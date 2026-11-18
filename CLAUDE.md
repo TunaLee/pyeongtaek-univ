@@ -18,7 +18,9 @@ bash ~/.claude/skills/lecture-deck/scripts/capture_anim.sh $PWD/docs/index.html 
 바꾼 장은 반드시 캡처해서 본다(글자 잘림 · 내비 바 겹침 · 애니메이션 끝 장면). 캡처 출력은 스크래치 폴더에.
 
 ## 구조
-- `src/build.py` 표지 · 과정 지도 → 교시마다 [간지 + `pgen.slides_for(u)`(택배 일반 예 → 반도체 적용) + `p{u}.slides()`] → 마지막 장
+- `src/build.py` 표지 · 과정 지도 → 개요(`p0.py` · 데이터 · 저장 형식 · AI 이전/이후 · 분석 개념 · 택배 적용) → 교시마다 [간지 + `pgen.slides_for(u)` + `p{u}.slides()`] → 마지막 장
+- **모든 교시는 도입 → 설명 → 적용 순서.** `build.py` 의 `PHASES` 에 도입 · 설명 장 제목을 적고 나머지는 적용. 장을 더하거나 제목을 바꾸면 `PHASES` 도 고친다(없는 제목은 빌드가 멈춘다).
+- `docs/index.html` 은 빌드 결과물이다. 직접 고치지 말고 `src/` 를 고친 뒤 빌드한다.
 - `src/pkit.py` 교시 목록 UNITS · REF(labs/ref.json) · 공통 헬퍼 / `src/p1~p8.py` 교시 본문 / `src/pviz.py · pv2~pv8.py` 애니메이션(anim._D, 접두어 고유)
 - 공통 모듈(deck · hx · viz2 · v1kit · v3kit · anim …)은 vibe-coding 저장소에서 복사한 것.
 - `labs/make_data.py` 웨이퍼 25장 합성(시드 2611 · ETCH_03 가장자리 · W05 중복 · W11 mV · W19 결측 · W26 은 data/new) · `labs/make_general.py` 택배 25일치 · `labs/make_secom.py` UCI SECOM(CC BY 4.0)
