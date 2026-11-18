@@ -1,10 +1,8 @@
-"""3교시 수율 집계와 수율 모델.
+"""3교시 수율 집계 · 엑셀 자동화.
 
-수율 집계(엑셀 피벗이 하던 일 · 존별 · 불량 Pareto(애니) · 엑셀 세 시트) → Gross die(배경 · 세기(애니) · 근사식)
-→ 결함 밀도(비유 · 결함 비(애니)) → Poisson · Negative binomial → 다이 크기별 수율(애니) · 양품 수 → 실습 3.
-숫자는 labs/solution/scripts(yield_model.py) 와 W07 정제본을 직접 계산해 얻는다.
+수율 집계(엑셀 피벗이 하던 일 · 존별 · 불량 Pareto(애니) · 엑셀 세 시트) → 웨이퍼 25장 한 번에 → 결과 대조 → 실습 3.
+숫자는 W07 · 원시 25장을 직접 계산해 얻는다.
 """
-import math
 import sys
 
 import pandas as pd
@@ -18,7 +16,7 @@ from stats_hx import big, hbars, src
 
 sys.path.insert(0, str(SOL / "scripts"))
 from common import KO  # noqa: E402
-from yield_model import gross_die_count, gross_die_formula, negbin, poisson  # noqa: E402
+from svg import line  # noqa: E402
 
 T = tag("3")
 W07 = W("W07")
@@ -29,19 +27,11 @@ ZONE["y"] = (ZONE["sum"] / ZONE["size"] * 100).round(2)
 FAIL = DF[~OK].fail_type.value_counts()
 TOP = FAIL.index[0]
 TOP_PCT = FAIL.iloc[0] / FAIL.sum() * 100
-G616 = gross_die_count()
-F300 = gross_die_formula(300, 10)
-F294 = gross_die_formula(294, 10)
-Y = W07["yield"] / 100
-D0 = -math.log(Y) / 1.0                          # 다이 10×10 mm = 1 cm²
-SIZES = (5, 8, 10, 12, 15, 20, 25)
-ROWS = [(s, round(poisson(s * s / 100, D0) * 100, 1), round(negbin(s * s / 100, D0) * 100, 1)) for s in SIZES]
-GOOD = [(s, round(gross_die_count(die=s) * poisson(s * s / 100, D0))) for s in SIZES]
-RAIN, RAIN_RES, RAIN_N = pv3.rain(D0)
+RAW = LAB / "wafer-lab" / "data" / "raw"
+WY = [(w, v["yield"], v["eqp"]) for w, v in REF["wafers"].items()]   # 테스터 판정 기준 웨이퍼별 수율
+LOW = [w for w, y, _ in WY if y < 90]
+XL_PASS = int(OK.sum())
 
-D_DEVRIES = ("de Vries · IEEE TSM 18(1) 2005 · doi:10.1109/TSM.2004.836656", "https://doi.org/10.1109/TSM.2004.836656")
-D_CUNN = ("Cunningham · IEEE TSM 3(2) 1990 · doi:10.1109/66.53188", "https://doi.org/10.1109/66.53188")
-D_STAPPER = ("Stapper · IBM J. Res. Dev. 30(3) 1986 · doi:10.1147/rd.303.0326", "https://doi.org/10.1147/rd.303.0326")
 
 CSS = """
   .p3eq{font-size:40px; font-weight:800; color:#16233A; text-align:center; margin:18px 0 22px; letter-spacing:-.01em;}
@@ -68,52 +58,23 @@ def slides():
             ("요약", f"총 다이 {len(DF)} · 양품 {int(OK.sum())} · 불량 {int((~OK).sum())} · 수율 {W07['yield']}%"),
             ("존별", "구역 · 다이 수 · 양품 · 수율"), ("불량 유형", "유형 · 개수 · 누적 %")], 3), T),
         # ── Gross die
-        light("Gross die", viz2.tiles([
-            ("뜻", "웨이퍼 한 장에서 나오는 다이 수 (양불 전)"), ("정하는 것", "웨이퍼 지름 · 다이 크기 · 가장자리 제외"),
-            ("쓰는 곳", "칩 원가 = 웨이퍼 값 ÷ 양품 다이 수")], 3), T),
-        light("격자에 놓고 세기", pv3.gross(), T),
-        light("Gross die 근사식", '<div class="p3eq">DPW = <em>π·d²</em> / 4S − <em>π·d</em> / √(2S)'
-              '<small>d 웨이퍼 지름 · S 다이 면적</small></div>'
-              + big([(f"{G616}", "개", "격자에 놓고 직접 센 수", True), (f"{F300:.0f}", "개", "근사식 · d = 300 mm"),
-                     (f"{F294:.0f}", "개", "근사식 · d = 294 mm (가장자리 3 mm 제외)")], 3)
-              + src(D_DEVRIES), T),
         # ── 결함 밀도 · 수율 모델
-        light("비유 · 빗방울과 타일", viz2.maprows([
-            ("빗방울", "결함 (파티클 · 결정 결함)", "웨이퍼 위 무작위 위치"), ("타일", "다이", "크기가 다이 면적"),
-            ("한 방울이라도 맞은 타일", "불량 다이", "결함 하나면 불량"), ("비의 세기", "결함 밀도 D0", "cm² 당 결함 수")], "비", "웨이퍼"), T),
-        light("같은 결함 · 다른 다이 크기", RAIN, T),
-        light("Poisson 수율 모델", '<div class="p3eq">Y = e<sup>−A·D0</sup>'
-              '<small>Y = 수율 · A = 다이 면적 (cm²) · D0 = 결함 밀도 (개/cm²)</small></div>'
-              + flow([("W07 수율", f"Y = {W07['yield']}%"), ("다이 면적", "A = 1 cm²"),
-                      ("D0 = −ln(Y) ÷ A", f"{D0:.3f} 개/cm²"), ("다른 다이 크기", "같은 D0 로 예상")], hl=2)
-              + src(D_CUNN), T),
-        light("Negative binomial 모델", '<div class="p3eq">Y = (1 + A·D0 / <em>α</em>)<sup>−α</sup>'
-              '<small>α 작을수록 결함이 뭉침 · α → ∞ 이면 Poisson</small></div>'
-              + viz2.pair("Poisson", [("결함", "웨이퍼 전체에 고르게"), ("큰 다이", "수율을 낮게 봄")],
-                          "Negative binomial", [("결함", "한 곳에 뭉침 (클러스터)"), ("큰 다이", "Poisson 보다 높게 봄")])
-              + src(D_STAPPER), T),
-        light("다이 크기별 예상 수율", pv3.curve(ROWS), T),
-        light("다이 크기와 양품 수", hbars([(f"{s} mm", g, s == 10, f"{g:,}개") for s, g in GOOD]), T),
-        light("Claude Code 에 계산 맡기기", codemap([
-            ("gross_die_count(d=300, edge=3, die=10)", f"격자로 센 Gross die · {G616}"),
-            ("d0 = -math.log(0.9042) / 1.0", f"W07 수율에서 D0 · {D0:.3f}"),
-            ("math.exp(-a * d0)", "Poisson 예상 수율"),
-            ("(1 + a * d0 / alpha) ** (-alpha)", "Negative binomial 예상 수율")],
-            ask="다이 크기별 Gross die 와 예상 수율 표를 만들어 줘", title="yield_model.py"), T),
         # ── 실습
-        lab("3", "수율 집계 · 수율 모델", T, "W07 의 수율을 집계해 엑셀로 저장하고 다이 크기별 예상 수율 표를 만든다",
-            ["존별 · 불량 유형 집계 요청", "엑셀 세 시트 저장", "Gross die 함수 요청 · 616 확인", "D0 · Poisson · NB 계산 요청",
-             "다이 크기별 표 저장"],
-            [f"존별 수율 center {ZONE['y']['center']}%", f"Gross die {G616} · D0 {D0:.3f}", "yield_summary.xlsx · die_size_yield.csv"],
-            files="output/clean/W07.csv 또는 data/wafer_test_W07.csv"),
+        light("웨이퍼 25장 한 번에", line([(w, y) for w, y, _ in WY], w=1160, h=330, unit="%", target=90, ymin=84, ymax=97,
+                                       color_of=lambda w: "#C62828" if REF["wafers"][w]["yield"] < 90 else "#1F3A5F"), T),
+        light("집계 결과 대조", viz2.maprows([
+            ("양품 수", f"스크립트 {XL_PASS}", f"엑셀 필터 PASS {XL_PASS}"), ("존별 다이 수", " · ".join(str(int(v)) for v in ZONE["size"]), "합계 616"),
+            ("불량 유형 합", f"{int(FAIL.sum())}", "불량 다이 수와 같음"), ("25장 수율", f"90% 미만 {len(LOW)}장", ", ".join(LOW[:5]) + " …")], "항목", "결과"), T),
+        lab("3", "수율 집계 · 엑셀 자동화", T, "W07 을 존별 · 불량 유형으로 집계해 엑셀에 저장하고, 원시 25장의 웨이퍼별 수율 표를 만든다",
+            ["존별 · 불량 유형 집계 요청", "엑셀 세 시트 저장", "엑셀 필터로 대조", "25장 웨이퍼별 수율 표 요청", "90% 미만 웨이퍼 확인"],
+            [f"존별 수율 center {ZONE['y']['center']}%", f"25장 중 90% 미만 {len(LOW)}장", "yield_summary.xlsx · wafer_yield.csv"],
+            files="data/wafer_test_W07.csv · data/raw/*.csv"),
         brief("3", T,
-              ["집계 요청 (존별 · 불량 유형)", "엑셀 저장 · 필터로 대조", "Gross die 세기 요청", "수율 모델 계산 요청", "다이 크기별 표 저장"],
-              [("목표", "W07 수율 집계 + 다이 크기별 예상 수율"), ("입력", "W07 정제본 · 웨이퍼 300 mm · 다이 10 mm · 제외 3 mm"),
-               ("산출물", "output/yield_summary.xlsx · output/die_size_yield.csv"), ("하지 말 것", "수율 숫자를 손으로 적기")],
-              [], [f"Gross die {G616}", f"다이 20 mm 예상 수율 {[r for r in ROWS if r[0] == 20][0][1]}%"], ""),
+              ["집계 요청 (존별 · 불량 유형)", "엑셀 저장 · 필터로 대조", "25장 수율 표 요청", "90% 미만 웨이퍼 확인", "결과 파일 열어 보기"],
+              [("목표", "W07 집계 엑셀 + 웨이퍼 25장 수율 표"), ("입력", "wafer_test_W07.csv · data/raw/"),
+               ("산출물", "output/yield_summary.xlsx · output/wafer_yield.csv"), ("하지 말 것", "수율 숫자를 손으로 적기")],
+              [], [f"PASS {XL_PASS} · 엑셀과 같음", f"90% 미만 {len(LOW)}장"], ""),
         light("실습 3 확인", chat([
-            ("me", "다이 크기 5~25 mm 의 Gross die 와 Poisson · NB 예상 수율 표를 만들어 줘. W07 수율로 D0 를 구해서."),
-            ("ai", f"D0 = {D0:.3f}/cm² (W07 {W07['yield']}%)\n"
-                   + "\n".join(f"{s} mm · Gross die {gross_die_count(die=s)} · Poisson {p}% · NB {n}%" for s, p, n in ROWS if s in (10, 20, 25))
-                   + "\n저장: output/die_size_yield.csv")], "계산 대화 예"), T),
+            ("me", "data/raw 의 25장 웨이퍼별 수율 표를 만들어 줘. 90% 미만인 웨이퍼만 따로 알려 줘."),
+            ("ai", f"output/wafer_yield.csv 저장 · 25행\n90% 미만 {len(LOW)}장 · {', '.join(LOW)}")], "집계 대화 예"), T),
     ]

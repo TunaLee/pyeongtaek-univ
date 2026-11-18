@@ -10,7 +10,6 @@ from deck import lab, light
 from hx import code, esc, note
 from pkit import REF, SOL, W, brief, chat, tag
 from stats_hx import big, src
-from v3kit import phmap
 
 T = tag("1")
 W07 = W("W07")
@@ -48,42 +47,12 @@ def _groups():
 
 def slides():
     return [
-        # ── 배경 · 반도체와 데이터
-        light("2026 반도체 수출", big([
-            ("564.4", "억 달러", "2026년 10월 반도체 수출 (월간 역대 2위)", True),
-            ("+259.4", "%", "전년 같은 달 대비"),
-            ("49", "%", "전체 수출 1,153억 달러 중 반도체")], 3)
-              + src(("산업통상부 · 2026년 10월 수출입 동향 (2026-11-01)", "https://www.korea.kr/news/policyNewsView.do?newsId=148974851")), T),
-        light("세계 반도체 시장 전망", big([
-            ("1.51", "조 달러", "2026년 세계 반도체 시장 (+90%)", True),
-            ("8,000", "억 달러+", "메모리 (+약 250%)"),
-            ("1.9", "조 달러", "2027년 전망")], 3)
-              + src(("WSTS Spring 2026 Forecast (2026-06-02)", "https://www.wsts.org/esraCMS/extension/media/f/WST/7618/WSTS_FC-Release-2026-May.pdf")), T),
-        light("웨이퍼와 다이", phmap(
-            "wafer_photo.webp", "웨이퍼 · 격자 한 칸이 다이 하나", "사진 · Silicon wafer (Inductiveload) · 퍼블릭 도메인",
-            "https://commons.wikimedia.org/wiki/File:Silicon_wafer.jpg",
-            viz2.maprows([
-                ("웨이퍼", "실리콘 원판", "지름 300 mm"), ("다이 (die)", "웨이퍼 위 칩 한 개", "10 × 10 mm"),
-                ("Gross die", "웨이퍼 한 장의 다이 수", f"{REF['gross_die']}개"), ("LOT", "같이 공정을 도는 웨이퍼 묶음", "25장")], "용어", "실습 데이터")), T),
-        light("반도체가 만들어지는 순서", pviz.fab_flow(), T),
-        light("CP 테스트", phmap(
-            "probe_card.webp", "프로브 카드 · 바늘이 다이 패드에 닿음", "사진 · Probe card (Ajoones) · CC BY 3.0",
-            "https://commons.wikimedia.org/wiki/File:Probe_card.JPG",
-            viz2.maprows([
-                ("프로브 카드", "바늘 묶음", "다이 전극에 접촉"), ("측정", "전압 · 전류 · 저항", "다이마다 수십 항목"),
-                ("판정", "스펙과 비교", "Bin 번호"), ("기록", "테스터 파일 (STDF)", "→ CSV 로 내려받음")], "단계", "내용")), T),
+        light("데이터 용어", viz2.maprows([
+            ("다이", "CSV 한 행", f"웨이퍼 한 장 {REF['gross_die']}행"), ("웨이퍼", "CSV 파일 하나", "W01 ~ W25"),
+            ("LOT", "파일 묶음", "LOT2611-07 · 25장"), ("Bin · pass_fail", "판정 열", "1 = 양품")], "용어", "데이터"), T),
         light("테스트 결과가 CSV 가 되는 과정", pviz.test_to_csv(), T),
-        light("테스트 데이터 용어", viz2.tiles([
-            ("CP · Wafer sort", "자르기 전 웨이퍼 상태의 전기 검사"), ("Bin", "판정 번호 · 1 양품 · 2~7 불량 유형"),
-            ("STDF", "테스터 결과 파일 표준 형식 (Teradyne)"), ("MES", "공장 생산 기록 시스템 · 데이터를 내려받는 곳")], 2)
-              + src(("SemiEngineering · STDF", "https://semiengineering.com/knowledge_centers/test/data-analytics/standard-test-data-format-stdf/")), T),
         # ── 데이터 읽기
         light("열 18개 네 묶음", _groups(), T),
-        light("비유 · 트랜지스터와 수도꼭지", viz2.maprows([
-            ("vth_v · 문턱전압", "꼭지를 얼마나 돌려야 물이 나오나", "0.38~0.52 V"),
-            ("idsat_ma · 포화전류", "활짝 열었을 때 물줄기", "0.92 mA 이상"),
-            ("ioff_na · 누설전류", "잠갔는데 새는 물", "10 nA 이하"),
-            ("rc_ohm · 접촉저항", "배관 이음새가 막힌 정도", "15 Ω 이하")], "측정값", "수도꼭지"), T),
         light("판정 순서", pviz.sieve(), T),
         light("수율", big([
             (f"{W07['pass']}", "개", "양품 다이 (PASS)"), (f"{REF['gross_die']}", "개", "전체 다이"),

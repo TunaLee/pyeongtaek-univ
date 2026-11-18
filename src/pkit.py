@@ -22,7 +22,7 @@ FOLDER = "wafer-lab"
 UNITS = [
     ("1", "반도체 테스트 데이터와 Claude Code", "데이터 사전 · CLAUDE.md"),
     ("2", "데이터 정제 · 검증", "clean.py · 검증 보고서"),
-    ("3", "수율 집계와 수율 모델", "yield_summary.xlsx · 수율 표"),
+    ("3", "수율 집계 · 엑셀 자동화", "yield_summary.xlsx · wafer_yield.csv"),
     ("4", "웨이퍼 맵과 불량 패턴", "wafer_map.html"),
     ("5", "파라미터 분포 · SPC", "SPC 차트 · 이상 다이 목록"),
     ("6", "데이터 파이프라인", "pipeline.py · warehouse.duckdb"),

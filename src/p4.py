@@ -57,11 +57,6 @@ def slides():
         light("패턴 비율", hbars([(f"{n} · {ko}", c, n == "none", f"{c:,} · {c / LABELED * 100:.1f}%")
                                for n, ko, c in pv4.PATTERNS], top=pv4.PATTERNS[0][2])
               + src(WM811K), T),
-        light("패턴과 원인 후보", viz2.maprows([
-            ("Edge-Ring · 가장자리 링", "식각 · 증착의 가장자리 균일도", "설비 · 챔버"),
-            ("Scratch · 스크래치", "웨이퍼 이송 · 연마(CMP) 접촉", "핸들링"),
-            ("Center · 중심", "회전 도포 · 가스 흐름의 중심부", "공정 조건"),
-            ("Random · 랜덤", "파티클 · 공정 환경", "청정도")], "패턴", "원인 후보"), T),
         # ── 우리 LOT
         light("W07 · 대각선 스크래치", shot("p4_wm_W07.webp", "W07 웨이퍼 맵 · wafer_map.py 결과", [
             ("수율", f"{w07['yield']}% · 양품 {w07['pass']}"), ("크랙", f"{w07['crack']}개 · 대각선 한 줄"),
