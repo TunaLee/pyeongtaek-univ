@@ -91,7 +91,7 @@ def slides():
         light("README", code("README.md · 일부", esc(_readme())), T),
         light("발표 2분", flow([("결과", "20초 · KPI 세 개"), ("원인 후보", "60초 · 후보 3건"), ("근거", "30초 · 맵 · 차트 한 장씩"),
                               ("추가 확인", "10초 · 다음에 볼 것")], hl=1), T),
-        light("사람이 정할 것", viz2.pair(
+        light("사람의 판단 영역", viz2.pair(
             "Claude Code", [("숫자 뽑기", "SQL · 집계"), ("차트 · 맵", "근거 그림"), ("초안", "analysis_summary.md")],
             "사람", [("판정 · 지표 정의", "스펙 · 수율 계산 방식"), ("원인 판단", "상관과 원인 구분"), ("다음 행동", "점검 · 재측정 결정")], hl="r")
               + src(("Claude 블로그 · How Anthropic enables self-service data analytics",

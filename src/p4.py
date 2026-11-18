@@ -35,7 +35,7 @@ def slides():
     z21 = _zone_fail("W21")
     return [
         # ── 배경
-        light("지도에서 보이는 것", phmap(
+        light("지도의 효과", phmap(
             "p4_snow_map.webp", "1854 런던 콜레라 지도 · 검은 막대 = 사망자", "지도 · John Snow (1854) · 퍼블릭 도메인",
             "https://commons.wikimedia.org/wiki/File:Snow-cholera-map-1.jpg",
             viz2.maprows([("기록", "사망자 주소 목록", "표"), ("지도", "주소마다 막대", "위치"), ("보인 것", "한 펌프 주변에 몰림", "원인 후보"),
