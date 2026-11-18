@@ -374,6 +374,45 @@
   .p0ph{display:inline-flex; gap:3px; margin-left:4px;}
   .p0ph i{font-style:normal; font-family:var(--sans); font-size:11px; font-weight:700; letter-spacing:0; padding:3px 8px; border-radius:6px; background:#EEF1F5; color:#9AA3AF;}
   .p0ph i.on{background:#F28C28; color:#fff;}
+  .p0ev{display:flex; flex-direction:column; gap:12px;}
+  .p0ev .code pre, .p0ev .code code{font-size:14px !important; line-height:1.6;}
+  .p0er{display:grid; grid-template-columns:170px minmax(0,1fr); gap:18px; align-items:center; opacity:0; animation:p0In .5s var(--d) forwards;}
+  .p0er > div:first-child b{display:block; font-size:24px; color:#16233A;}
+  .p0er > div:first-child span{display:block; font-size:14.5px; color:#6B7785; line-height:1.5; margin-top:4px;}
+  .p0er.on > div:first-child b{color:#E07A12;}
+  .p0x{border:1.5px solid #D9DDE3; border-radius:10px; overflow:hidden; background:#fff; font-family:var(--sans);}
+  .p0x .bar{background:#1D6F42; color:#fff; font-size:12px; font-weight:700; padding:6px 12px;}
+  .p0x .fx{display:flex; gap:10px; align-items:center; font-size:12.5px; border-bottom:1px solid #DADCE0; padding:4px 10px; color:#3C4043;}
+  .p0x .fx i{font-style:italic; color:#5F6368; border-right:1px solid #DADCE0; padding-right:10px;}
+  .p0x .fx em{font-style:normal; font-weight:700; width:28px;}
+  .p0x table{border-collapse:collapse; width:100%; font-size:13px;}
+  .p0x th{background:#F1F3F4; color:#5F6368; font-weight:600; border:1px solid #DADCE0; padding:3px 6px; font-size:11.5px;}
+  .p0x td{border:1px solid #E3E5E8; padding:5px 8px; color:#202124; white-space:nowrap;}
+  .p0x td.n{text-align:right;}
+  .p0x tr.h td{font-weight:700; background:#E8F0E9;}
+  .p0x td.sel{outline:2px solid #1D6F42; outline-offset:-2px;}
+  .p0x .tab{font-size:11.5px; color:#1D6F42; font-weight:700; padding:4px 12px; border-top:1px solid #DADCE0; background:#F8F9FA;}
+  .p0er.on .code{border:2px solid #F28C28;}
+  .p0tb{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:28px; align-items:center;}
+  .p0tb .t{border:1.5px solid #D9DDE3; border-radius:12px; overflow:hidden; background:#fff;}
+  .p0tb .t .nm{background:#1F3A5F; color:#fff; font-family:var(--mono); font-size:13px; font-weight:700; padding:7px 14px;}
+  .p0tb table{border-collapse:collapse; width:100%; font-size:15px;}
+  .p0tb th{background:#F4F6F9; color:#1F3A5F; font-family:var(--mono); font-size:13.5px; text-align:left; padding:8px 12px; border-bottom:1.5px solid #D9DDE3;}
+  .p0tb td{padding:8px 12px; border-bottom:1px solid #EEF1F5; color:#16233A;}
+  .p0tb td.more{color:#9AA3AF; font-size:13px;}
+  .p0tb .k{color:#E07A12;}
+  .p0tb tr.row td{animation:p0Row .5s 1s forwards;}
+  .p0tb .col{animation:p0Col .5s 3s forwards;}
+  .p0tb td.cell{animation:p0Cell .5s 5s forwards;}
+  @keyframes p0Row{to{background:#FFF3E6;}}
+  @keyframes p0Col{to{background:#E6EEF8;}}
+  @keyframes p0Cell{to{background:#F28C28; color:#fff; font-weight:800;}}
+  .p0lg{display:flex; flex-direction:column; gap:10px;}
+  .p0lg div{display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center; border-radius:10px; padding:10px 14px; background:#fff; border:1.5px solid #E1E5EB; opacity:0; animation:p0In .5s var(--d) forwards;}
+  .p0lg b{font-size:17px; color:#16233A;} .p0lg b small{display:block; font-size:12px; color:#6B7785; font-weight:600; font-family:var(--mono);}
+  .p0lg span{font-size:15px; color:#3B4756;}
+  .p0lg i{display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px;}
+  @media print{.p0tb tr.row td{background:#FFF3E6} .p0tb .col{background:#E6EEF8} .p0tb td.cell{background:#F28C28;color:#fff} .p0lg div{animation:none;opacity:1}}
   @keyframes p0In{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
   @media print{.p0f,.p0t{animation:none; opacity:1}}
   .v2tile .p0hl{color:#E07A12; font-weight:700;}
@@ -1147,24 +1186,32 @@ print(round(rate, 2))</code></pre></div><div class="r">70.25%</div><span style="
   <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">데이터 분석</div><div class="v2pc" style="--d:0.00s"><b>질문</b><span>외곽 배송은 왜 늦나</span></div><div class="v2pc" style="--d:0.08s"><b>결과</b><span>차트 · 원인 후보 · 요약</span></div><div class="v2pc" style="--d:0.16s"><b>주기</b><span>질문이 생길 때 한 번</span></div></div><div class="v2p on"><div class="v2ph">데이터 엔지니어링</div><div class="v2pc" style="--d:0.00s"><b>질문</b><span>매일 정시율 집계 자동화</span></div><div class="v2pc" style="--d:0.08s"><b>결과</b><span>정제 · 적재 · 집계 스크립트</span></div><div class="v2pc" style="--d:0.16s"><b>주기</b><span>파일이 들어올 때마다</span></div></div></div></div></div>
 </section>
 
+<section class="slide lt" data-title="테이블의 행과 열">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">개요</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">테이블의 행과 열</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="p0tb"><div class="t"><div class="nm">TABLE delivery</div><table><tr><th class="">order_id</th><th class="">area</th><th class="">truck_id</th><th class="col">delivery_min</th><th class="">status</th></tr><tr class=""><td class=" k">D07-0001</td><td class="">외곽</td><td class="">TRUCK_C</td><td class="col">87</td><td class="">ON_TIME</td></tr><tr class="row"><td class=" k">D07-0002</td><td class="">외곽</td><td class="">TRUCK_A</td><td class="col cell">92</td><td class="">ON_TIME</td></tr><tr class=""><td class=" k">D07-0003</td><td class="">외곽</td><td class="">TRUCK_C</td><td class="col">104</td><td class="">ON_TIME</td></tr><tr class=""><td class=" k">D07-0004</td><td class="">도심</td><td class="">TRUCK_C</td><td class="col">78</td><td class="">ON_TIME</td></tr><tr class=""><td class=" k">D07-0005</td><td class="">외곽</td><td class="">TRUCK_B</td><td class="col">78</td><td class="">ON_TIME</td></tr><tr><td class="more" colspan="5">… 600행</td></tr></table></div><div class="p0lg"><div style="--d:0.6s"><b>테이블<small>table</small></b><span>delivery · 배송 기록을 모은 표</span></div><div style="--d:1.6s"><b><i style=background:#FFF3E6></i>행<small>row · 레코드</small></b><span>배송 1건 · D07-0002</span></div><div style="--d:2.6s"><b><i style=background:#E6EEF8></i>열<small>column · 필드</small></b><span>같은 종류의 값 · delivery_min</span></div><div style="--d:3.6s"><b><i style=background:#F28C28></i>값<small>cell</small></b><span>행과 열이 만나는 칸 · 92</span></div><div style="--d:4.6s"><b>기본 키<small>primary key</small></b><span>행마다 겹치지 않는 열 · order_id</span></div></div></div></div></div>
+</section>
+
 <section class="slide lt" data-title="택배 배송 데이터">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">개요</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
   <h2 class="s-title sm">택배 배송 데이터</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">delivery_D07.csv · 앞 4줄 · 14열 중 8열</span></div><pre><code>date,zone_x,zone_y,area,truck_id,delivery_min,reason,status
+  <div class="body"><div class="mid"><div class="p0ev"><div class="p0er" style="--d:0.0s"><div><b>엑셀</b><span>사람이 보는 화면<br/>칸 · 서식 · 시트</span></div><div class="p0x"><div class="bar">delivery_D07.xlsx</div><div class="fx"><em>F2</em><i>fx</i>87</div><table><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr><tr class="h"><th>1</th><td>date</td><td>zone_x</td><td>zone_y</td><td>area</td><td>truck_id</td><td>delivery_min</td><td>reason</td><td>status</td></tr><tr><th>2</th><td class="">2026-10-07</td><td class="n">-4</td><td class="n">7</td><td class="">외곽</td><td class="">TRUCK_C</td><td class="n sel">87</td><td class="">none</td><td class="">ON_TIME</td></tr><tr><th>3</th><td class="">2026-10-07</td><td class="n">7</td><td class="n">-5</td><td class="">외곽</td><td class="">TRUCK_A</td><td class="n">92</td><td class="">none</td><td class="">ON_TIME</td></tr><tr><th>4</th><td class="">2026-10-07</td><td class="n">-5</td><td class="n">6</td><td class="">외곽</td><td class="">TRUCK_C</td><td class="n">104</td><td class="">none</td><td class="">ON_TIME</td></tr><tr><th>5</th><td class="">2026-10-07</td><td class="n">0</td><td class="n">-1</td><td class="">도심</td><td class="">TRUCK_C</td><td class="n">78</td><td class="">none</td><td class="">ON_TIME</td></tr></table><div class="tab">Sheet1</div></div></div><div class="p0er on" style="--d:0.8s"><div><b>CSV</b><span>1~8교시에서 다루는 형식<br/>쉼표로 나눈 글자</span></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">delivery_D07.csv</span></div><pre><code>date,zone_x,zone_y,area,truck_id,delivery_min,reason,status
 2026-10-07,-4,7,외곽,TRUCK_C,87,none,ON_TIME
 2026-10-07,7,-5,외곽,TRUCK_A,92,none,ON_TIME
 2026-10-07,-5,6,외곽,TRUCK_C,104,none,ON_TIME
-2026-10-07,0,-1,도심,TRUCK_C,78,none,ON_TIME</code></pre></div><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>한 행</b><span>배송 1건</span></div><div class="v2tile" style="--d:0.08s"><b>하루 파일</b><span>600행 · 25일치</span></div><div class="v2tile" style="--d:0.16s"><b>판정</b><span>약속 120분 안 · 파손 · 주소 · 부재 없음 → ON_TIME</span></div></div></div></div>
+2026-10-07,0,-1,도심,TRUCK_C,78,none,ON_TIME</code></pre></div></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="행 · 열 · 변수 종류">
+<section class="slide lt" data-title="변수 종류">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">개요</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">행 · 열 · 변수 종류</h2>
+  <h2 class="s-title sm">변수 종류</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>표 용어</span><i></i><span>delivery_D07.csv</span></div><div class="v2m" style="--d:0.00s"><div class="a">행 = 관측</div><i>→</i><div class="b"><b>배송 1건</b><small>600행</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">열 = 변수</div><i>→</i><div class="b"><b>측정 항목 하나</b><small>14열 · date · area · status …</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">수치형 변수</div><i>→</i><div class="b"><b>delivery_min · dist_km</b><small>평균 · 합계 · 분포</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">범주형 변수</div><i>→</i><div class="b"><b>area · truck_id · status</b><small>개수 · 비율 · 묶어 세기</small></div></div></div></div></div>
+  <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>변수</span><i></i><span>delivery_D07.csv</span></div><div class="v2m" style="--d:0.00s"><div class="a">수치형 변수</div><i>→</i><div class="b"><b>delivery_min · dist_km</b><small>평균 · 합계 · 분포</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">범주형 변수</div><i>→</i><div class="b"><b>area · truck_id · status</b><small>개수 · 비율 · 묶어 세기</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">판정 열 status</div><i>→</i><div class="b"><b>ON_TIME · 그 외</b><small>약속 120분 안 · 파손 · 주소 · 부재 없음</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">파일 규모</div><i>→</i><div class="b"><b>600행 × 14열</b><small>하루 한 파일 · 25일치</small></div></div></div></div></div>
 </section>
 
 <section class="slide lt" data-title="정시 도착률">

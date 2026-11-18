@@ -52,6 +52,45 @@ CSS = """
   .p0ph{display:inline-flex; gap:3px; margin-left:4px;}
   .p0ph i{font-style:normal; font-family:var(--sans); font-size:11px; font-weight:700; letter-spacing:0; padding:3px 8px; border-radius:6px; background:#EEF1F5; color:#9AA3AF;}
   .p0ph i.on{background:#F28C28; color:#fff;}
+  .p0ev{display:flex; flex-direction:column; gap:12px;}
+  .p0ev .code pre, .p0ev .code code{font-size:14px !important; line-height:1.6;}
+  .p0er{display:grid; grid-template-columns:170px minmax(0,1fr); gap:18px; align-items:center; opacity:0; animation:p0In .5s var(--d) forwards;}
+  .p0er > div:first-child b{display:block; font-size:24px; color:#16233A;}
+  .p0er > div:first-child span{display:block; font-size:14.5px; color:#6B7785; line-height:1.5; margin-top:4px;}
+  .p0er.on > div:first-child b{color:#E07A12;}
+  .p0x{border:1.5px solid #D9DDE3; border-radius:10px; overflow:hidden; background:#fff; font-family:var(--sans);}
+  .p0x .bar{background:#1D6F42; color:#fff; font-size:12px; font-weight:700; padding:6px 12px;}
+  .p0x .fx{display:flex; gap:10px; align-items:center; font-size:12.5px; border-bottom:1px solid #DADCE0; padding:4px 10px; color:#3C4043;}
+  .p0x .fx i{font-style:italic; color:#5F6368; border-right:1px solid #DADCE0; padding-right:10px;}
+  .p0x .fx em{font-style:normal; font-weight:700; width:28px;}
+  .p0x table{border-collapse:collapse; width:100%; font-size:13px;}
+  .p0x th{background:#F1F3F4; color:#5F6368; font-weight:600; border:1px solid #DADCE0; padding:3px 6px; font-size:11.5px;}
+  .p0x td{border:1px solid #E3E5E8; padding:5px 8px; color:#202124; white-space:nowrap;}
+  .p0x td.n{text-align:right;}
+  .p0x tr.h td{font-weight:700; background:#E8F0E9;}
+  .p0x td.sel{outline:2px solid #1D6F42; outline-offset:-2px;}
+  .p0x .tab{font-size:11.5px; color:#1D6F42; font-weight:700; padding:4px 12px; border-top:1px solid #DADCE0; background:#F8F9FA;}
+  .p0er.on .code{border:2px solid #F28C28;}
+  .p0tb{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:28px; align-items:center;}
+  .p0tb .t{border:1.5px solid #D9DDE3; border-radius:12px; overflow:hidden; background:#fff;}
+  .p0tb .t .nm{background:#1F3A5F; color:#fff; font-family:var(--mono); font-size:13px; font-weight:700; padding:7px 14px;}
+  .p0tb table{border-collapse:collapse; width:100%; font-size:15px;}
+  .p0tb th{background:#F4F6F9; color:#1F3A5F; font-family:var(--mono); font-size:13.5px; text-align:left; padding:8px 12px; border-bottom:1.5px solid #D9DDE3;}
+  .p0tb td{padding:8px 12px; border-bottom:1px solid #EEF1F5; color:#16233A;}
+  .p0tb td.more{color:#9AA3AF; font-size:13px;}
+  .p0tb .k{color:#E07A12;}
+  .p0tb tr.row td{animation:p0Row .5s 1s forwards;}
+  .p0tb .col{animation:p0Col .5s 3s forwards;}
+  .p0tb td.cell{animation:p0Cell .5s 5s forwards;}
+  @keyframes p0Row{to{background:#FFF3E6;}}
+  @keyframes p0Col{to{background:#E6EEF8;}}
+  @keyframes p0Cell{to{background:#F28C28; color:#fff; font-weight:800;}}
+  .p0lg{display:flex; flex-direction:column; gap:10px;}
+  .p0lg div{display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center; border-radius:10px; padding:10px 14px; background:#fff; border:1.5px solid #E1E5EB; opacity:0; animation:p0In .5s var(--d) forwards;}
+  .p0lg b{font-size:17px; color:#16233A;} .p0lg b small{display:block; font-size:12px; color:#6B7785; font-weight:600; font-family:var(--mono);}
+  .p0lg span{font-size:15px; color:#3B4756;}
+  .p0lg i{display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px;}
+  @media print{.p0tb tr.row td{background:#FFF3E6} .p0tb .col{background:#E6EEF8} .p0tb td.cell{background:#F28C28;color:#fff} .p0lg div{animation:none;opacity:1}}
   @keyframes p0In{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
   @media print{.p0f,.p0t{animation:none; opacity:1}}
 """
@@ -112,6 +151,53 @@ def three_tools():
     return f'<div class="p0tl">{t}</div>'
 
 
+def table_terms(df):
+    """DB 테이블 한 장 — 행(1초) · 열(3초) · 값(5초) 차례로 강조 · 한 번 재생."""
+    cols = ["order_id", "area", "truck_id", "delivery_min", "status"]
+    h = df.head(5)[cols]
+    hc = cols.index("delivery_min")
+    th = "".join(f'<th class="{"col" if j == hc else ""}">{c}</th>' for j, c in enumerate(cols))
+    trs = ""
+    for r, (_, row) in enumerate(h.iterrows()):
+        tds = "".join(f'<td class="{"col" if j == hc else ""}{" cell" if (r == 1 and j == hc) else ""}{" k" if j == 0 else ""}">{row[c]}</td>'
+                      for j, c in enumerate(cols))
+        trs += f'<tr class="{"row" if r == 1 else ""}">{tds}</tr>'
+    trs += f'<tr><td class="more" colspan="{len(cols)}">… {len(df)}행</td></tr>'
+    v = h.iloc[1]
+    lg = [("테이블", "table", f"delivery · 배송 기록을 모은 표", ""),
+          ("행", "row · 레코드", f"배송 1건 · {v.order_id}", "#FFF3E6"),
+          ("열", "column · 필드", "같은 종류의 값 · delivery_min", "#E6EEF8"),
+          ("값", "cell", f"행과 열이 만나는 칸 · {v.delivery_min}", "#F28C28"),
+          ("기본 키", "primary key", "행마다 겹치지 않는 열 · order_id", "")]
+    leg = "".join(f'<div style="--d:{0.6 + i * 1.0:.1f}s"><b>{"<i style=background:%s></i>" % c if c else ""}{a}<small>{e}</small></b><span>{x}</span></div>'
+                  for i, (a, e, x, c) in enumerate(lg))
+    return (f'<div class="p0tb"><div class="t"><div class="nm">TABLE delivery</div><table><tr>{th}</tr>{trs}</table></div>'
+            f'<div class="p0lg">{leg}</div></div>')
+
+
+def excel_vs_csv(head):
+    """같은 택배 기록 4줄 — 엑셀 화면과 CSV 글자. 1~8교시는 CSV 를 다룬다."""
+    cols = list(head.columns)
+    letters = "ABCDEFGHIJ"
+    num = {c for c in cols if str(head[c].dtype) != "object"}
+    th = "<tr><th></th>" + "".join(f"<th>{letters[i]}</th>" for i in range(len(cols))) + "</tr>"
+    hr = '<tr class="h"><th>1</th>' + "".join(f"<td>{c}</td>" for c in cols) + "</tr>"
+    sel = cols.index("delivery_min")
+    body = "".join("<tr><th>%d</th>" % (r + 2) + "".join(
+        f'<td class="{"n" if c in num else ""}{" sel" if (r == 0 and j == sel) else ""}">{v}</td>' for j, (c, v) in enumerate(row.items()))
+        + "</tr>" for r, (_, row) in enumerate(head.iterrows()))
+    first = head.iloc[0]["delivery_min"]
+    xl = (f'<div class="p0x"><div class="bar">delivery_D07.xlsx</div>'
+          f'<div class="fx"><em>{letters[sel]}2</em><i>fx</i>{first}</div><table>{th}{hr}{body}</table>'
+          f'<div class="tab">Sheet1</div></div>')
+    cv = code("delivery_D07.csv", esc(head.to_csv(index=False).strip()))
+    rows = [("엑셀", "사람이 보는 화면<br/>칸 · 서식 · 시트", xl, False),
+            ("CSV", "1~8교시에서 다루는 형식<br/>쉼표로 나눈 글자", cv, True)]
+    return '<div class="p0ev">' + "".join(
+        f'<div class="p0er{" on" if on else ""}" style="--d:{i * .8:.1f}s"><div><b>{h}</b><span>{sub}</span></div>{v}</div>'
+        for i, (h, sub, v, on) in enumerate(rows)) + "</div>"
+
+
 def slides():
     df = _d07()
     head = df.head(4)[["date", "zone_x", "zone_y", "area", "truck_id", "delivery_min", "reason", "status"]]
@@ -163,15 +249,14 @@ def slides():
         light("분석과 엔지니어링", viz2.pair(
             "데이터 분석", [("질문", "외곽 배송은 왜 늦나"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
             "데이터 엔지니어링", [("질문", "매일 정시율 집계 자동화"), ("결과", "정제 · 적재 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), TAG),
+        light("테이블의 행과 열", table_terms(df), TAG),
     ]
     ap = [
-        light("택배 배송 데이터", code(f"delivery_D07.csv · 앞 4줄 · {df.shape[1]}열 중 {head.shape[1]}열", esc(head.to_csv(index=False).strip()))
-              + viz2.tiles([("한 행", "배송 1건"), ("하루 파일", f"{GEN['rows_per_day']}행 · 25일치"),
-                            ("판정", "약속 120분 안 · 파손 · 주소 · 부재 없음 → ON_TIME")], 3), TAG),
-        light("행 · 열 · 변수 종류", viz2.maprows([
-            ("행 = 관측", "배송 1건", f"{len(df)}행"), ("열 = 변수", "측정 항목 하나", f"{df.shape[1]}열 · date · area · status …"),
-            ("수치형 변수", "delivery_min · dist_km", "평균 · 합계 · 분포"), ("범주형 변수", "area · truck_id · status", "개수 · 비율 · 묶어 세기")],
-            "표 용어", "delivery_D07.csv"), TAG),
+        light("택배 배송 데이터", excel_vs_csv(head), TAG),
+        light("변수 종류", viz2.maprows([
+            ("수치형 변수", "delivery_min · dist_km", "평균 · 합계 · 분포"), ("범주형 변수", "area · truck_id · status", "개수 · 비율 · 묶어 세기"),
+            ("판정 열 status", "ON_TIME · 그 외", "약속 120분 안 · 파손 · 주소 · 부재 없음"),
+            ("파일 규모", f"{len(df)}행 × {df.shape[1]}열", "하루 한 파일 · 25일치")], "변수", "delivery_D07.csv"), TAG),
         light("정시 도착률", big([
             (f"{GEN['D07']['on_time']}", "건", "정시 도착 (10월 7일)"), (f"{GEN['D07']['rows']}", "건", "전체 배송"),
             (f"{GEN['D07']['rate']}", "%", "정시 도착률 = 정시 ÷ 전체", True)], 3), TAG),
