@@ -1016,16 +1016,32 @@
   <div class="body"><div class="mid"><div class="v1map"><div class="v1u"><span class="c">1교시</span><b>반도체 테스트 데이터와 Claude Code</b><small>데이터 사전 · CLAUDE.md</small></div><div class="v1u"><span class="c">2교시</span><b>데이터 정제 · 검증</b><small>clean.py · 검증 보고서</small></div><div class="v1u"><span class="c">3교시</span><b>수율 집계 · 엑셀 자동화</b><small>yield_summary.xlsx · wafer_yield.csv</small></div><div class="v1u"><span class="c">4교시</span><b>웨이퍼 맵과 불량 패턴</b><small>wafer_map.html</small></div><div class="v1u"><span class="c">5교시</span><b>파라미터 분포 · SPC</b><small>SPC 차트 · 이상 다이 목록</small></div><div class="v1u"><span class="c">6교시</span><b>데이터 파이프라인</b><small>pipeline.py · warehouse.duckdb</small></div><div class="v1u"><span class="c">7교시</span><b>자동화 · 대시보드</b><small>dashboard.html · run_all.py</small></div><div class="v1u"><span class="c">8교시</span><b>분석 리포트 · 발표</b><small>분석 요약 · Git 저장소</small></div></div></div></div>
 </section>
 
-<section class="slide dk divider" data-title="[1] 반도체 테스트 데이터와 Claude Code">
-  <div class="ghost">1</div>
-  <div class="kick">1교시</div>
-  <h2 class="big">반도체 테스트 데이터와 Claude Code</h2>
+<section class="slide dk divider" data-title="[0] 데이터 분석 개요">
+  <div class="ghost">0</div>
+  <div class="kick">개요</div>
+  <h2 class="big">데이터 분석 개요</h2>
   
+</section>
+
+<section class="slide lt" data-title="데이터 · 정보 · 인사이트 · 결정">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">개요</span></div>
+  <h2 class="s-title sm">데이터 · 정보 · 인사이트 · 결정</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>단계</span><i></i><span>택배 예 · 10월 7일</span></div><div class="v2m" style="--d:0.00s"><div class="a">데이터</div><i>→</i><div class="b"><b>배송 기록 600행</b><small>delivery_D07.csv · 열 14개</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">정보</div><i>→</i><div class="b"><b>외곽 정시율 70.25%</b><small>255 ÷ 363 · 도심 98.18%</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">인사이트</div><i>→</i><div class="b"><b>외곽 지연은 TRUCK_C 쪽</b><small>외곽 301건 · 정시율 66.45%</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">결정</div><i>→</i><div class="b"><b>외곽 배차 조정</b><small>사람이 정함</small></div></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="분석의 네 종류">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">개요</span></div>
+  <h2 class="s-title sm">분석의 네 종류</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2tiles c4"><div class="v2tile" style="--d:0.00s"><b>기술</b><span>무엇이 일어났나</span><span>정시율 80.17%</span><span style="color:#E07A12;font-weight:800">이 과정 1~8교시</span></div><div class="v2tile" style="--d:0.08s"><b>진단</b><span>왜 일어났나</span><span>외곽 · TRUCK_C 지연</span><span style="color:#E07A12;font-weight:800">이 과정 1~8교시</span></div><div class="v2tile" style="--d:0.16s"><b>예측</b><span>무엇이 일어날까</span><span>11월 지연 건수 추정</span><span>이 과정 밖</span></div><div class="v2tile" style="--d:0.24s"><b>처방</b><span>무엇을 할까</span><span>배차 조정안</span><span>이 과정 밖</span></div></div></div></div>
 </section>
 
 <section class="slide lt" data-title="데이터 분석의 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">1교시</span></div>
+  <div class="eyebrow"><span class="tag">개요</span></div>
   <h2 class="s-title sm">데이터 분석의 흐름</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><svg class="an an-gf" viewBox="0 0 1160 250" xmlns="http://www.w3.org/2000/svg"><style>.an-gf{width:100%;height:auto;max-height:470px;display:block;margin:0 auto;overflow:visible}.an-gf text{dominant-baseline:middle}.an-gf .tt{font-size:19px;font-weight:800;fill:#16233A}.an-gf .ts{font-size:15px;fill:#6B7785}.an-gf .to{font-size:15px;font-weight:800;fill:#EF6C00}.an-gf .tw{font-size:15px;font-weight:800;fill:#FFFFFF}.an-gf .tn{font-size:15px;font-weight:700;fill:#16233A}.an-gf .tm{font-size:14px;font-weight:700;fill:#16233A;font-family:var(--mono,monospace)}@media print{.an-gf *{animation:none!important}}@media (prefers-reduced-motion:reduce){.an-gf *{animation:none!important}}@keyframes angf1{0%{opacity:0}2%{opacity:0}5%{opacity:1}100%{opacity:1}}@keyframes angf2{0%{opacity:0}5%{opacity:0}8%{opacity:1}100%{opacity:1}}@keyframes angf3{0%{opacity:0}11%{opacity:0}14%{opacity:1}100%{opacity:1}}@keyframes angf4{0%{opacity:0}10%{opacity:0}13%{opacity:1}100%{opacity:1}}@keyframes angf5{0%{opacity:0}14%{opacity:0}17%{opacity:1}100%{opacity:1}}@keyframes angf6{0%{opacity:0}20%{opacity:0}23%{opacity:1}100%{opacity:1}}@keyframes angf7{0%{opacity:0}19%{opacity:0}22%{opacity:1}100%{opacity:1}}@keyframes angf8{0%{opacity:0}23%{opacity:0}26%{opacity:1}100%{opacity:1}}@keyframes angf9{0%{opacity:0}29%{opacity:0}32%{opacity:1}100%{opacity:1}}@keyframes angf10{0%{opacity:0}28%{opacity:0}31%{opacity:1}100%{opacity:1}}@keyframes angf11{0%{opacity:0}32%{opacity:0}35%{opacity:1}100%{opacity:1}}@keyframes angf12{0%{opacity:0}38%{opacity:0}41%{opacity:1}100%{opacity:1}}@keyframes angf13{0%{opacity:0}37%{opacity:0}40%{opacity:1}100%{opacity:1}}@keyframes angf14{0%{opacity:0}41%{opacity:0}44%{opacity:1}100%{opacity:1}}@keyframes angf15{0%{opacity:0}47%{opacity:0}50%{opacity:1}100%{opacity:1}}@keyframes angf16{0%{opacity:0}46%{opacity:0}49%{opacity:1}100%{opacity:1}}@keyframes angf17{0%{opacity:0}50%{opacity:0}53%{opacity:1}100%{opacity:1}}@keyframes angf18{0%{opacity:0}56%{opacity:0}59%{opacity:1}100%{opacity:1}}@keyframes angf19{0%{opacity:0}55%{opacity:0}58%{opacity:1}100%{opacity:1}}@keyframes angf20{0%{opacity:0}59%{opacity:0}62%{opacity:1}100%{opacity:1}}@keyframes angf21{0%{opacity:0}1%{opacity:0}4%{opacity:1}100%{opacity:1}}</style><defs><marker id="angfk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1F3A5F"/></marker><marker id="angfo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#F28C28"/></marker><marker id="angfr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#C62828"/></marker><marker id="angfg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2E7D32"/></marker></defs><g style="animation:angf1 12s linear 1 both;"><rect x="8" y="70" width="146" height="70" rx="14" fill="#FFF3E6" stroke="#F28C28" stroke-width="2.5" /><text x="81" y="106" text-anchor="middle" class="tt" >질문</text></g><g style="animation:angf2 12s linear 1 both;"><rect x="8" y="160" width="146" height="64" rx="10" fill="#F4F6F9"/><text x="81" y="192" text-anchor="middle" class="tn" style="font-size:14px">외곽 배송이 왜 늦나</text></g><g style="animation:angf3 12s linear 1 both;"><rect x="172" y="70" width="146" height="70" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="245" y="106" text-anchor="middle" class="tt" >읽기</text></g><g style="animation:angf4 12s linear 1 both;"><path d="M156 105 H169" stroke="#D9DDE3" stroke-width="3" marker-end="url(#angfk)"/></g><g style="animation:angf5 12s linear 1 both;"><rect x="172" y="160" width="146" height="64" rx="10" fill="#F4F6F9"/><text x="245" y="192" text-anchor="middle" class="tn" style="font-size:14px">열 · 행 · 단위</text></g><g style="animation:angf6 12s linear 1 both;"><rect x="336" y="70" width="146" height="70" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="409" y="106" text-anchor="middle" class="tt" >정제</text></g><g style="animation:angf7 12s linear 1 both;"><path d="M320 105 H333" stroke="#D9DDE3" stroke-width="3" marker-end="url(#angfk)"/></g><g style="animation:angf8 12s linear 1 both;"><rect x="336" y="160" width="146" height="64" rx="10" fill="#F4F6F9"/><text x="409" y="192" text-anchor="middle" class="tn" style="font-size:14px">중복 · 단위 · 결측</text></g><g style="animation:angf9 12s linear 1 both;"><rect x="500" y="70" width="146" height="70" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="573" y="106" text-anchor="middle" class="tt" >집계</text></g><g style="animation:angf10 12s linear 1 both;"><path d="M484 105 H497" stroke="#D9DDE3" stroke-width="3" marker-end="url(#angfk)"/></g><g style="animation:angf11 12s linear 1 both;"><rect x="500" y="160" width="146" height="64" rx="10" fill="#F4F6F9"/><text x="573" y="192" text-anchor="middle" class="tn" style="font-size:14px">구역별 정시율</text></g><g style="animation:angf12 12s linear 1 both;"><rect x="664" y="70" width="146" height="70" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="737" y="106" text-anchor="middle" class="tt" >시각화</text></g><g style="animation:angf13 12s linear 1 both;"><path d="M648 105 H661" stroke="#D9DDE3" stroke-width="3" marker-end="url(#angfk)"/></g><g style="animation:angf14 12s linear 1 both;"><rect x="664" y="160" width="146" height="64" rx="10" fill="#F4F6F9"/><text x="737" y="192" text-anchor="middle" class="tn" style="font-size:14px">구역 지도 · 막대</text></g><g style="animation:angf15 12s linear 1 both;"><rect x="828" y="70" width="146" height="70" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="901" y="106" text-anchor="middle" class="tt" >해석</text></g><g style="animation:angf16 12s linear 1 both;"><path d="M812 105 H825" stroke="#D9DDE3" stroke-width="3" marker-end="url(#angfk)"/></g><g style="animation:angf17 12s linear 1 both;"><rect x="828" y="160" width="146" height="64" rx="10" fill="#F4F6F9"/><text x="901" y="192" text-anchor="middle" class="tn" style="font-size:14px">원인 후보 · 근거</text></g><g style="animation:angf18 12s linear 1 both;"><rect x="992" y="70" width="146" height="70" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="1065" y="106" text-anchor="middle" class="tt" >자동화</text></g><g style="animation:angf19 12s linear 1 both;"><path d="M976 105 H989" stroke="#D9DDE3" stroke-width="3" marker-end="url(#angfk)"/></g><g style="animation:angf20 12s linear 1 both;"><rect x="992" y="160" width="146" height="64" rx="10" fill="#F4F6F9"/><text x="1065" y="192" text-anchor="middle" class="tn" style="font-size:14px">매일 같은 결과</text></g><text x="8" y="192" text-anchor="middle" class="ts" ></text><g style="animation:angf21 12s linear 1 both;"><text x="8" y="40" text-anchor="start" class="to" style="font-size:15px">택배 예</text></g></svg></div></div>
@@ -1033,7 +1049,7 @@
 
 <section class="slide lt" data-title="택배 배송 데이터">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">1교시</span></div>
+  <div class="eyebrow"><span class="tag">개요</span></div>
   <h2 class="s-title sm">택배 배송 데이터</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">delivery_D07.csv · 앞 4줄</span></div><pre><code>date,zone_x,zone_y,area,truck_id,delivery_min,reason,status
@@ -1043,12 +1059,43 @@
 2026-10-07,0,-1,도심,TRUCK_C,78,none,ON_TIME</code></pre></div><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>한 행</b><span>배송 1건</span></div><div class="v2tile" style="--d:0.08s"><b>하루 파일</b><span>600행 · 25일치</span></div><div class="v2tile" style="--d:0.16s"><b>판정</b><span>약속 120분 안 · 파손 · 주소 · 부재 없음 → ON_TIME</span></div></div></div></div>
 </section>
 
+<section class="slide lt" data-title="행 · 열 · 변수 종류">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">개요</span></div>
+  <h2 class="s-title sm">행 · 열 · 변수 종류</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>표 용어</span><i></i><span>delivery_D07.csv</span></div><div class="v2m" style="--d:0.00s"><div class="a">행 = 관측</div><i>→</i><div class="b"><b>배송 1건</b><small>600행</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">열 = 변수</div><i>→</i><div class="b"><b>측정 항목 하나</b><small>14열 · date · area · status …</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">수치형 변수</div><i>→</i><div class="b"><b>delivery_min · dist_km</b><small>평균 · 합계 · 분포</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">범주형 변수</div><i>→</i><div class="b"><b>area · truck_id · status</b><small>개수 · 비율 · 묶어 세기</small></div></div></div></div></div>
+</section>
+
 <section class="slide lt" data-title="정시 도착률">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">1교시</span></div>
+  <div class="eyebrow"><span class="tag">개요</span></div>
   <h2 class="s-title sm">정시 도착률</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="bns c3"><div class="bn" style="--d:0.00s"><div class="bv">481<small>건</small></div><div class="bl">정시 도착 (10월 7일)</div></div><div class="bn" style="--d:0.12s"><div class="bv">600<small>건</small></div><div class="bl">전체 배송</div></div><div class="bn hl" style="--d:0.24s"><div class="bv">80.17<small>%</small></div><div class="bl">정시 도착률 = 정시 ÷ 전체</div></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="분석과 엔지니어링">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">개요</span></div>
+  <h2 class="s-title sm">분석과 엔지니어링</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">데이터 분석</div><div class="v2pc" style="--d:0.00s"><b>질문</b><span>외곽 배송은 왜 늦나</span></div><div class="v2pc" style="--d:0.08s"><b>결과</b><span>차트 · 원인 후보 · 요약</span></div><div class="v2pc" style="--d:0.16s"><b>주기</b><span>질문이 생길 때 한 번</span></div></div><div class="v2p on"><div class="v2ph">데이터 엔지니어링</div><div class="v2pc" style="--d:0.00s"><b>질문</b><span>매일 정시율 집계 자동화</span></div><div class="v2pc" style="--d:0.08s"><b>결과</b><span>정제 · 적재 · 집계 스크립트</span></div><div class="v2pc" style="--d:0.16s"><b>주기</b><span>파일이 들어올 때마다</span></div></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="분석 도구">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">개요</span></div>
+  <h2 class="s-title sm">분석 도구</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>엑셀</b><span>셀 · 수식 · 피벗 직접 조작</span><span>파일 하나씩</span></div><div class="v2tile" style="--d:0.08s"><b>파이썬</b><span>같은 계산의 코드 반복</span><span>파일 25개 · 매일 반복</span></div><div class="v2tile" style="--d:0.16s"><b>Claude Code</b><span>요청 → 코드 작성 · 실행</span><span>사람은 질문 · 결과 확인</span></div></div></div></div>
+</section>
+
+<section class="slide dk divider" data-title="[1] 반도체 테스트 데이터와 Claude Code">
+  <div class="ghost">1</div>
+  <div class="kick">1교시</div>
+  <h2 class="big">반도체 테스트 데이터와 Claude Code</h2>
+  
 </section>
 
 <section class="slide lt" data-title="반도체 적용">
@@ -1105,14 +1152,6 @@
   <h2 class="s-title sm">데이터 규모</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>웨이퍼 한 장</b><span>616행 × 18열</span></div><div class="v2tile" style="--d:0.08s"><b>LOT 하나</b><span>25장 · 15,400행</span></div><div class="v2tile" style="--d:0.16s"><b>공정 센서 (SECOM)</b><span>1,567행 × 590열</span></div></div></div></div>
-</section>
-
-<section class="slide lt" data-title="분석과 엔지니어링">
-  <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">1교시</span></div>
-  <h2 class="s-title sm">분석과 엔지니어링</h2>
-  <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">데이터 분석</div><div class="v2pc" style="--d:0.00s"><b>질문</b><span>W07 수율은 왜 낮은가</span></div><div class="v2pc" style="--d:0.08s"><b>결과</b><span>차트 · 원인 후보 · 요약</span></div><div class="v2pc" style="--d:0.16s"><b>주기</b><span>질문이 생길 때 한 번</span></div></div><div class="v2p on"><div class="v2ph">데이터 엔지니어링</div><div class="v2pc" style="--d:0.00s"><b>질문</b><span>매일 같은 집계 자동화</span></div><div class="v2pc" style="--d:0.08s"><b>결과</b><span>정제 · 적재 · 집계 스크립트</span></div><div class="v2pc" style="--d:0.16s"><b>주기</b><span>파일이 들어올 때마다</span></div></div></div></div></div>
 </section>
 
 <section class="slide lt" data-title="Claude 와 Claude Code">
