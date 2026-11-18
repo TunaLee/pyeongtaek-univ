@@ -78,7 +78,7 @@ def slides():
                                          top=100, title="평균 수율 · 웨이퍼 수 · 목표 90% 미달"), T),
         light("다시 돌려도 같은 결과", pv6.rerun(NUM["dies"]), T),
         light("파이프라인 기록", code("output/pipeline_log.md · 일부", esc(_log_excerpt())), T),
-        light("Claude 몫과 사람 몫", viz2.pair(
+        light("Claude 작업과 사람 판단", viz2.pair(
             "Claude Code", [("작성", "pipeline.py · SQL 뷰"), ("실행", "25장 처리 · 오류 고침"), ("기록", "pipeline_log.md")],
             "사람", [("정제 규칙", "중복 기준 · 단위 판단 · 결측 처리"), ("검증 규칙", "다이 616 · 값 범위"), ("대조", "설비별 수율을 원본에서 다시 셈")], hl="r"), T),
         # ── 실습
