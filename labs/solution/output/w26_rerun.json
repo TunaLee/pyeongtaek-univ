@@ -1,0 +1,20 @@
+{
+ "before": {
+  "wafers": 25,
+  "lot_yield": 91.23,
+  "below_target": 9,
+  "etch03": {
+   "wafers": 9,
+   "yield": 87.37
+  }
+ },
+ "after": {
+  "wafers": 26,
+  "lot_yield": 91.08,
+  "below_target": 10,
+  "etch03": {
+   "wafers": 10,
+   "yield": 87.39
+  }
+ }
+}

@@ -132,6 +132,10 @@ def main():
                 rows[i][10] = ""
         write(RAW / f"wafer_test_W{w:02d}.csv", HEADER, rows)
         eq_rows.append([f"W{w:02d}", eqp_of(w), "CH" + "AB"[w % 2], f"2026-11-{3 + (w - 1) // 5:02d}"])
+    # 7교시 · 나중에 들어오는 웨이퍼 W26 (ETCH_03) — data/new/ 에 두고 실습 때 raw/ 로 옮긴다
+    (DATA / "new").mkdir(exist_ok=True)
+    write(DATA / "new" / "wafer_test_W26.csv", HEADER, wafer(26, np.random.default_rng(2626), d))
+    eq_rows.append(["W26", eqp_of(26), "CHA", "2026-11-08"])
     write(DATA / "equipment.csv", ["wafer_id", "eqp_id", "chamber", "test_date"], eq_rows)
     write(DATA / "spec.csv", ["param", "lsl", "usl", "unit", "fail_type"], SPEC)
     shutil.copy(RAW / "wafer_test_W07.csv", DATA / "wafer_test_W07.csv")
