@@ -13,6 +13,7 @@ import deck_gas
 import explain
 import hx
 import intro
+import pgen
 import pkit
 import stats_hx
 import v1kit
@@ -37,7 +38,7 @@ def main():
         except ModuleNotFoundError:
             continue
         tpl = _tpl(BASE_CSS + getattr(mod, "CSS", ""))
-        parts = [art.DEFS, pkit.cover(u), pkit.roadmap(u)] + mod.slides() + [pkit.nextup(u)]
+        parts = [art.DEFS, pkit.cover(u), pkit.roadmap(u)] + pgen.slides_for(u) + mod.slides() + [pkit.nextup(u)]
         out = ROOT / "docs" / pkit.file_of(u)
         out.write_text(tpl.replace("{{DECK_TITLE}}", f"{u}교시 {title}").replace("{{SLIDES}}", "\n\n".join(parts)))
         print(out.name, len(parts) - 1, "장")

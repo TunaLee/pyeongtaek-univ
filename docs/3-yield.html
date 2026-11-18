@@ -1007,6 +1007,30 @@
   <div class="body"><div class="mid"><div class="v1map"><a class="v1u done" href="1-data.html"><span class="c">1교시</span><b>반도체 테스트 데이터와 Claude Code</b><small>데이터 사전 · CLAUDE.md</small></a><a class="v1u done" href="2-clean.html"><span class="c">2교시</span><b>데이터 정제 · 검증</b><small>clean.py · 검증 보고서</small></a><a class="v1u on" href="3-yield.html"><span class="c">3교시</span><b>수율 집계와 수율 모델</b><small>yield_summary.xlsx · 수율 표</small></a><a class="v1u " href="4-wafer-map.html"><span class="c">4교시</span><b>웨이퍼 맵과 불량 패턴</b><small>wafer_map.html</small></a><a class="v1u " href="5-spc.html"><span class="c">5교시</span><b>파라미터 분포 · SPC</b><small>SPC 차트 · 이상 다이 목록</small></a><a class="v1u " href="6-pipeline.html"><span class="c">6교시</span><b>데이터 파이프라인</b><small>pipeline.py · warehouse.duckdb</small></a><a class="v1u " href="7-dashboard.html"><span class="c">7교시</span><b>자동화 · 대시보드</b><small>dashboard.html · run_all.py</small></a><a class="v1u " href="8-report.html"><span class="c">8교시</span><b>분석 리포트 · 발표</b><small>분석 요약 · Git 저장소</small></a></div><div class="dbnote"><span>공통 데이터</span> LOT2611-07 · 웨이퍼 25장 · 다이 616개/장 · 설비 3대</div></div></div>
 </section>
 
+<section class="slide lt" data-title="일반 예 · 구역별 정시 도착률">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">3교시</span></div>
+  <h2 class="s-title sm">일반 예 · 구역별 정시 도착률</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="hbars"><div class="hb" style="--d:0.00s"><span class="hn">도심</span><span class="ht"><span class="hf" style="width:94.3%"></span></span><span class="hv">94.27%</span></div><div class="hb" style="--d:0.10s"><span class="hn">중간</span><span class="ht"><span class="hf" style="width:93.8%"></span></span><span class="hv">93.75%</span></div><div class="hb hl" style="--d:0.20s"><span class="hn">외곽</span><span class="ht"><span class="hf" style="width:69.5%"></span></span><span class="hv">69.48%</span></div></div><div class="dbnote"><span>25일 전체</span> 정시 도착률 79.18%</div></div></div>
+</section>
+
+<section class="slide lt" data-title="일반 예 · 실패 사유 Pareto">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">3교시</span></div>
+  <h2 class="s-title sm">일반 예 · 실패 사유 Pareto</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="hbars"><div class="hb hl" style="--d:0.00s"><span class="hn">지연</span><span class="ht"><span class="hf" style="width:100.0%"></span></span><span class="hv">2,403건 · 77%</span></div><div class="hb" style="--d:0.10s"><span class="hn">부재</span><span class="ht"><span class="hf" style="width:15.2%"></span></span><span class="hv">365건 · 12%</span></div><div class="hb" style="--d:0.20s"><span class="hn">주소 오류</span><span class="ht"><span class="hf" style="width:7.8%"></span></span><span class="hv">187건 · 6%</span></div><div class="hb" style="--d:0.30s"><span class="hn">파손</span><span class="ht"><span class="hf" style="width:7.0%"></span></span><span class="hv">168건 · 5%</span></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="반도체 적용">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">3교시</span></div>
+  <h2 class="s-title sm">반도체 적용</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>택배</span><i></i><span>반도체</span></div><div class="v2m" style="--d:0.00s"><div class="a">구역 (도심 · 중간 · 외곽)</div><i>→</i><div class="b"><b>존 (center · mid · edge)</b><small>groupby</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">실패 사유 Pareto</div><i>→</i><div class="b"><b>불량 유형 Pareto</b><small>많은 순</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">정시 도착률</div><i>→</i><div class="b"><b>수율</b><small>비율 집계</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">엑셀 피벗</div><i>→</i><div class="b"><b>엑셀 피벗 · 3시트</b><small>yield_summary.xlsx</small></div></div></div></div></div>
+</section>
+
 <section class="slide lt" data-title="수율 집계 세 가지">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">3교시</span></div>

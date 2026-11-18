@@ -1003,6 +1003,22 @@
   <div class="body"><div class="mid"><div class="v1map"><a class="v1u done" href="1-data.html"><span class="c">1교시</span><b>반도체 테스트 데이터와 Claude Code</b><small>데이터 사전 · CLAUDE.md</small></a><a class="v1u on" href="2-clean.html"><span class="c">2교시</span><b>데이터 정제 · 검증</b><small>clean.py · 검증 보고서</small></a><a class="v1u " href="3-yield.html"><span class="c">3교시</span><b>수율 집계와 수율 모델</b><small>yield_summary.xlsx · 수율 표</small></a><a class="v1u " href="4-wafer-map.html"><span class="c">4교시</span><b>웨이퍼 맵과 불량 패턴</b><small>wafer_map.html</small></a><a class="v1u " href="5-spc.html"><span class="c">5교시</span><b>파라미터 분포 · SPC</b><small>SPC 차트 · 이상 다이 목록</small></a><a class="v1u " href="6-pipeline.html"><span class="c">6교시</span><b>데이터 파이프라인</b><small>pipeline.py · warehouse.duckdb</small></a><a class="v1u " href="7-dashboard.html"><span class="c">7교시</span><b>자동화 · 대시보드</b><small>dashboard.html · run_all.py</small></a><a class="v1u " href="8-report.html"><span class="c">8교시</span><b>분석 리포트 · 발표</b><small>분석 요약 · Git 저장소</small></a></div><div class="dbnote"><span>공통 데이터</span> LOT2611-07 · 웨이퍼 25장 · 다이 616개/장 · 설비 3대</div></div></div>
 </section>
 
+<section class="slide lt" data-title="일반 예 · 택배 원시 파일의 문제">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">2교시</span></div>
+  <h2 class="s-title sm">일반 예 · 택배 원시 파일의 문제</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>D05 · 중복</b><span>610행 중 같은 송장 번호 10행</span></div><div class="v2tile" style="--d:0.08s"><b>D11 · 단위</b><span>weight_kg 중앙값 2,810 — g 로 기록됨</span></div><div class="v2tile" style="--d:0.16s"><b>D19 · 결측</b><span>delivery_min 빈칸 8개</span></div></div><div class="dbnote"><span>그대로 집계하면</span> D11 평균 무게 3,262 kg · g → kg 로 고치면 3.26 kg</div></div></div>
+</section>
+
+<section class="slide lt" data-title="반도체 적용">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">2교시</span></div>
+  <h2 class="s-title sm">반도체 적용</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>택배</span><i></i><span>반도체</span></div><div class="v2m" style="--d:0.00s"><div class="a">송장 번호 중복</div><i>→</i><div class="b"><b>다이 좌표 중복</b><small>W05 · 12행</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">무게 g ↔ kg</div><i>→</i><div class="b"><b>vth mV ↔ V</b><small>W11 · 단위</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">배송 시간 결측</div><i>→</i><div class="b"><b>ioff_na 결측</b><small>W19 · 9칸</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">결측 = 재확인</div><i>→</i><div class="b"><b>결측 = 재측정 (RETEST)</b><small>판정 보류</small></div></div></div></div></div>
+</section>
+
 <section class="slide lt" data-title="공정 데이터가 지저분한 이유">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">2교시</span></div>
