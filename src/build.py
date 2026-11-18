@@ -39,13 +39,14 @@ def cover():
 def roadmap():
     cells = "".join(f'<div class="v1u"><span class="c">{u}교시</span><b>{t}</b><small>{o}</small></div>' for u, t, o in pkit.UNITS)
     return deck.light("과정 지도", f'<div class="v1map">{cells}</div>'
-                      + hx.note("공통 데이터", "택배 배송 25일치 (일반 예) · LOT2611-07 웨이퍼 25장 (반도체)"), "전체")
+                      , "전체")
 
 
 def main():
     """한 파일 docs/index.html — 표지 · 과정 지도 · 교시마다 [간지 + 일반 예 + 본문] · 마지막 장."""
     mods = [(u, t, o, importlib.import_module(f"p{u}")) for u, t, o in pkit.UNITS]
-    css = BASE_CSS + "".join(getattr(m, "CSS", "") for *_, m in mods)
+    css = (BASE_CSS + "".join(getattr(m, "CSS", "") for *_, m in mods)
+           + ".v1shot figcaption,.ph figcaption,.v3ph figcaption{display:none}")  # 그림 밑 설명 줄은 내지 않는다
     parts = [art.DEFS, cover(), roadmap()]
     for u, t, o, m in mods:
         parts.append(deck.divider(u, t, "").replace(f'<div class="kick">{u}</div>', f'<div class="kick">{u}교시</div>'))

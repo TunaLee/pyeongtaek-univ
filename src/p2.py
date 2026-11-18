@@ -79,14 +79,12 @@ def slides():
         light("실제 공정 데이터 · UCI SECOM", big([
             (f"{SEC['rows']:,}", "행", "생산 단위 (2008년 7~10월)"), (f"{SEC['features']}", "열", "공정 센서 값 · 이름 비공개"),
             (f"{SEC['fail']}", "건", "불량 (FAIL)", True)], 3)
-              + note("공개 데이터", "반도체 제조 공정 실측 · 출처 표기 후 재사용 가능")
               + src(SECOM_SRC), T),
         light("SECOM 의 결측 · 상수 열", hbars([
             ("결측이 하나라도 있는 열", SEC["cols_any_missing"], True, f"{SEC['cols_any_missing']} / {SEC['features']}"),
             ("값이 하나뿐인 열", SEC["cols_constant"], False, f"{SEC['cols_constant']}"),
             ("결측 50% 넘는 열", SEC["cols_missing_over50"], False, f"{SEC['cols_missing_over50']}"),
             ("그대로 쓸 수 있는 열", SEC_OK, False, f"{SEC_OK}")], top=SEC["features"])
-              + note("전체 칸 중 결측", f"{SEC['cells_missing_pct']}%")
               + src(SECOM_SRC), T),
         light("비유 · 택배 분류장 검수", viz2.maprows([
             ("같은 상자 두 번 스캔", "중복 행", "한 번만 남김"), ("무게 g · kg 섞임", "단위 오류", "한 단위로 통일"),
@@ -105,8 +103,7 @@ def slides():
             "표시하기", [("RETEST", "측정값이 빈 다이는 재측정 대상"), ("수율", "PASS 로 세지 않음 · 개수는 보고서에")]), T),
         light("W19 결측 처리 결과", big([
             (f"{N_NA}", "개", "ioff_na 빈 다이 → RETEST"), (f"{W('W19')['yield']}", "%", "테스터 판정 수율"),
-            (f"{Y19:.2f}", "%", "다시 판정한 수율", True)], 3)
-              + note("차이", f"{N_NA}개 ÷ 616 = {N_NA / 616 * 100:.2f}%p · 측정값 없이 PASS 로 둔 다이"), T),
+            (f"{Y19:.2f}", "%", "다시 판정한 수율", True)], 3), T),
         # ── 검증
         light("검증 규칙", pv2.gate(RULES), T),
         light("검증 보고서", '<div class="twocol w"><div>' + code("output/qc_W11.md", esc(QC11)) + "</div><div>"
@@ -118,8 +115,7 @@ def slides():
         light("Claude Code 에 정제 맡기기", chat([
             ("me", "data/raw 의 W05 · W11 · W19 를 검사해 줘. 고치지 말고 문제만 보고."),
             ("ai", f"W05 · 같은 좌표 {N_DUP}줄 중복 ({len(R05)}행)\nW11 · vth_v 중앙값 {R11.vth_v.median():g} → mV 로 보임\n"
-                   f"W19 · ioff_na 빈칸 {N_NA}개")], "검사 대화 예")
-              + note("순서", "검사 · 보고 먼저 → 사람이 처리 방법을 정함 → 그다음 clean.py"), T),
+                   f"W19 · ioff_na 빈칸 {N_NA}개")], "검사 대화 예"), T),
         # ── 실습
         lab("2", "정제 · 검증 스크립트", T, "원시 파일의 문제를 찾고 clean.py · 검증 보고서를 만든다",
             ["W05 · W11 · W19 문제 검사 요청", "처리 방법 정하기 (중복 · 단위 · 결측)", "clean.py 작성 요청", "검증 규칙 추가 요청",
@@ -133,6 +129,5 @@ def slides():
               [], [f"W11 수율 {Y11:.2f}%", f"W19 RETEST {N_NA}개"], ""),
         light("실습 2 확인", viz2.maprows([
             ("W05", f"{len(R05)}행 → {len(C05)}행", f"중복 {N_DUP}줄 삭제"), ("W11", "vth_v ÷ 1000", f"수율 {Y11:.2f}%"),
-            ("W19", f"RETEST {N_NA}개", f"수율 {Y19:.2f}%"), ("검증", f"규칙 {len(RULES)}개", "세 파일 모두 통과")], "파일", "결과")
-              + note("심화", "secom.csv 에서 결측 50% 넘는 열 목록 · 값이 하나뿐인 열 목록 만들기"), T),
+            ("W19", f"RETEST {N_NA}개", f"수율 {Y19:.2f}%"), ("검증", f"규칙 {len(RULES)}개", "세 파일 모두 통과")], "파일", "결과"), T),
     ]

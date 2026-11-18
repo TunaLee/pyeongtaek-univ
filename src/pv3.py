@@ -107,7 +107,7 @@ def rain(d0_cm2, seed=7):
         s += (f'<g {d.show(60 + k * 8)}><rect x="{cx + 180}" y="{cy - 64}" width="170" height="128" rx="14" fill="{W}" stroke="{K}" stroke-width="2.5"/>'
               + _t(cx + 265, cy - 36, f"다이 {die} mm", "tn") + _t(cx + 265, cy - 6, f"불량 {len(bad)} / {len(full)}", "ts")
               + _t(cx + 265, cy + 30, f"{y:.1f}%", "tt", extra=f'style="font-size:28px;fill:{OK if die == 10 else R}"') + "</g>")
-    s += (f'<g {d.show(84)}>' + _t(580, 392, f"결함 {n}개 · 같은 위치 · D0 {d0_cm2:.3f}/cm² — 다이가 클수록 결함을 맞을 확률이 큼", "tn") + "</g>")
+    s += (f'<g {d.show(84)}>' + _t(580, 392, f"결함 {n}개 · 같은 위치 · D0 {d0_cm2:.3f}/cm²", "tn") + "</g>")
     return d.svg(1160, 410, s), res, n
 
 

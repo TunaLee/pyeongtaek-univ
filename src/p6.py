@@ -52,8 +52,7 @@ def slides():
         # ── 배경
         light("매일 쌓이는 테스트 파일", viz2.tiles([
             ("웨이퍼 한 장", f"파일 하나 · {REF['gross_die']}행"), ("LOT 하나", f"파일 25개 · {NUM['dies']:,}행"),
-            ("설비 · 날짜", "LOT 가 들어올 때마다 같은 파일 묶음")], 3)
-              + note("손작업", "파일 열기 → 고치기 → 붙여 넣기 → 피벗 · 25번 반복 · 실수 한 번이면 처음부터"), T),
+            ("설비 · 날짜", "LOT 가 들어올 때마다 같은 파일 묶음")], 3), T),
         light("업계 사례 · 테스트 데이터 레이크", viz2.maprows([
             ("테스트 장비", "STDF 파일", "웨이퍼 · 다이마다 결과"), ("수집", "게이트웨이", "장비에서 파일을 모음"),
             ("적재", "데이터 레이크", "한곳에 형식을 맞춰 저장"), ("분석", "대시보드 · 질의", "수율 · 불량 추적")], "단계", "AWS 반도체 사례")
@@ -63,26 +62,22 @@ def slides():
             ("입고", "트럭에서 상자를 내림", "수집 · data/raw/"), ("검수", "파손 · 수량 확인 · 반품", "정제 · clean.py"),
             ("선반 보관", "품목별 자리에 정리", "저장 · Parquet · DuckDB"), ("출고", "주문대로 꺼내 배송", "집계 · SQL 뷰 · 대시보드")], "물류센터", "파이프라인"), T),
         light("파이프라인 다섯 단계", pv6.pipeline(len(ROWS), len(ISSUES), NUM["dies"]), T),
-        light("정제 단계에서 잡은 문제", viz2.tiles([(f[11:14], f"원시 {a}행 → 정제 {b}행 · {iss.split(' — ')[0].split(' · ')[0]}") for f, a, b, iss in ISSUES], 3)
-              + note("나머지", f"{len(ROWS) - len(ISSUES)}장 · 문제 없음 · 검증 통과"), T),
+        light("정제 단계에서 잡은 문제", viz2.tiles([(f[11:14], f"원시 {a}행 → 정제 {b}행 · {iss.split(' — ')[0].split(' · ')[0]}") for f, a, b, iss in ISSUES], 3), T),
         # ── 저장 형식
         light("CSV 와 Parquet", pv6.row_vs_col()
               + src(("Apache Parquet · Overview", "https://parquet.apache.org/docs/overview/")), T),
         light("같은 데이터의 파일 크기", big([
             (f"{NUM['csv_kb']:,}", "KB", f"원시 CSV {len(ROWS)}장"), (f"{NUM['parquet_kb']:,}", "KB", f"Parquet {len(ROWS)}장", True),
-            (f"{round(NUM['parquet_kb'] / NUM['csv_kb'] * 100)}", "%", "CSV 대비 크기")], 3)
-              + note("형식", "CSV 는 모든 값이 글자 · Parquet 은 열마다 숫자 · 글자 형식을 함께 저장"), T),
+            (f"{round(NUM['parquet_kb'] / NUM['csv_kb'] * 100)}", "%", "CSV 대비 크기")], 3), T),
         light("DuckDB", viz2.tiles([
             ("서버 없음", "설치 · 계정 없이 파이썬 안에서 실행"), ("파일 하나", "warehouse.duckdb"),
             ("SQL 로 바로 읽기", "SELECT * FROM 'file.csv' · Parquet 도 같음"), ("라이선스", "MIT · 무료")], 2)
               + src(("DuckDB · Why DuckDB", "https://duckdb.org/why_duckdb"), ("DuckDB · CSV import", "https://duckdb.org/docs/stable/data/csv/overview")), T),
         light("SQL 한 덩어리 읽기", codemap(SQL, ask="설비별 평균 수율과 목표 미달 웨이퍼 수", title="eqp_yield 뷰"), T),
         light("설비별 수율 · SQL 결과", hbars([(e["eqp"], e["yield"], e["eqp"] == "ETCH_03", f"{e['yield']}% · {e['wafers']}장 · 미달 {e['below']}") for e in EQ],
-                                         top=100, title="평균 수율 · 웨이퍼 수 · 목표 90% 미달")
-              + note("ETCH_03", f"{E3['wafers']}장 모두 목표 미달 · 평균 {E3['yield']}%"), T),
+                                         top=100, title="평균 수율 · 웨이퍼 수 · 목표 90% 미달"), T),
         light("다시 돌려도 같은 결과", pv6.rerun(NUM["dies"]), T),
-        light("파이프라인 기록", code("output/pipeline_log.md · 일부", esc(_log_excerpt()))
-              + note("기록", "파일마다 행 수 · 문제 · 검증 결과 · 다음 날 비교의 기준"), T),
+        light("파이프라인 기록", code("output/pipeline_log.md · 일부", esc(_log_excerpt())), T),
         light("맡길 것과 정할 것", viz2.pair(
             "Claude Code", [("작성", "pipeline.py · SQL 뷰"), ("실행", "25장 처리 · 오류 고침"), ("기록", "pipeline_log.md")],
             "사람", [("정제 규칙", "중복 기준 · 단위 판단 · 결측 처리"), ("검증 규칙", "다이 616 · 값 범위"), ("대조", "설비별 수율을 원본에서 다시 셈")], hl="r"), T),
@@ -99,6 +94,5 @@ def slides():
               [], [f"dies {NUM['dies']:,}행", "문제 있던 3장이 기록에 남음"], ""),
         light("실습 6 확인", chat([
             ("me", "설비별 평균 수율과 목표 미달 웨이퍼 수를 SQL 로 보여 줘."),
-            ("ai", "\n".join(f"{e['eqp']} · {e['wafers']}장 · {e['yield']}% · 미달 {e['below']}장" for e in EQ))], "SQL 대화 예")
-              + note("대조", f"W17 한 장을 엑셀로 다시 계산 · 두 번째 실행 뒤에도 dies {NUM['dies']:,}행"), T),
+            ("ai", "\n".join(f"{e['eqp']} · {e['wafers']}장 · {e['yield']}% · 미달 {e['below']}장" for e in EQ))], "SQL 대화 예"), T),
     ]

@@ -57,8 +57,7 @@ def slides():
         # ── 배경
         light("차트에서 결정까지", viz2.tiles([
             ("읽는 사람", "팀장 · 공정 엔지니어 · 설비 담당"), ("필요한 것", "무엇이 문제 · 왜 그렇게 보나 · 다음에 할 일"),
-            ("대시보드만 보내면", "차트 해석이 사람마다 다름")], 3)
-              + note("분석 요약", "한 장 · 숫자와 차트가 붙은 문장"), T),
+            ("대시보드만 보내면", "차트 해석이 사람마다 다름")], 3), T),
         light("분석 요약 네 칸", pv8.summary([
             ("결과", f"LOT 수율 {LOT_Y}% · 목표 미달 {E3['below']}장"),
             ("원인 후보", "ETCH_03 가장자리 · W07 스크래치 · W12 중심 오픈·쇼트"),
@@ -81,29 +80,24 @@ def slides():
             ("모양", "중심 근처에 뭉침 · 무작위 분포와 다름")]), T),
         light("근거 묶기", viz2.maprows([
             ("주장", "ETCH_03 가장자리 불량", "한 문장"), ("숫자", f"edge {Z['ETCH_03|edge']}% vs {Z['ETCH_01|edge']}%", "SQL 결과 그대로"),
-            ("차트", "존별 수율 · W21 웨이퍼 맵", "숫자를 눈으로 확인"), ("출처", "warehouse.duckdb · eqp_zone 질의", "다시 뽑을 수 있게")], "칸", "예")
-              + note("규칙", "숫자 없는 문장 · 출처 없는 숫자는 빼기"), T),
+            ("차트", "존별 수율 · W21 웨이퍼 맵", "숫자를 눈으로 확인"), ("출처", "warehouse.duckdb · eqp_zone 질의", "다시 뽑을 수 있게")], "칸", "예"), T),
         light("상관과 원인", pv8.confound_svg(DATE_ROWS, SAME_DAY), T),
         light("추가 확인", viz2.tiles([
             ("챔버", f"ETCH_03 CHA {CH3[0]}% · CHB {CH3[1]}% · 차이 작음 → 후보 제외"),
             ("장비 이력", "식각 균일도 · 정비(PM) 기록 · 이 데이터에는 없음"),
             ("다음 LOT", "ETCH_03 가장자리 수율이 반복되는지")], 3), T),
         # ── 기록 · 공유
-        light("Git 커밋 기록", code("git log --oneline · 과정 프로젝트 예", esc(GITLOG))
-              + note("커밋", "교시마다 하나 · 메시지에 만든 것"), T),
-        light("README", code("README.md · 일부", esc(_readme()))
-              + note("읽는 사람", "다른 사람이 같은 순서로 다시 실행"), T),
+        light("Git 커밋 기록", code("git log --oneline · 과정 프로젝트 예", esc(GITLOG)), T),
+        light("README", code("README.md · 일부", esc(_readme())), T),
         light("발표 2분", flow([("결과", "20초 · KPI 세 개"), ("원인 후보", "60초 · 후보 3건"), ("근거", "30초 · 맵 · 차트 한 장씩"),
-                              ("추가 확인", "10초 · 다음에 볼 것")], hl=1)
-              + note("질문 대비", "숫자 출처 · 다시 돌리는 명령"), T),
+                              ("추가 확인", "10초 · 다음에 볼 것")], hl=1), T),
         light("사람이 정할 것", viz2.pair(
             "Claude Code", [("숫자 뽑기", "SQL · 집계"), ("차트 · 맵", "근거 그림"), ("초안", "analysis_summary.md")],
             "사람", [("판정 · 지표 정의", "스펙 · 수율 계산 방식"), ("원인 판단", "상관과 원인 구분"), ("다음 행동", "점검 · 재측정 결정")], hl="r")
               + src(("Claude 블로그 · How Anthropic enables self-service data analytics",
                      "https://claude.com/blog/how-anthropic-enables-self-service-data-analytics-with-claude")), T),
         light("내 데이터에 적용", flow([("데이터 사전", "열 · 단위 · 기준"), ("정제 규칙", "중복 · 단위 · 결측"), ("파이프라인", "명령 하나"),
-                                    ("대시보드", "목표선 · 비교"), ("분석 요약", "근거 숫자")], hl=0)
-              + note("시작", "내 업무 CSV 한 장 · CLAUDE.md 부터"), T),
+                                    ("대시보드", "목표선 · 비교"), ("분석 요약", "근거 숫자")], hl=0), T),
         # ── 실습
         lab("8", "분석 요약 · 발표", T, "원인 후보 3건을 근거 숫자 · 차트와 묶은 분석 요약을 쓰고 2분 발표한다",
             ["원인 후보 숫자 요청 (설비 · 존 · 웨이퍼)", "분석 요약 초안 요청", "숫자 · 출처 대조", "README · 커밋", "짝꿍 발표 · 질문"],
@@ -118,7 +112,6 @@ def slides():
             ("me", "ETCH_03 가장자리 불량을 원인 후보로 쓰려고 해. 근거 숫자를 설비별로 비교해 줘."),
             ("ai", f"edge 존 수율 · ETCH_01 {Z['ETCH_01|edge']}% · ETCH_02 {Z['ETCH_02|edge']}% · ETCH_03 {Z['ETCH_03|edge']}%\n"
                    f"누설전류 · {F['ETCH_01|leakage']} · {F['ETCH_02|leakage']} · {F['ETCH_03|leakage']}개\n"
-                   "출처 · warehouse.duckdb (dies × equipment)")], "근거 대화 예")
-              + note("대조", "숫자 한 개를 대시보드 · 엑셀에서 다시 확인"), T),
+                   "출처 · warehouse.duckdb (dies × equipment)")], "근거 대화 예"), T),
     ]
 

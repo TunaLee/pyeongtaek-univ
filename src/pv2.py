@@ -60,9 +60,6 @@ def clean_steps(n_raw, n_dup, n_na, n_clean):
     s += f'<g {d.show(70)}><path d="M1093 174 V236" stroke="{OK}" stroke-width="3.5" marker-end="url(#{d.id("g")})"/></g>'
     s += (f'<g {d.show(74)}><rect x="830" y="244" width="320" height="96" rx="14" fill="{GB}" stroke="{OK}" stroke-width="3"/>'
           + _t(990, 280, "정제본", "tt", extra=f'style="fill:{OK}"') + _t(990, 310, f"{n_clean}행 · 다이 좌표 하나에 한 줄", "tn") + "</g>")
-    s += (f'<g {d.show(80)}><rect x="10" y="244" width="780" height="96" rx="14" fill="{W}" stroke="{G}" stroke-width="2"/>'
-          + _t(400, 280, "원시 파일은 그대로 · 정제본은 output/clean/ 에 새로 저장", "tt", extra='style="font-size:18px"')
-          + _t(400, 310, "같은 스크립트를 다시 돌리면 같은 결과", "ts") + "</g>")
     return d.svg(1160, 360, s)
 
 
@@ -107,5 +104,5 @@ def gate(rules):
           + _t(921, 30 + len(rules) * 31 - 14, "통과 → 정제본 저장", "tt", extra=f'style="fill:{OK}"')
           + _t(921, 30 + len(rules) * 31 + 16, "qc_W11.md 에 결과 기록", "ts") + "</g>")
     s += (f'<g {d.show(70)}><rect x="20" y="{yb + 10}" width="1116" height="56" rx="12" fill="{RB}" stroke="{R}" stroke-width="2.5"/>'
-          + _t(578, yb + 39, "하나라도 False → AssertionError · 그 파일은 적재하지 않고 멈춤", "tt", extra=f'style="fill:{R};font-size:18px"') + "</g>")
+          + _t(578, yb + 39, "False 하나 → 적재 중단", "tt", extra=f'style="fill:{R};font-size:18px"') + "</g>")
     return d.svg(1160, yb + 80, s)

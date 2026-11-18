@@ -55,29 +55,25 @@ def slides():
         # ── 수율 집계
         light("수율 집계 세 가지", viz2.tiles([
             ("전체 수율", f"양품 ÷ 전체 · W07 {W07['yield']}%"), ("존별 수율", "center · mid · edge 구역마다"),
-            ("불량 유형별 개수", "어떤 불량이 많은가 · Pareto")], 3)
-              + note("엑셀", "필터 · 피벗 테이블로 하던 일 · 웨이퍼가 25장이면 25번"), T),
+            ("불량 유형별 개수", "어떤 불량이 많은가 · Pareto")], 3), T),
         light("피벗 테이블과 요청", viz2.maprows([
             ("행", "zone", "「존별로」"), ("값", "pass_fail 이 PASS 인 개수", "「양품 수와 수율」"),
             ("정렬", "개수 큰 순", "「많은 순으로」"), ("저장", "시트 하나", "「엑셀 시트로」")], "피벗 설정", "요청에 들어갈 말"), T),
         light("존별 수율 · W07", hbars([
             (f"center · 중심 {ZONE['size']['center']}개", ZONE["y"]["center"], True, f"{ZONE['y']['center']}%"),
             (f"mid · 중간 {ZONE['size']['mid']}개", ZONE["y"]["mid"], False, f"{ZONE['y']['mid']}%"),
-            (f"edge · 가장자리 {ZONE['size']['edge']}개", ZONE["y"]["edge"], False, f"{ZONE['y']['edge']}%")], top=100)
-              + note("center 가 가장 낮음", "대각선 크랙이 중심을 지남 · 웨이퍼 맵에서 위치 확인"), T),
-        light("불량 유형 Pareto · W07", pv3.pareto([(KO[t], int(v)) for t, v in FAIL.items()])
-              + note(f"1위 {KO[TOP]}", f"불량 {FAIL.sum()}개 중 {FAIL.iloc[0]}개 · {TOP_PCT:.0f}% — 먼저 볼 곳"), T),
+            (f"edge · 가장자리 {ZONE['size']['edge']}개", ZONE["y"]["edge"], False, f"{ZONE['y']['edge']}%")], top=100), T),
+        light("불량 유형 Pareto · W07", pv3.pareto([(KO[t], int(v)) for t, v in FAIL.items()]), T),
         light("엑셀 세 시트", viz2.tiles([
             ("요약", f"총 다이 {len(DF)} · 양품 {int(OK.sum())} · 불량 {int((~OK).sum())} · 수율 {W07['yield']}%"),
-            ("존별", "구역 · 다이 수 · 양품 · 수율"), ("불량 유형", "유형 · 개수 · 누적 %")], 3)
-              + note("파일", "output/yield_summary.xlsx · scripts/aggregate.py 가 만듦"), T),
+            ("존별", "구역 · 다이 수 · 양품 · 수율"), ("불량 유형", "유형 · 개수 · 누적 %")], 3), T),
         # ── Gross die
         light("Gross die", viz2.tiles([
             ("뜻", "웨이퍼 한 장에서 나오는 다이 수 (양불 전)"), ("정하는 것", "웨이퍼 지름 · 다이 크기 · 가장자리 제외"),
             ("쓰는 곳", "칩 원가 = 웨이퍼 값 ÷ 양품 다이 수")], 3), T),
         light("격자에 놓고 세기", pv3.gross(), T),
         light("Gross die 근사식", '<div class="p3eq">DPW = <em>π·d²</em> / 4S − <em>π·d</em> / √(2S)'
-              '<small>d = 웨이퍼 지름 · S = 다이 면적 · 앞 항 = 원 넓이 ÷ 다이 넓이 · 뒤 항 = 가장자리에서 잘리는 다이</small></div>'
+              '<small>d 웨이퍼 지름 · S 다이 면적</small></div>'
               + big([(f"{G616}", "개", "격자에 놓고 직접 센 수", True), (f"{F300:.0f}", "개", "근사식 · d = 300 mm"),
                      (f"{F294:.0f}", "개", "근사식 · d = 294 mm (가장자리 3 mm 제외)")], 3)
               + src(D_DEVRIES), T),
@@ -92,14 +88,12 @@ def slides():
                       ("D0 = −ln(Y) ÷ A", f"{D0:.3f} 개/cm²"), ("다른 다이 크기", "같은 D0 로 예상")], hl=2)
               + src(D_CUNN), T),
         light("Negative binomial 모델", '<div class="p3eq">Y = (1 + A·D0 / <em>α</em>)<sup>−α</sup>'
-              '<small>α = 결함이 뭉친 정도 · 작을수록 뭉침 · α 가 아주 크면 Poisson 과 같아짐</small></div>'
+              '<small>α 작을수록 결함이 뭉침 · α → ∞ 이면 Poisson</small></div>'
               + viz2.pair("Poisson", [("결함", "웨이퍼 전체에 고르게"), ("큰 다이", "수율을 낮게 봄")],
                           "Negative binomial", [("결함", "한 곳에 뭉침 (클러스터)"), ("큰 다이", "Poisson 보다 높게 봄")])
               + src(D_STAPPER), T),
-        light("다이 크기별 예상 수율", pv3.curve(ROWS)
-              + note("두 모델", "다이가 작으면 거의 같고 클수록 벌어짐 · α 는 실측으로 정함"), T),
-        light("다이 크기와 양품 수", hbars([(f"{s} mm", g, s == 10, f"{g:,}개") for s, g in GOOD])
-              + note("Poisson · D0 " + f"{D0:.3f}", "다이 한 변이 2배면 면적 4배 · 양품 수는 4배보다 더 줄어듦"), T),
+        light("다이 크기별 예상 수율", pv3.curve(ROWS), T),
+        light("다이 크기와 양품 수", hbars([(f"{s} mm", g, s == 10, f"{g:,}개") for s, g in GOOD]), T),
         light("Claude Code 에 계산 맡기기", codemap([
             ("gross_die_count(d=300, edge=3, die=10)", f"격자로 센 Gross die · {G616}"),
             ("d0 = -math.log(0.9042) / 1.0", f"W07 수율에서 D0 · {D0:.3f}"),
@@ -121,6 +115,5 @@ def slides():
             ("me", "다이 크기 5~25 mm 의 Gross die 와 Poisson · NB 예상 수율 표를 만들어 줘. W07 수율로 D0 를 구해서."),
             ("ai", f"D0 = {D0:.3f}/cm² (W07 {W07['yield']}%)\n"
                    + "\n".join(f"{s} mm · Gross die {gross_die_count(die=s)} · Poisson {p}% · NB {n}%" for s, p, n in ROWS if s in (10, 20, 25))
-                   + "\n저장: output/die_size_yield.csv")], "계산 대화 예")
-              + note("대조", f"다이 10 mm 행의 Poisson 수율 = W07 실제 수율 {W07['yield']}% 와 같은지"), T),
+                   + "\n저장: output/die_size_yield.csv")], "계산 대화 예"), T),
     ]

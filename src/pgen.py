@@ -45,10 +45,8 @@ def flow_anim():
         s += (f'<g {d.show(5 + i * 9)}><rect x="{x}" y="160" width="146" height="64" rx="10" fill="#F4F6F9"/>'
               + _t(x + 73, 192, ex, "tn", extra='style="font-size:14px"') + "</g>")
     s += _t(8, 192, "", "ts")
-    s += (f'<g {d.show(72)}><rect x="8" y="262" width="1144" height="70" rx="14" fill="{K}"/>'
-          + _t(580, 297, "같은 일곱 단계 · 택배 데이터에서 먼저 → 반도체 테스트 데이터에 그대로", "tw", extra='style="font-size:19px"') + "</g>")
     s += f'<g {d.show(1)}>' + _t(8, 40, "택배 예", "to", "start", 'style="font-size:15px"') + "</g>"
-    return d.svg(1160, 350, s)
+    return d.svg(1160, 250, s)
 
 
 def u1():
@@ -57,10 +55,10 @@ def u1():
     t = tag("1")
     return [
         light("데이터 분석의 흐름", flow_anim(), t),
-        light("일반 예 · 택배 배송 데이터", code("delivery_D07.csv · 앞 4줄", esc(head.to_csv(index=False).strip()))
+        light("택배 배송 데이터", code("delivery_D07.csv · 앞 4줄", esc(head.to_csv(index=False).strip()))
               + viz2.tiles([("한 행", "배송 1건"), ("하루 파일", f"{GEN['rows_per_day']}행 · 25일치"),
                             ("판정", f"약속 120분 안 · 파손 · 주소 · 부재 없음 → ON_TIME")], 3), t),
-        light("일반 예 · 정시 도착률", big([
+        light("정시 도착률", big([
             (f"{GEN['D07']['on_time']}", "건", "정시 도착 (10월 7일)"), (f"{GEN['D07']['rows']}", "건", "전체 배송"),
             (f"{GEN['D07']['rate']}", "%", "정시 도착률 = 정시 ÷ 전체", True)], 3), t),
         _pair([("배송 1건 = 1행", "다이 1개 = 1행", "wafer_test_W07.csv"), ("하루 파일 25개", "웨이퍼 파일 25개", "LOT 하나"),
@@ -76,11 +74,10 @@ def u2():
     d19 = pd.read_csv(P / "raw" / "delivery_D19.csv")
     dup = int(d05.duplicated(subset=["order_id"]).sum())
     return [
-        light("일반 예 · 택배 원시 파일의 문제", viz2.tiles([
+        light("택배 원시 파일의 문제", viz2.tiles([
             ("D05 · 중복", f"{len(d05)}행 중 같은 송장 번호 {dup}행"),
             ("D11 · 단위", f"weight_kg 중앙값 {d11.weight_kg.median():,.0f} — g 로 기록됨"),
-            ("D19 · 결측", f"delivery_min 빈칸 {int(d19.delivery_min.isna().sum())}개")], 3)
-              + note("그대로 집계하면", f"D11 평균 무게 {d11.weight_kg.mean():,.0f} kg · g → kg 로 고치면 {d11.weight_kg.mean() / 1000:.2f} kg"), t),
+            ("D19 · 결측", f"delivery_min 빈칸 {int(d19.delivery_min.isna().sum())}개")], 3), t),
         _pair([("송장 번호 중복", "다이 좌표 중복", "W05 · 12행"), ("무게 g ↔ kg", "vth mV ↔ V", "W11 · 단위"),
                ("배송 시간 결측", "ioff_na 결측", "W19 · 9칸"), ("결측 = 재확인", "결측 = 재측정 (RETEST)", "판정 보류")], t),
     ]
@@ -93,9 +90,8 @@ def u3():
     rs = GEN["reason"]
     tot = sum(rs.values())
     return [
-        light("일반 예 · 구역별 정시 도착률", hbars([(k, v, k == "외곽") for k, v in a.items()], unit="%", top=100)
-              + note("25일 전체", f"정시 도착률 {GEN['on_time']}%"), t),
-        light("일반 예 · 실패 사유 Pareto", hbars([(KO[k], v, i == 0, f"{v:,}건 · {v / tot * 100:.0f}%") for i, (k, v) in enumerate(rs.items())]), t),
+        light("구역별 정시 도착률", hbars([(k, v, k == "외곽") for k, v in a.items()], unit="%", top=100), t),
+        light("실패 사유 Pareto", hbars([(KO[k], v, i == 0, f"{v:,}건 · {v / tot * 100:.0f}%") for i, (k, v) in enumerate(rs.items())]), t),
         _pair([("구역 (도심 · 중간 · 외곽)", "존 (center · mid · edge)", "groupby"), ("실패 사유 Pareto", "불량 유형 Pareto", "많은 순"),
                ("정시 도착률", "수율", "비율 집계"), ("엑셀 피벗", "엑셀 피벗 · 3시트", "yield_summary.xlsx")], t),
     ]
@@ -118,7 +114,7 @@ def u4():
     t = tag("4")
     leg = viz2.tiles([("초록", "정시 90% 이상"), ("노랑", "75~90%"), ("빨강", "75% 미만")], 1)
     return [
-        light("일반 예 · 구역 지도", f'<div class="twocol w"><div>{city_map()}</div><div>{leg}</div></div>', t),
+        light("구역 지도", f'<div class="twocol w"><div>{city_map()}</div><div>{leg}</div></div>', t),
         _pair([("구역 격자 한 칸", "다이 한 칸", "좌표 → 사각형"), ("물류센터에서 먼 고리", "웨이퍼 가장자리 링", "Edge-Ring"),
                ("칸 색 = 정시율", "칸 색 = 불량 유형", "보기 전환"), ("표로는 안 보이는 위치", "표로는 안 보이는 패턴", "지도의 이유")], t),
     ]
@@ -155,7 +151,7 @@ def u5():
     cpk = (120 - mu) / (3 * sd)
     late = int((df.delivery_min > 120).sum())
     return [
-        light("일반 예 · 배송 시간 분포", f'<div class="twocol w"><div>{_hist(df.delivery_min.tolist(), 120)}</div><div>'
+        light("배송 시간 분포", f'<div class="twocol w"><div>{_hist(df.delivery_min.tolist(), 120)}</div><div>'
               + viz2.tiles([("약속 시간", f"120분 · 넘은 배송 {late}건"), ("평균 · 표준편차", f"{mu}분 · {sd}분"),
                             ("Cpk (한쪽 한계)", f"(120 − {mu}) ÷ (3 × {sd}) = {cpk:.2f}")], 1) + "</div></div>", t),
         _pair([("약속 시간 120분", "USL · LSL", "spec.csv"), ("배송 시간 분포", "vth 분포", "히스토그램"),
@@ -170,10 +166,10 @@ def u6():
     sql = ("SELECT truck_id,\n  round(avg(CASE WHEN status = 'ON_TIME' THEN 100.0 ELSE 0 END), 2) AS on_time\n"
            "FROM read_csv('practice/clean/*.csv') GROUP BY truck_id")
     return [
-        light("일반 예 · 매일 쌓이는 배송 파일", viz2.maprows([
+        light("매일 쌓이는 배송 파일", viz2.maprows([
             ("수집", "delivery_D01 ~ D25.csv", "하루 한 파일"), ("정제", "중복 · g 단위 · 결측", "D05 · D11 · D19"),
             ("적재", f"한 표 · {GEN['rows_per_day'] * 25:,}행", "Parquet · DuckDB"), ("집계", "차량별 정시율 SQL", "매일 같은 쿼리")], "단계", "택배"), t),
-        light("일반 예 · 차량별 정시율", code("SQL", esc(sql))
+        light("차량별 정시율", code("SQL", esc(sql))
               + hbars([(k, v, k == "TRUCK_C") for k, v in tr.items()], unit="%", top=100), t),
         _pair([("하루 파일", "웨이퍼 파일", "data/raw/"), ("차량 TRUCK_A/B/C", "설비 ETCH_01/02/03", "equipment.csv"),
                ("TRUCK_C 정시율 낮음", "ETCH_03 수율 낮음", "같은 SQL 모양"), ("배송 DB", "warehouse.duckdb", "다시 돌려도 같은 결과")], t),
@@ -186,7 +182,7 @@ def u7():
     tr = GEN["truck"]
     worst = min(tr, key=tr.get)
     return [
-        light("일반 예 · 배송 현황판", big([
+        light("배송 현황판", big([
             (f"{GEN['on_time']}", "%", "25일 정시 도착률"), (f"{GEN['area']['외곽']}", "%", "외곽 구역", True),
             (f"{tr[worst]}", "%", f"최저 차량 {worst}", True), ("25", "일", "하루 한 파일 · 명령 하나로 갱신")], 4), t),
         _pair([("현황판 KPI", "대시보드 KPI", "LOT 수율 · 미달 장 수"), ("새 날짜 파일", "새 웨이퍼 W26", "data/new → raw"),
@@ -202,9 +198,8 @@ def u8():
     outer = df[df.area == "외곽"]
     by = outer.groupby("truck_id").status.apply(lambda s: round((s == "ON_TIME").mean() * 100, 1))
     return [
-        light("일반 예 · 외곽 지연의 원인 후보", hbars([(k, v, k == "TRUCK_C", f"{v}%") for k, v in by.items()], unit="%", top=100,
-                                                title="같은 외곽 구역 안 · 차량별 정시율")
-              + note("겹침 풀기", "외곽 탓 · 차량 탓이 섞임 → 같은 구역 안에서 차량끼리 비교"), t),
+        light("외곽 지연의 원인 후보", hbars([(k, v, k == "TRUCK_C", f"{v}%") for k, v in by.items()], unit="%", top=100,
+                                                title="같은 외곽 구역 안 · 차량별 정시율"), t),
         _pair([("외곽 · TRUCK_C 겹침", "가장자리 · ETCH_03 겹침", "상관 ≠ 원인"), ("같은 구역 안 비교", "같은 날 · 같은 존 안 비교", "조건 맞추기"),
                ("원인 후보 + 근거 숫자", "원인 후보 + 근거 차트", "분석 요약"), ("추가 확인 · 차량 점검", "추가 확인 · 장비 이력", "다음 행동")], t),
     ]

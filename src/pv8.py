@@ -31,7 +31,7 @@ def confound(rows):
               + _t(x + 40, 268 - h, f"{y}%", "tn", extra='style="font-size:14px"') + _t(x + 40, 300, day[5:], "tm", extra='style="font-size:13px"')
               + _t(x + 40, 324, eq.replace("ETCH_", "E"), "ts", extra='style="font-size:12px"') + "</g>")
     s += f'<line x1="30" y1="{280 - (90 - mn) / (mx - mn) * 220:.0f}" x2="580" y2="{280 - (90 - mn) / (mx - mn) * 220:.0f}" stroke="{R}" stroke-dasharray="5 4" stroke-width="2"/>'
-    s += f'<g {d.show(28)}>' + _t(300, 370, "날짜 탓? 설비 탓? · 날짜와 설비가 겹침", "tt", extra=f'style="fill:{R};font-size:18px"') + "</g>"
+    s += f'<g {d.show(28)}>' + _t(300, 370, "날짜 · 설비가 겹침", "tt", extra=f'style="fill:{R};font-size:18px"') + "</g>"
     s += f'<line x1="610" y1="20" x2="610" y2="420" stroke="{G}" stroke-width="2" stroke-dasharray="6 6"/>'
     return d, s
 

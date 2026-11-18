@@ -43,8 +43,7 @@ def slides():
         # ── 배경
         light("평균은 같고 퍼짐이 다름", big([
             (f"{es['ETCH_01'][2]:.3f}", "V", "ETCH_01 · vth 평균"), (f"{es['ETCH_03'][2]:.3f}", "V", "ETCH_03 · vth 평균"),
-            (f"{es['ETCH_01'][3]:.4f}", "", "ETCH_01 · 표준편차 σ"), (f"{es['ETCH_03'][3]:.4f}", "", "ETCH_03 · 표준편차 σ", True)], 4)
-              + note("평균만 보면", "두 설비 차이 0.003 V · 퍼짐은 ETCH_03 이 약 1.2배"), T),
+            (f"{es['ETCH_01'][3]:.4f}", "", "ETCH_01 · 표준편차 σ"), (f"{es['ETCH_03'][3]:.4f}", "", "ETCH_03 · 표준편차 σ", True)], 4), T),
         light("분포와 스펙 한계", viz2.tiles([
             ("분포", "값이 어디에 얼마나 모였나"), ("σ · 표준편차", "평균에서 퍼진 정도"),
             ("LSL · USL", "스펙 하한 · 상한 (data/spec.csv)"), ("vth_v 스펙", "LSL 0.38 V · USL 0.52 V")], 2), T),
@@ -62,10 +61,8 @@ def slides():
         # ── 우리 데이터
         light("설비별 vth Cpk", big([
             (f"{es['ETCH_01'][0]}", "", f"ETCH_01 · Cp {es['ETCH_01'][1]}"), (f"{es['ETCH_02'][0]}", "", f"ETCH_02 · Cp {es['ETCH_02'][1]}"),
-            (f"{es['ETCH_03'][0]}", "", f"ETCH_03 · Cp {es['ETCH_03'][1]}", True)], 3)
-              + note("ETCH_03", "평균은 비슷 · σ 가 커서 Cp · Cpk 모두 낮음 → 가장자리 vth 이탈과 같은 설비"), T),
-        light("반경과 문턱전압", pv5.radius_trend()
-              + note("경향", f"W07 중심 {rm07[0][1]:.3f} → 가장자리 {rm07[-1][1]:.3f} V · W21 가장자리 {rm21[-1][1]:.3f} V"), T),
+            (f"{es['ETCH_03'][0]}", "", f"ETCH_03 · Cp {es['ETCH_03'][1]}", True)], 3), T),
+        light("반경과 문턱전압", pv5.radius_trend(), T),
         light("산점도와 규격 영역", pv5.scatter_spec("W07"), T),
         light("이상 다이 목록", '<div class="twocol w"><div>' + code(f"output/outliers_W07.csv · {nol}행 중 6행", esc(ol)) + "</div><div>"
               + viz2.tiles([("뽑는 조건", "vth 스펙 밖 · idsat < 0.92"), ("쓰는 곳", "맵 위치 확인 · 재측정 목록"),
@@ -86,6 +83,5 @@ def slides():
         light("실습 5 확인", chat([
             ("me", "W07 vth 의 Cp, Cpk 를 spec.csv 기준으로 계산하고 식에 들어간 값도 보여 줘."),
             ("ai", f"μ {mu07:.4f} · σ {sd07:.4f} · LSL 0.38 · USL 0.52\nCp {cp07} · Cpk {k07}\n"
-                   "USL 쪽 여유가 더 작음 — 가장자리 다이의 vth 가 높음")], "Cpk 요청 대화 예")
-              + note("대조", "엑셀 AVERAGE · STDEV 로 μ · σ 를 구해 같은지"), T),
+                   "USL 쪽 여유가 더 작음 — 가장자리 다이의 vth 가 높음")], "Cpk 요청 대화 예"), T),
     ]

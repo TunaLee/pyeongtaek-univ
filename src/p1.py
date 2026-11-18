@@ -78,25 +78,22 @@ def slides():
             ("STDF", "테스터 결과 파일 표준 형식 (Teradyne)"), ("MES", "공장 생산 기록 시스템 · 데이터를 내려받는 곳")], 2)
               + src(("SemiEngineering · STDF", "https://semiengineering.com/knowledge_centers/test/data-analytics/standard-test-data-format-stdf/")), T),
         # ── 데이터 읽기
-        light("열 18개 네 묶음", _groups() + note("한 행", "다이 한 개 · wafer_test_W07.csv = 616행"), T),
+        light("열 18개 네 묶음", _groups(), T),
         light("비유 · 트랜지스터와 수도꼭지", viz2.maprows([
             ("vth_v · 문턱전압", "꼭지를 얼마나 돌려야 물이 나오나", "0.38~0.52 V"),
             ("idsat_ma · 포화전류", "활짝 열었을 때 물줄기", "0.92 mA 이상"),
             ("ioff_na · 누설전류", "잠갔는데 새는 물", "10 nA 이하"),
-            ("rc_ohm · 접촉저항", "배관 이음새가 막힌 정도", "15 Ω 이하")], "측정값", "수도꼭지")
-              + note("비전공자", "뜻은 이 정도면 충분 · 스펙 숫자는 spec.csv 에 있음"), T),
+            ("rc_ohm · 접촉저항", "배관 이음새가 막힌 정도", "15 Ω 이하")], "측정값", "수도꼭지"), T),
         light("판정 순서", pviz.sieve(), T),
         light("수율", big([
             (f"{W07['pass']}", "개", "양품 다이 (PASS)"), (f"{REF['gross_die']}", "개", "전체 다이"),
-            (f"{W07['yield']}", "%", "수율 = 양품 ÷ 전체 · W07", True)], 3)
-              + note("목표", "이 과정의 목표 수율 90% · 1%p 는 웨이퍼 한 장에 다이 약 6개"), T),
+            (f"{W07['yield']}", "%", "수율 = 양품 ÷ 전체 · W07", True)], 3), T),
         light("데이터 규모", viz2.tiles([
             ("웨이퍼 한 장", f"{REF['gross_die']}행 × 18열"), ("LOT 하나", f"25장 · {REF['gross_die'] * 25:,}행"),
-            ("공정 센서 (SECOM)", f"{REF['secom']['rows']:,}행 × {REF['secom']['features']}열")], 3)
-              + note("엑셀로 하는 일", "열고 · 필터 · 피벗 · 복사 — 파일이 늘면 같은 일을 매번 반복"), T),
+            ("공정 센서 (SECOM)", f"{REF['secom']['rows']:,}행 × {REF['secom']['features']}열")], 3), T),
         light("분석과 엔지니어링", viz2.pair(
             "데이터 분석", [("질문", "W07 수율은 왜 낮은가"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
-            "데이터 엔지니어링", [("질문", "매일 같은 답이 자동으로 나오게"), ("결과", "정제 · 적재 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), T),
+            "데이터 엔지니어링", [("질문", "매일 같은 집계 자동화"), ("결과", "정제 · 적재 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), T),
         # ── Claude Code
         light("Claude 와 Claude Code", viz2.pair(
             "Claude (claude.ai)", [("하는 일", "질문에 글로 답함"), ("CSV", "붙여 넣은 만큼만 봄"), ("결과", "사람이 복사 · 실행")],
@@ -106,22 +103,20 @@ def slides():
         light("Anthropic 사내 데이터 분석", big([
             ("95", "%", "Claude 로 처리하는 분석 질의 비율", True), ("21", "% 이하", "스킬 · 정의 없을 때 정확도"),
             ("95 → 65", "%", "관리하지 않은 한 달 뒤 정확도")], 3)
-              + note("지표 정의", "사람이 소유 · 데이터 사전 · 규칙 파일로 고정")
               + src(("Claude 블로그 · How Anthropic enables self-service data analytics (2026-06-03)",
                      "https://claude.com/blog/how-anthropic-enables-self-service-data-analytics-with-claude")), T),
         light("CLAUDE.md", '<div class="twocol w"><div>' + code("CLAUDE.md · 예", esc(_claude_md())) + "</div><div>"
               + viz2.tiles([("읽는 때", "Claude Code 시작마다 자동"), ("담는 것", "폴더 · 판정 규칙 · 작업 규칙"),
-                            ("효과", "매번 같은 설명을 반복하지 않음")], 1) + "</div></div>", T),
+                            ], 1) + "</div></div>", T),
         light("데이터 사전", viz2.maprows([
             ("열 이름", "vth_v", "문턱전압"), ("단위", "V", "mV 로 들어오면 오류"), ("스펙", "0.38~0.52", "판정 기준"),
-            ("기준 숫자", f"{REF['gross_die']} · {W07['pass']} · {W07['yield']}%", "결과 대조용")], "칸", "예")
-              + note("파일", "docs/data_dictionary.md · Claude 가 쓰고 사람이 확인"), T),
+            ("기준 숫자", f"{REF['gross_die']} · {W07['pass']} · {W07['yield']}%", "결과 대조용")], "칸", "예"), T),
         light("실습 폴더 wafer-lab", viz2.maprows([
             ("data/", "wafer_test_W07.csv · spec.csv · equipment.csv", "읽기만"), ("data/raw/", "원시 파일 25장", "2 · 6교시"),
             ("docs/", "데이터 사전 · 보고서", "문서"), ("scripts/ · output/", "스크립트 · 결과 파일", "Claude 가 만듦")], "폴더", "내용"), T),
         light("실습 환경", viz2.tiles([
             ("VS Code", "편집기 · 파일 탐색기 · 터미널"), ("Claude Code 확장", "VS Code 확장 · 교육용 계정 로그인"),
-            ("Python", "pandas · openpyxl — 없으면 Claude Code 가 설치 안내"), ("wafer-lab 폴더", "파일 → 폴더 열기")], 2)
+            ("Python", "pandas · openpyxl"), ("wafer-lab 폴더", "파일 → 폴더 열기")], 2)
               + src(("Claude Code 문서 · VS Code", "https://code.claude.com/docs/en/vs-code")), T),
         light("요청 한 문장의 구성", viz2.maprows([
             ("대상", "data/wafer_test_W07.csv", "어느 파일"), ("할 일", "행 · 열 · 결측 · 양불 개수 요약", "무엇을"),
@@ -140,6 +135,5 @@ def slides():
         light("실습 1 확인", chat([
             ("me", "data/wafer_test_W07.csv 를 요약해 줘. 행 · 열 수, 결측, 양불 개수만."),
             ("ai", f"616행 × 18열 · 결측 0\nPASS {W07['pass']} · FAIL {FAIL07} · 수율 {W07['yield']}%\n"
-                   f"불량 1위 crack {W07['crack']}개 — 대각선 위치에 몰려 있음")], "요약 대화 예")
-              + note("대조", "엑셀에서 pass_fail 필터 → PASS 개수가 같은지"), T),
+                   f"불량 1위 crack {W07['crack']}개 — 대각선 위치에 몰려 있음")], "요약 대화 예"), T),
     ]
