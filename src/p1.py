@@ -119,6 +119,13 @@ def slides():
         light("실습 폴더 wafer-lab", viz2.maprows([
             ("data/", "wafer_test_W07.csv · spec.csv · equipment.csv", "읽기만"), ("data/raw/", "원시 파일 25장", "2 · 6교시"),
             ("docs/", "데이터 사전 · 보고서", "문서"), ("scripts/ · output/", "스크립트 · 결과 파일", "Claude 가 만듦")], "폴더", "내용"), T),
+        light("실습 환경", viz2.tiles([
+            ("VS Code", "편집기 · 파일 탐색기 · 터미널"), ("Claude Code 확장", "VS Code 확장 · 교육용 계정 로그인"),
+            ("Python", "pandas · openpyxl — 없으면 Claude Code 가 설치 안내"), ("wafer-lab 폴더", "파일 → 폴더 열기")], 2)
+              + src(("Claude Code 문서 · VS Code", "https://code.claude.com/docs/en/vs-code")), T),
+        light("요청 한 문장의 구성", viz2.maprows([
+            ("대상", "data/wafer_test_W07.csv", "어느 파일"), ("할 일", "행 · 열 · 결측 · 양불 개수 요약", "무엇을"),
+            ("결과", "docs/data_dictionary.md", "어디에 남길지"), ("조건", "원본 수정 금지 · 앞 5줄만 출력", "하지 말 것")], "칸", "예"), T),
         # ── 실습
         lab("1", "데이터 사전 · CLAUDE.md", T, "wafer-lab 폴더에서 Claude Code 로 W07 을 읽고 데이터 사전 · CLAUDE.md 를 만든다",
             ["VS Code 로 wafer-lab 열기 · Claude Code 실행", "W07 요약 · 결측 보고 요청", "데이터 사전 작성 요청", "CLAUDE.md 작성 요청",
