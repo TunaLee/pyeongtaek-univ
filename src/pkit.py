@@ -75,5 +75,5 @@ def nextup(u):
         nxt = '<div class="v1next"><span>과정 이후</span><b>내 데이터로 같은 순서</b><small>→ 정제 · 적재 · 집계 · 대시보드</small></div>'
     return f'''<section class="slide dk" data-title="다음 교시">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="v1end"><div class="v1got"><span>{u}교시에서 남은 것</span><b>{out}</b></div>{nxt}</div>
+  <div class="v1end"><div class="v1got"><span>{u}교시 산출물</span><b>{out}</b></div>{nxt}</div>
 </section>'''
