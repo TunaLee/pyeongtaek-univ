@@ -1,0 +1,302 @@
+{
+ "gross_die": 616,
+ "wafers": {
+  "W01": {
+   "eqp": "ETCH_01",
+   "pass": 573,
+   "yield": 93.02,
+   "crack": 0,
+   "open_short": 8,
+   "leakage": 9,
+   "vth_shift": 7,
+   "particle": 10,
+   "parametric": 9
+  },
+  "W02": {
+   "eqp": "ETCH_01",
+   "pass": 562,
+   "yield": 91.23,
+   "crack": 0,
+   "open_short": 13,
+   "leakage": 8,
+   "vth_shift": 8,
+   "particle": 6,
+   "parametric": 19
+  },
+  "W03": {
+   "eqp": "ETCH_01",
+   "pass": 583,
+   "yield": 94.64,
+   "crack": 0,
+   "open_short": 9,
+   "leakage": 4,
+   "vth_shift": 9,
+   "particle": 2,
+   "parametric": 9
+  },
+  "W04": {
+   "eqp": "ETCH_01",
+   "pass": 580,
+   "yield": 94.16,
+   "crack": 0,
+   "open_short": 6,
+   "leakage": 6,
+   "vth_shift": 4,
+   "particle": 7,
+   "parametric": 13
+  },
+  "W05": {
+   "eqp": "ETCH_01",
+   "pass": 581,
+   "yield": 94.32,
+   "crack": 0,
+   "open_short": 8,
+   "leakage": 10,
+   "vth_shift": 4,
+   "particle": 6,
+   "parametric": 7
+  },
+  "W06": {
+   "eqp": "ETCH_01",
+   "pass": 584,
+   "yield": 94.81,
+   "crack": 0,
+   "open_short": 2,
+   "leakage": 4,
+   "vth_shift": 5,
+   "particle": 11,
+   "parametric": 10
+  },
+  "W07": {
+   "eqp": "ETCH_01",
+   "pass": 557,
+   "yield": 90.42,
+   "crack": 25,
+   "open_short": 6,
+   "leakage": 6,
+   "vth_shift": 7,
+   "particle": 6,
+   "parametric": 9
+  },
+  "W08": {
+   "eqp": "ETCH_01",
+   "pass": 578,
+   "yield": 93.83,
+   "crack": 0,
+   "open_short": 9,
+   "leakage": 8,
+   "vth_shift": 3,
+   "particle": 3,
+   "parametric": 15
+  },
+  "W09": {
+   "eqp": "ETCH_02",
+   "pass": 577,
+   "yield": 93.67,
+   "crack": 0,
+   "open_short": 3,
+   "leakage": 6,
+   "vth_shift": 5,
+   "particle": 12,
+   "parametric": 13
+  },
+  "W10": {
+   "eqp": "ETCH_02",
+   "pass": 578,
+   "yield": 93.83,
+   "crack": 0,
+   "open_short": 7,
+   "leakage": 7,
+   "vth_shift": 5,
+   "particle": 6,
+   "parametric": 13
+  },
+  "W11": {
+   "eqp": "ETCH_02",
+   "pass": 575,
+   "yield": 93.34,
+   "crack": 0,
+   "open_short": 7,
+   "leakage": 9,
+   "vth_shift": 7,
+   "particle": 10,
+   "parametric": 8
+  },
+  "W12": {
+   "eqp": "ETCH_02",
+   "pass": 563,
+   "yield": 91.4,
+   "crack": 0,
+   "open_short": 18,
+   "leakage": 9,
+   "vth_shift": 7,
+   "particle": 6,
+   "parametric": 13
+  },
+  "W13": {
+   "eqp": "ETCH_02",
+   "pass": 578,
+   "yield": 93.83,
+   "crack": 0,
+   "open_short": 3,
+   "leakage": 13,
+   "vth_shift": 5,
+   "particle": 6,
+   "parametric": 11
+  },
+  "W14": {
+   "eqp": "ETCH_02",
+   "pass": 572,
+   "yield": 92.86,
+   "crack": 0,
+   "open_short": 9,
+   "leakage": 11,
+   "vth_shift": 8,
+   "particle": 3,
+   "parametric": 13
+  },
+  "W15": {
+   "eqp": "ETCH_02",
+   "pass": 580,
+   "yield": 94.16,
+   "crack": 0,
+   "open_short": 7,
+   "leakage": 7,
+   "vth_shift": 3,
+   "particle": 8,
+   "parametric": 11
+  },
+  "W16": {
+   "eqp": "ETCH_02",
+   "pass": 584,
+   "yield": 94.81,
+   "crack": 0,
+   "open_short": 7,
+   "leakage": 4,
+   "vth_shift": 5,
+   "particle": 6,
+   "parametric": 10
+  },
+  "W17": {
+   "eqp": "ETCH_03",
+   "pass": 539,
+   "yield": 87.5,
+   "crack": 0,
+   "open_short": 11,
+   "leakage": 31,
+   "vth_shift": 19,
+   "particle": 7,
+   "parametric": 9
+  },
+  "W18": {
+   "eqp": "ETCH_03",
+   "pass": 542,
+   "yield": 87.99,
+   "crack": 0,
+   "open_short": 5,
+   "leakage": 35,
+   "vth_shift": 19,
+   "particle": 7,
+   "parametric": 8
+  },
+  "W19": {
+   "eqp": "ETCH_03",
+   "pass": 549,
+   "yield": 89.12,
+   "crack": 0,
+   "open_short": 3,
+   "leakage": 34,
+   "vth_shift": 19,
+   "particle": 6,
+   "parametric": 5
+  },
+  "W20": {
+   "eqp": "ETCH_03",
+   "pass": 542,
+   "yield": 87.99,
+   "crack": 0,
+   "open_short": 11,
+   "leakage": 30,
+   "vth_shift": 14,
+   "particle": 7,
+   "parametric": 12
+  },
+  "W21": {
+   "eqp": "ETCH_03",
+   "pass": 531,
+   "yield": 86.2,
+   "crack": 0,
+   "open_short": 9,
+   "leakage": 33,
+   "vth_shift": 30,
+   "particle": 6,
+   "parametric": 7
+  },
+  "W22": {
+   "eqp": "ETCH_03",
+   "pass": 534,
+   "yield": 86.69,
+   "crack": 0,
+   "open_short": 4,
+   "leakage": 33,
+   "vth_shift": 27,
+   "particle": 8,
+   "parametric": 10
+  },
+  "W23": {
+   "eqp": "ETCH_03",
+   "pass": 541,
+   "yield": 87.82,
+   "crack": 0,
+   "open_short": 7,
+   "leakage": 33,
+   "vth_shift": 21,
+   "particle": 5,
+   "parametric": 9
+  },
+  "W24": {
+   "eqp": "ETCH_03",
+   "pass": 542,
+   "yield": 87.99,
+   "crack": 0,
+   "open_short": 6,
+   "leakage": 35,
+   "vth_shift": 20,
+   "particle": 4,
+   "parametric": 9
+  },
+  "W25": {
+   "eqp": "ETCH_03",
+   "pass": 533,
+   "yield": 86.53,
+   "crack": 0,
+   "open_short": 9,
+   "leakage": 31,
+   "vth_shift": 27,
+   "particle": 3,
+   "parametric": 13
+  }
+ },
+ "lot_yield": 91.29,
+ "eqp_yield": {
+  "ETCH_01": 93.3,
+  "ETCH_02": 93.49,
+  "ETCH_03": 87.54
+ },
+ "raw_issues": {
+  "W05": "중복 행 12개",
+  "W11": "vth_v 단위 mV",
+  "W19": "ioff_na 결측 9칸"
+ },
+ "secom": {
+  "rows": 1567,
+  "features": 590,
+  "fail": 104,
+  "cells_missing_pct": 4.54,
+  "cols_any_missing": 538,
+  "cols_missing_over50": 28,
+  "cols_constant": 116,
+  "start": "2008-07-19 11:55:00",
+  "end": "2008-10-17 06:07:00"
+ }
+}

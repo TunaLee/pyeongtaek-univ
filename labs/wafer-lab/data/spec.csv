@@ -1,0 +1,8 @@
+param,lsl,usl,unit,fail_type
+vth_v,0.38,0.52,V,vth_shift
+idsat_ma,0.92,,mA,parametric
+ioff_na,,10,nA,leakage
+rc_ohm,,15,Ω,open_short
+ox_thk_nm,2.85,3.15,nm,parametric
+crack,,0,개,crack
+particle_cnt,,4,개,particle

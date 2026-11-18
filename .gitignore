@@ -1,0 +1,12 @@
+__pycache__/
+.DS_Store
+*.pyc
+# 고객 원본 자료 · 커리큘럼 그림 — 커밋 금지
+평택대_반도체품질데이터_바이브코딩_교안/
+평택대 반도체 시뮬레이터 바이브코딩 자료/
+커리큘럼_*.png
+_raw/
+.venv/
+# 완성본 실행용 데이터 사본 — wafer-lab/data 를 복사해 쓴다
+labs/solution/data/
+labs/solution/output/clean/
