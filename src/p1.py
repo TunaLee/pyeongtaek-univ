@@ -1,7 +1,7 @@
 """1교시 반도체 테스트 데이터와 Claude Code.
 
 배경(2026 반도체 숫자 · 웨이퍼와 다이 · 공정 흐름 · CP 테스트 · 테스트 → CSV) → 데이터 읽기(열 네 묶음 · 수도꼭지 비유 · 판정 순서 · 수율)
-→ 분석과 엔지니어링 → Claude Code(대화형과 위임형 · 데이터 작업 고리 · 사내 사례 · CLAUDE.md · 데이터 사전) → 실습 1.
+→ Claude Code(대화형과 위임형 · 데이터 작업 고리 · 사내 사례 · CLAUDE.md · 데이터 사전) → 실습 1.
 숫자는 labs/ref.json · labs/solution 에서 읽는다.
 """
 import pviz
@@ -60,9 +60,6 @@ def slides():
         light("데이터 규모", viz2.tiles([
             ("웨이퍼 한 장", f"{REF['gross_die']}행 × 18열"), ("LOT 하나", f"25장 · {REF['gross_die'] * 25:,}행"),
             ("공정 센서 (SECOM)", f"{REF['secom']['rows']:,}행 × {REF['secom']['features']}열")], 3), T),
-        light("분석과 엔지니어링", viz2.pair(
-            "데이터 분석", [("질문", "W07 수율은 왜 낮은가"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
-            "데이터 엔지니어링", [("질문", "매일 같은 집계 자동화"), ("결과", "정제 · 적재 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), T),
         # ── Claude Code
         light("Claude 와 Claude Code", viz2.pair(
             "Claude (claude.ai)", [("하는 일", "질문에 글로 답함"), ("CSV", "붙여 넣은 만큼만 봄"), ("결과", "사람이 복사 · 실행")],

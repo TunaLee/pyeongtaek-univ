@@ -50,17 +50,9 @@ def flow_anim():
 
 
 def u1():
-    df = _d07()
-    head = df.head(4)[["date", "zone_x", "zone_y", "area", "truck_id", "delivery_min", "reason", "status"]]
+    """개요(p0)가 택배 데이터 · 흐름 · 정시율을 먼저 보인다 — 1교시는 반도체 연결 한 장."""
     t = tag("1")
     return [
-        light("데이터 분석의 흐름", flow_anim(), t),
-        light("택배 배송 데이터", code("delivery_D07.csv · 앞 4줄", esc(head.to_csv(index=False).strip()))
-              + viz2.tiles([("한 행", "배송 1건"), ("하루 파일", f"{GEN['rows_per_day']}행 · 25일치"),
-                            ("판정", f"약속 120분 안 · 파손 · 주소 · 부재 없음 → ON_TIME")], 3), t),
-        light("정시 도착률", big([
-            (f"{GEN['D07']['on_time']}", "건", "정시 도착 (10월 7일)"), (f"{GEN['D07']['rows']}", "건", "전체 배송"),
-            (f"{GEN['D07']['rate']}", "%", "정시 도착률 = 정시 ÷ 전체", True)], 3), t),
         _pair([("배송 1건 = 1행", "다이 1개 = 1행", "wafer_test_W07.csv"), ("하루 파일 25개", "웨이퍼 파일 25개", "LOT 하나"),
                ("구역 좌표 · 거리", "die_x · die_y · radius_mm", "위치"), ("정시 도착률", "수율", "양품 ÷ 전체")], t),
     ]
