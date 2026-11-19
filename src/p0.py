@@ -366,3 +366,107 @@ def cat_anim(df):
         s += (f'<g {d.show(80)}>' + _t(bx[n] + 72, base - ho / 2, f"정시 {on.get(n, 0) / cnt[n] * 100:.1f}%", "to", "start",
                                          'style="font-size:16px"') + "</g>")
     return d.svg(1160, 440, s)
+
+
+# ── 판정 조건 쌓기 · 택배(1교시 앞) · 웨이퍼(판정 순서 뒤) 공통 ─────────
+CSS += """
+  .p0j{display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:22px; align-items:start; margin-top:4px;}
+  .p0j table{border-collapse:collapse; width:100%; font-size:14.5px; background:#fff; border:1.5px solid #D9DDE3;}
+  .p0j th{background:#F4F6F9; color:#1F3A5F; font-family:var(--mono); font-size:12.5px; font-weight:700; padding:8px 7px; border-bottom:1.5px solid #D9DDE3; text-align:right;}
+  .p0j td{font-family:var(--mono); padding:8px 7px; border-bottom:1px solid #EEF1F5; text-align:right; color:#16233A;}
+  .p0j th:first-child, .p0j td:first-child{text-align:left;}
+  .p0j td.r{width:118px; text-align:center; font-family:var(--sans); font-weight:800;}
+  .p0j td.r span{opacity:0; animation:p0Op .4s var(--d) forwards;}
+  .p0j tr.f td{animation:p0Bad .4s var(--d) forwards;}
+  .p0j tr.f td.hit{animation:p0Hit .4s var(--d) forwards;}
+  .p0j tr.f td.r span{color:#C62828;}
+  .p0j tr.ok td{animation:p0Ok .4s var(--d) forwards;}
+  .p0j tr.ok td.r span{color:#2E7D32;}
+  .p0j ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;}
+  .p0j li{border:1.5px solid #E1E5EB; border-left:5px solid #1F3A5F; border-radius:10px; background:#fff; padding:8px 12px; opacity:0; animation:p0Op .4s var(--d) forwards;}
+  .p0j li b{display:block; font-size:16px; color:#16233A;}
+  .p0j li code{font-family:var(--mono); font-size:13px; color:#C62828;}
+  .p0j li em{font-style:normal; float:right; font-size:13px; color:#6B7785; font-weight:700;}
+  .p0j li.ok{border-left-color:#2E7D32;} .p0j li.ok code{color:#2E7D32;}
+  @keyframes p0Op{to{opacity:1}}
+  @keyframes p0Bad{to{background:#FDECEA; color:#9AA3AF}}
+  @keyframes p0Hit{to{background:#C62828; color:#fff; font-weight:800}}
+  @keyframes p0Ok{to{background:#E8F5E9}}
+  @media print{.p0j *{animation:none!important; opacity:1!important} .p0j tr.f td{background:#FDECEA} .p0j tr.f td.hit{background:#C62828;color:#fff} .p0j tr.ok td{background:#E8F5E9}}
+"""
+
+
+def judge_build(rows, key, cols, steps, ok, gap=2.5):
+    """표 위에 조건을 하나씩 더한다 — 조건마다 처음 걸린 행이 빨갛게 빠지고, 마지막에 남은 행이 통과.
+    steps: [(이름, 조건 html, 오른쪽 작은 글씨, 걸림 판단 fn(row)->[걸린 열])] · ok: (이름, 조건 html, 작은 글씨, 판정 글자)."""
+    t0 = 1.0
+    t_ok = t0 + len(steps) * gap
+    th = f"<tr><th>{key[0]}</th>" + "".join(f"<th>{c}</th>" for c in cols) + "<th>판정</th></tr>"
+    trs = ""
+    for _, r in rows.iterrows():
+        k, hit = None, []
+        for i, (*_, fn) in enumerate(steps):
+            hit = fn(r)
+            if hit:
+                k = i
+                break
+        d = (t0 + k * gap if k is not None else t_ok) + .4
+        cells = "".join(f'<td class="{"hit" if c in hit else ""}">{r[c]:g}</td>' if not isinstance(r[c], str) else f"<td>{r[c]}</td>"
+                        for c in cols)
+        res = steps[k][0] if k is not None else ok[3]
+        trs += (f'<tr class="{"f" if k is not None else "ok"}" style="--d:{d:.1f}s"><td>{key[1](r)}</td>{cells}'
+                f'<td class="r"><span>{res}</span></td></tr>')
+    li = "".join(f'<li style="--d:{t0 + i * gap:.1f}s"><b>{i + 1}. {h}<em>{sm}</em></b><code>{c}</code></li>'
+                 for i, (h, c, sm, _) in enumerate(steps))
+    li += f'<li class="ok" style="--d:{t_ok:.1f}s"><b>{ok[0]}<em>{ok[2]}</em></b><code>{ok[1]}</code></li>'
+    return f'<div class="p0j"><div><table>{th}{trs}</table></div><ol>{li}</ol></div>'
+
+
+def judge_delivery():
+    """택배 D07 · 파손 → 주소 오류 → 지연 → 부재 → 정시 (labs/make_general.py judge 순서). 사유마다 한 건 + 정시 둘."""
+    df = _d07()
+    prom = 120
+    steps = [("파손", "damaged = 1", "", lambda r: ["damaged"] if r.damaged else []),
+             ("주소 오류", "addr_error = 1", "", lambda r: ["addr_error"] if r.addr_error else []),
+             ("지연", f"delivery_min &gt; {prom}", f"약속 {prom}분", lambda r: ["delivery_min"] if r.delivery_min > prom else []),
+             ("부재", "absent = 1", "", lambda r: ["absent"] if r.absent else [])]
+    cols = ["damaged", "addr_error", "delivery_min", "absent"]
+    n = df.damaged + df.addr_error + (df.delivery_min > prom) + df.absent
+    df = df.assign(n=n)
+    pick = [df[df.reason == "none"].iloc[i] for i in (0, 1)]
+    for rs in ("damaged", "addr_error", "late", "absent"):
+        pick.append(df[df.reason == rs].sort_values("n", ascending=False).iloc[0])
+    pick = pd.DataFrame(pick).sort_values("order_id")
+    return judge_build(pick, ("order_id", lambda r: r.order_id), cols, steps, ("남은 행", "ON_TIME", "", "정시"))
+
+
+def judge_wafer():
+    """W07 · spec.csv 조건을 판정 순서대로. 유형마다 다이 하나 + 양품 둘 (크랙 다이는 다른 조건에도 걸리는 것)."""
+    dd = P.parent
+    df = pd.read_csv(dd / "raw" / "wafer_test_W07.csv")
+    spec = pd.read_csv(dd / "spec.csv")
+    ko = {"crack": "크랙", "open_short": "오픈 · 쇼트", "leakage": "누설전류", "vth_shift": "문턱전압 이탈",
+          "particle": "파티클", "parametric": "기타 파라미터"}
+
+    def bad(r, p):
+        s = spec[spec.param == p].iloc[0]
+        return bool((pd.notna(s.lsl) and r[p] < s.lsl) or (pd.notna(s.usl) and r[p] > s.usl))
+
+    def txt(p):
+        s = spec[spec.param == p].iloc[0]
+        if pd.notna(s.lsl) and pd.notna(s.usl):
+            return f"{p} {s.lsl:g}~{s.usl:g} 밖"
+        return f"{p} &gt; {s.usl:g}" if pd.notna(s.usl) else f"{p} &lt; {s.lsl:g}"
+
+    par = {ft: list(spec[spec.fail_type == ft].param) for ft in ko}
+    binno = df.groupby("fail_type").bin.first()
+    steps = [(ko[ft], " · ".join(txt(p) for p in par[ft]), f"bin {binno[ft]}",
+              (lambda ps: lambda r: [p for p in ps if bad(r, p)])(par[ft])) for ft in ko]
+    df = df.assign(n=df.apply(lambda r: sum(any(bad(r, p) for p in par[ft]) for ft in ko), axis=1))
+    pick = [df[df.fail_type == "none"].iloc[i] for i in (0, 1)]
+    for ft in ko:
+        pick.append(df[df.fail_type == ft].sort_values("n", ascending=False).iloc[0])
+    pick = pd.DataFrame(pick).sort_values(["die_y", "die_x"])
+    cols = ["crack", "rc_ohm", "ioff_na", "vth_v", "particle_cnt", "idsat_ma", "ox_thk_nm"]
+    return judge_build(pick, ("die", lambda r: f"({int(r.die_x)}, {int(r.die_y)})"), cols, steps,
+                       ("남은 행", "PASS", f"bin {binno['none']}", "양품"))

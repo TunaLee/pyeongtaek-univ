@@ -77,17 +77,17 @@ def slides():
             ("점 색과 범례가 맞는가", "설비 세 개"), ("새 파일 뒤 웨이퍼 수가 늘었나", f"{B['wafers']} → {A['wafers']}")],
             "하나라도 불일치 → 숫자부터 다시"), T),
         # ── 실습
-        lab("7", "자동화 · 대시보드", T, "명령 하나로 파이프라인과 대시보드를 다시 만들고 새 웨이퍼 파일로 확인한다",
+        lab("7-2", "자동화 · 대시보드", T, "명령 하나로 파이프라인과 대시보드를 다시 만들고 새 웨이퍼 파일로 확인한다",
             ["run_all.py 요청", "대시보드 요청 (KPI · 수율 선 · 설비 · Pareto · 맵)", "점검 네 가지", "data/new/ 의 W26 을 raw/ 로 옮기고 다시 실행",
              "원인 후보 한 줄 쓰기"],
             [f"웨이퍼 {A['wafers']}장 · LOT {A['lot_yield']}%", "목표선 · 범례 · 축 단위", "원인 후보 한 줄"],
             files="data/raw/ · data/new/wafer_test_W26.csv"),
-        brief("7", T,
+        brief("7-2", T,
               ["run_all.py 요청", "대시보드 요청", "점검 네 가지", "W26 넣고 다시 실행", "원인 후보 한 줄"],
               [("목표", "새 파일이 들어와도 명령 하나로 같은 대시보드"), ("입력", "warehouse.duckdb 의 SQL 뷰"),
                ("산출물", "run_all.py · output/dashboard.html"), ("하지 말 것", "차트 숫자를 손으로 입력 · 외부 차트 라이브러리")],
               [], [f"W26 뒤 웨이퍼 {A['wafers']}장", f"미달 {B['below_target']} → {A['below_target']}장"], ""),
-        light("실습 7 확인", chat([
+        light("실습 7-2 확인", chat([
             ("me", "W26 파일을 넣었어. 대시보드를 다시 만들고 바뀐 숫자만 알려 줘."),
             ("ai", f"웨이퍼 {B['wafers']} → {A['wafers']}장\nLOT 수율 {B['lot_yield']}% → {A['lot_yield']}%\n"
                    f"목표 미달 {B['below_target']} → {A['below_target']}장 (W26 · ETCH_03)")], "다시 실행 대화 예"), T),

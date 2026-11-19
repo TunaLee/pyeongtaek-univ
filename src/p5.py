@@ -71,16 +71,16 @@ def slides():
             ("왼쪽", f"vth 히스토그램 · LSL · USL · Cpk {k07}"), ("오른쪽", "vth × idsat 산점도 · 규격 영역"),
             ("색", "양품 초록 · 불량 빨강"), ("파일", "HTML 한 파일 · 외부 라이브러리 없음")]), T),
         # ── 실습
-        lab("5", "분포 · Cpk · 이상 다이", T, "W07 의 vth 분포와 Cpk 를 구하고, 산점도와 이상 다이 목록을 만든다",
+        lab("5-2", "분포 · Cpk · 이상 다이", T, "W07 의 vth 분포와 Cpk 를 구하고, 산점도와 이상 다이 목록을 만든다",
             ["vth 히스토그램 요청 (LSL · USL 선)", "Cp · Cpk 계산 요청", "vth × idsat 산점도 요청", "이상 다이 CSV 저장", "설비별 Cpk 비교"],
             [f"W07 vth Cpk {k07}", f"이상 다이 {nol}행 · 엑셀 개수와 같음", f"ETCH_03 Cpk 가 가장 낮음 ({es['ETCH_03'][0]})"],
             files="output/clean/W07.csv · data/spec.csv"),
-        brief("5", T,
+        brief("5-2", T,
               ["히스토그램 요청", "Cp · Cpk 숫자 확인", "산점도 요청", "이상 다이 CSV 요청", "설비별 Cpk 요청"],
               [("목표", "vth 퍼짐 · 스펙 여유를 숫자와 그림으로"), ("입력", "W07 정제본 · spec.csv"),
                ("산출물", "output/spc_W07.html · outliers_W07.csv"), ("하지 말 것", "스펙 숫자를 코드에 직접 적기 · spec.csv 를 읽게")],
               [], [f"Cpk {k07} · Cp {cp07}", f"이상 다이 {nol}개"], ""),
-        light("실습 5 확인", chat([
+        light("실습 5-2 확인", chat([
             ("me", "W07 vth 의 Cp, Cpk 를 spec.csv 기준으로 계산하고 식에 들어간 값도 보여 줘."),
             ("ai", f"μ {mu07:.4f} · σ {sd07:.4f} · LSL 0.38 · USL 0.52\nCp {cp07} · Cpk {k07}\n"
                    "USL 쪽 여유가 더 작음 — 가장자리 다이의 vth 가 높음")], "Cpk 요청 대화 예"), T),

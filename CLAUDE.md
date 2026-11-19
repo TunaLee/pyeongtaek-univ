@@ -19,6 +19,7 @@ bash ~/.claude/skills/lecture-deck/scripts/capture_anim.sh $PWD/docs/index.html 
 
 ## 구조
 - `src/build.py` 표지 · 과정 지도 → 개요(`p0.py` · 데이터 · 저장 형식 · AI 이전/이후 · 분석 개념 · 택배 적용) → 교시마다 [간지 + `pgen.slides_for(u)` + `p{u}.slides()`] → 마지막 장
+- **실습은 택배 먼저 → 반도체.** 교시마다 `[실습 N-1]` 택배(`pgen.practice_lab`, build.py 가 `[실습 N-2]` 바로 앞에 끼움) → `[실습 N-2]` 반도체. 판정 · 조건 같은 설명도 택배 예 → 반도체 순서. 「기법별 반도체 적용」 같은 대놓고 비교하는 장은 더 만들지 않는다.
 - **모든 교시는 도입 → 설명 → 적용 순서.** `build.py` 의 `PHASES` 에 도입 · 설명 장 제목을 적고 나머지는 적용. 장을 더하거나 제목을 바꾸면 `PHASES` 도 고친다(없는 제목은 빌드가 멈춘다).
 - `docs/index.html` 은 빌드 결과물이다. 직접 고치지 말고 `src/` 를 고친 뒤 빌드한다.
 - `src/pkit.py` 교시 목록 UNITS · REF(labs/ref.json) · 공통 헬퍼 / `src/p1~p8.py` 교시 본문 / `src/pviz.py · pv2~pv8.py` 애니메이션(anim._D, 접두어 고유)

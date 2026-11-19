@@ -82,17 +82,17 @@ def slides():
             "Claude Code", [("작성", "pipeline.py · SQL 뷰"), ("실행", "25장 처리 · 오류 고침"), ("기록", "pipeline_log.md")],
             "사람", [("정제 규칙", "중복 기준 · 단위 판단 · 결측 처리"), ("검증 규칙", "다이 616 · 값 범위"), ("대조", "설비별 수율을 원본에서 다시 셈")], hl="r"), T),
         # ── 실습
-        lab("6", "파이프라인", T, "원시 CSV 25장을 정제해 Parquet · DuckDB 에 적재하고 설비별 수율을 SQL 로 뽑는다",
+        lab("6-2", "파이프라인", T, "원시 CSV 25장을 정제해 Parquet · DuckDB 에 적재하고 설비별 수율을 SQL 로 뽑는다",
             ["clean.py 재사용 확인", "pipeline.py 요청 (정제 → Parquet → DuckDB)", "SQL 뷰 세 개 요청", "두 번 실행해 행 수 비교",
              "pipeline_log.md 확인"],
             [f"dies {NUM['dies']:,}행", f"ETCH_03 평균 {E3['yield']}% · 미달 {E3['below']}장", "두 번 돌려도 같은 행 수"],
             files="data/raw/*.csv · data/equipment.csv"),
-        brief("6", T,
+        brief("6-2", T,
               ["clean.py 가 있는지 확인", "파이프라인 요청", "SQL 뷰 요청 (웨이퍼 · 설비 · 불량 유형)", "한 번 더 실행", "기록 · 숫자 대조"],
               [("목표", "원시 25장 → 정제 → 적재 → 집계를 명령 하나로"), ("입력", "data/raw/ · equipment.csv"),
                ("산출물", "pipeline.py · warehouse.duckdb · pipeline_log.md"), ("하지 말 것", "data/raw/ 수정 · 실행마다 행이 늘어나는 적재")],
               [], [f"dies {NUM['dies']:,}행", "문제 있던 3장이 기록에 남음"], ""),
-        light("실습 6 확인", chat([
+        light("실습 6-2 확인", chat([
             ("me", "설비별 평균 수율과 목표 미달 웨이퍼 수를 SQL 로 보여 줘."),
             ("ai", "\n".join(f"{e['eqp']} · {e['wafers']}장 · {e['yield']}% · 미달 {e['below']}장" for e in EQ))], "SQL 대화 예"), T),
     ]

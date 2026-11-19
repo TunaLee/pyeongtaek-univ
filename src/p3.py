@@ -65,16 +65,16 @@ def slides():
         light("집계 결과 대조", viz2.maprows([
             ("양품 수", f"스크립트 {XL_PASS}", f"엑셀 필터 PASS {XL_PASS}"), ("존별 다이 수", " · ".join(str(int(v)) for v in ZONE["size"]), "합계 616"),
             ("불량 유형 합", f"{int(FAIL.sum())}", "불량 다이 수와 같음"), ("25장 수율", f"90% 미만 {len(LOW)}장", ", ".join(LOW[:5]) + " …")], "항목", "결과"), T),
-        lab("3", "수율 집계 · 엑셀 자동화", T, "W07 을 존별 · 불량 유형으로 집계해 엑셀에 저장하고, 원시 25장의 웨이퍼별 수율 표를 만든다",
+        lab("3-2", "수율 집계 · 엑셀 자동화", T, "W07 을 존별 · 불량 유형으로 집계해 엑셀에 저장하고, 원시 25장의 웨이퍼별 수율 표를 만든다",
             ["존별 · 불량 유형 집계 요청", "엑셀 세 시트 저장", "엑셀 필터로 대조", "25장 웨이퍼별 수율 표 요청", "90% 미만 웨이퍼 확인"],
             [f"존별 수율 center {ZONE['y']['center']}%", f"25장 중 90% 미만 {len(LOW)}장", "yield_summary.xlsx · wafer_yield.csv"],
             files="data/wafer_test_W07.csv · data/raw/*.csv"),
-        brief("3", T,
+        brief("3-2", T,
               ["집계 요청 (존별 · 불량 유형)", "엑셀 저장 · 필터로 대조", "25장 수율 표 요청", "90% 미만 웨이퍼 확인", "결과 파일 열어 보기"],
               [("목표", "W07 집계 엑셀 + 웨이퍼 25장 수율 표"), ("입력", "wafer_test_W07.csv · data/raw/"),
                ("산출물", "output/yield_summary.xlsx · output/wafer_yield.csv"), ("하지 말 것", "수율 숫자를 손으로 적기")],
               [], [f"PASS {XL_PASS} · 엑셀과 같음", f"90% 미만 {len(LOW)}장"], ""),
-        light("실습 3 확인", chat([
+        light("실습 3-2 확인", chat([
             ("me", "data/raw 의 25장 웨이퍼별 수율 표를 만들어 줘. 90% 미만인 웨이퍼만 따로 알려 줘."),
             ("ai", f"output/wafer_yield.csv 저장 · 25행\n90% 미만 {len(LOW)}장 · {', '.join(LOW)}")], "집계 대화 예"), T),
     ]

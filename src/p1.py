@@ -4,11 +4,14 @@
 → Claude Code(대화형과 위임형 · 데이터 작업 고리 · 사내 사례 · CLAUDE.md · 데이터 사전) → 실습 1.
 숫자는 labs/ref.json · labs/solution 에서 읽는다.
 """
+import pandas as pd
+
+import p0
 import pviz
 import viz2
 from deck import lab, light
 from hx import code, esc, note
-from pkit import REF, SOL, W, brief, chat, tag
+from pkit import REF, ROOT, SOL, W, brief, chat, tag
 from stats_hx import big, src
 
 T = tag("1")
@@ -53,7 +56,9 @@ def slides():
         light("테스트 결과가 CSV 가 되는 과정", pviz.test_to_csv(), T),
         # ── 데이터 읽기
         light("열 18개 네 묶음", _groups(), T),
+        light("택배 판정 조건", p0.judge_delivery(), T),
         light("판정 순서", pviz.sieve(), T),
+        light("다이 판정 조건", p0.judge_wafer(), T),
         light("수율", big([
             (f"{W07['pass']}", "개", "양품 다이 (PASS)"), (f"{REF['gross_die']}", "개", "전체 다이"),
             (f"{W07['yield']}", "%", "수율 = 양품 ÷ 전체 · W07", True)], 3), T),
@@ -88,17 +93,17 @@ def slides():
             ("대상", "data/wafer_test_W07.csv", "어느 파일"), ("할 일", "행 · 열 · 결측 · 양불 개수 요약", "무엇을"),
             ("결과", "docs/data_dictionary.md", "어디에 남길지"), ("조건", "원본 수정 금지 · 앞 5줄만 출력", "하지 말 것")], "칸", "예"), T),
         # ── 실습
-        lab("1", "데이터 사전 · CLAUDE.md", T, "wafer-lab 폴더에서 Claude Code 로 W07 을 읽고 데이터 사전 · CLAUDE.md 를 만든다",
+        lab("1-2", "데이터 사전 · CLAUDE.md", T, "wafer-lab 폴더에서 Claude Code 로 W07 을 읽고 데이터 사전 · CLAUDE.md 를 만든다",
             ["VS Code 로 wafer-lab 열기 · Claude Code 실행", "W07 요약 · 결측 보고 요청", "데이터 사전 작성 요청", "CLAUDE.md 작성 요청",
              "숫자 대조"],
             [f"행 {REF['gross_die']} · 열 18 · 결측 0", f"양품 {W07['pass']} · 수율 {W07['yield']}%", "docs/data_dictionary.md · CLAUDE.md"],
             files="data/wafer_test_W07.csv · data/spec.csv"),
-        brief("1", T,
+        brief("1-2", T,
               ["wafer-lab 열기 · Claude Code 실행", "W07 요약 요청 (행 · 열 · 결측)", "데이터 사전 요청", "CLAUDE.md 요청", "엑셀 필터로 양품 수 대조"],
               [("목표", "W07 의 구조 · 열 뜻 · 기준 숫자 정리"), ("입력", "wafer_test_W07.csv · spec.csv"),
                ("산출물", "docs/data_dictionary.md · CLAUDE.md"), ("하지 말 것", "data/ 원본 수정 · CSV 전체 출력")],
               [], [f"양품 {W07['pass']} · 불량 {FAIL07}", "열 18개의 뜻 · 단위 · 스펙"], ""),
-        light("실습 1 확인", chat([
+        light("실습 1-2 확인", chat([
             ("me", "data/wafer_test_W07.csv 를 요약해 줘. 행 · 열 수, 결측, 양불 개수만."),
             ("ai", f"616행 × 18열 · 결측 0\nPASS {W07['pass']} · FAIL {FAIL07} · 수율 {W07['yield']}%\n"
                    f"불량 1위 crack {W07['crack']}개 — 대각선 위치에 몰려 있음")], "요약 대화 예"), T),

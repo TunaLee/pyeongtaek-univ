@@ -117,17 +117,17 @@ def slides():
             ("ai", f"W05 · 같은 좌표 {N_DUP}줄 중복 ({len(R05)}행)\nW11 · vth_v 중앙값 {R11.vth_v.median():g} → mV 로 보임\n"
                    f"W19 · ioff_na 빈칸 {N_NA}개")], "검사 대화 예"), T),
         # ── 실습
-        lab("2", "정제 · 검증 스크립트", T, "원시 파일의 문제를 찾고 clean.py · 검증 보고서를 만든다",
+        lab("2-2", "정제 · 검증 스크립트", T, "원시 파일의 문제를 찾고 clean.py · 검증 보고서를 만든다",
             ["W05 · W11 · W19 문제 검사 요청", "처리 방법 정하기 (중복 · 단위 · 결측)", "clean.py 작성 요청", "검증 규칙 추가 요청",
              "세 파일 실행 · 보고서 확인"],
             [f"W05 {len(R05)} → {len(C05)}행", f"W11 수율 {Y11:.2f}% (0% 아님)", f"W19 RETEST {N_NA}개 · 검증 규칙 {len(RULES)}개 통과"],
             files="data/raw/wafer_test_W05 · W11 · W19.csv"),
-        brief("2", T,
+        brief("2-2", T,
               ["문제 검사 요청 (고치지 말고 보고)", "처리 방법 정하기", "clean.py 요청", "검증 규칙 · 보고서 요청", "세 파일 실행"],
               [("목표", "원시 CSV 한 장 → 정제본 + 검증 보고서"), ("입력", "data/raw/ · spec.csv"),
                ("산출물", "scripts/clean.py · output/qc_W05 · W11 · W19.md"), ("하지 말 것", "data/raw/ 수정 · 결측을 평균으로 채우기")],
               [], [f"W11 수율 {Y11:.2f}%", f"W19 RETEST {N_NA}개"], ""),
-        light("실습 2 확인", viz2.maprows([
+        light("실습 2-2 확인", viz2.maprows([
             ("W05", f"{len(R05)}행 → {len(C05)}행", f"중복 {N_DUP}줄 삭제"), ("W11", "vth_v ÷ 1000", f"수율 {Y11:.2f}%"),
             ("W19", f"RETEST {N_NA}개", f"수율 {Y19:.2f}%"), ("검증", f"규칙 {len(RULES)}개", "세 파일 모두 통과")], "파일", "결과"), T),
     ]

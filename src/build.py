@@ -47,7 +47,7 @@ def roadmap():
 # 교시마다 도입 → 설명 → 적용. 도입 · 설명은 장 제목을 순서대로 적고, 나머지는 적용(원래 순서 · 「반도체 적용」 먼저).
 PHASES = {
     "1": (["반도체 적용", "테스트 결과가 CSV 가 되는 과정", "데이터 규모"],
-          ["데이터 용어", "열 18개 네 묶음", "판정 순서", "수율", "Claude 와 Claude Code", "Claude Code 의 데이터 작업 고리",
+          ["데이터 용어", "열 18개 네 묶음", "택배 판정 조건", "판정 순서", "다이 판정 조건", "수율", "Claude 와 Claude Code", "Claude Code 의 데이터 작업 고리",
            "Anthropic 사내 데이터 분석", "CLAUDE.md", "데이터 사전"]),
     "2": (["택배 원시 파일의 문제", "공정 데이터가 지저분한 이유", "실제 공정 데이터 · UCI SECOM", "SECOM 의 결측 · 상수 열"],
           ["비유 · 택배 분류장 검수", "결측 처리 세 가지", "원본 보존"]),
@@ -89,6 +89,8 @@ def phased(u, slides):
     used = set(intro_t + expl_t)
     rest = [sl for sl in slides if _title(sl) not in used]
     rest.sort(key=lambda sl: _title(sl) != "반도체 적용")
+    k = next(i for i, sl in enumerate(rest) if _title(sl).startswith(f"[실습 {u}-2]"))
+    rest.insert(k, pgen.practice_lab(u))  # 택배 실습 → 반도체 실습
     return ([_mark(x, "도입") for x in pick(intro_t)] + [_mark(x, "설명") for x in pick(expl_t)]
             + [_mark(x, "적용") for x in rest])
 

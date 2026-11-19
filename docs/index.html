@@ -417,6 +417,30 @@
   @media print{.p0f,.p0t{animation:none; opacity:1}}
   .v2tile .p0hl{color:#E07A12; font-weight:700;}
 
+  .p0j{display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:22px; align-items:start; margin-top:4px;}
+  .p0j table{border-collapse:collapse; width:100%; font-size:14.5px; background:#fff; border:1.5px solid #D9DDE3;}
+  .p0j th{background:#F4F6F9; color:#1F3A5F; font-family:var(--mono); font-size:12.5px; font-weight:700; padding:8px 7px; border-bottom:1.5px solid #D9DDE3; text-align:right;}
+  .p0j td{font-family:var(--mono); padding:8px 7px; border-bottom:1px solid #EEF1F5; text-align:right; color:#16233A;}
+  .p0j th:first-child, .p0j td:first-child{text-align:left;}
+  .p0j td.r{width:118px; text-align:center; font-family:var(--sans); font-weight:800;}
+  .p0j td.r span{opacity:0; animation:p0Op .4s var(--d) forwards;}
+  .p0j tr.f td{animation:p0Bad .4s var(--d) forwards;}
+  .p0j tr.f td.hit{animation:p0Hit .4s var(--d) forwards;}
+  .p0j tr.f td.r span{color:#C62828;}
+  .p0j tr.ok td{animation:p0Ok .4s var(--d) forwards;}
+  .p0j tr.ok td.r span{color:#2E7D32;}
+  .p0j ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;}
+  .p0j li{border:1.5px solid #E1E5EB; border-left:5px solid #1F3A5F; border-radius:10px; background:#fff; padding:8px 12px; opacity:0; animation:p0Op .4s var(--d) forwards;}
+  .p0j li b{display:block; font-size:16px; color:#16233A;}
+  .p0j li code{font-family:var(--mono); font-size:13px; color:#C62828;}
+  .p0j li em{font-style:normal; float:right; font-size:13px; color:#6B7785; font-weight:700;}
+  .p0j li.ok{border-left-color:#2E7D32;} .p0j li.ok code{color:#2E7D32;}
+  @keyframes p0Op{to{opacity:1}}
+  @keyframes p0Bad{to{background:#FDECEA; color:#9AA3AF}}
+  @keyframes p0Hit{to{background:#C62828; color:#fff; font-weight:800}}
+  @keyframes p0Ok{to{background:#E8F5E9}}
+  @media print{.p0j *{animation:none!important; opacity:1!important} .p0j tr.f td{background:#FDECEA} .p0j tr.f td.hit{background:#C62828;color:#fff} .p0j tr.ok td{background:#E8F5E9}}
+
   /* ── 도입부: 어두운 남색 + 주황 ── */
   .slide.dk{background:radial-gradient(900px 520px at 85% -10%, #2A4C78 0%, rgba(42,76,120,0) 60%), #0F1B2D; color:#fff; border:none; padding:52px 64px 44px;}
   .dk .kick{font-family:var(--serif); font-size:15px; font-weight:700; letter-spacing:.02em; color:#F28C28; text-transform:uppercase;}
@@ -1301,12 +1325,28 @@ print(round(rate, 2))</code></pre></div><div class="r">70.25%</div><span style="
   <div class="body"><div class="mid"><div class="p1grp"><div class="p1g " style="--d:0.20s"><b>식별</b><code>lot_id</code><code>wafer_id</code><small>어느 LOT · 웨이퍼</small></div><div class="p1g " style="--d:0.55s"><b>위치</b><code>die_x · die_y</code><code>center_x_mm · center_y_mm</code><code>radius_mm · zone</code><small>웨이퍼 위 어디</small></div><div class="p1g k" style="--d:0.90s"><b>측정</b><code>vth_v · idsat_ma · ioff_na</code><code>rc_ohm · ox_thk_nm</code><code>crack · particle_cnt</code><small>전기 · 검사 값</small></div><div class="p1g " style="--d:1.25s"><b>판정</b><code>bin</code><code>fail_type</code><code>pass_fail</code><small>측정값 → 양품 · 불량</small></div></div></div></div>
 </section>
 
+<section class="slide lt" data-title="택배 판정 조건">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">택배 판정 조건</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="p0j"><div><table><tr><th>order_id</th><th>damaged</th><th>addr_error</th><th>delivery_min</th><th>absent</th><th>판정</th></tr><tr class="ok" style="--d:11.4s"><td>D07-0001</td><td class="">0</td><td class="">0</td><td class="">87</td><td class="">0</td><td class="r"><span>정시</span></td></tr><tr class="ok" style="--d:11.4s"><td>D07-0002</td><td class="">0</td><td class="">0</td><td class="">92</td><td class="">0</td><td class="r"><span>정시</span></td></tr><tr class="f" style="--d:1.4s"><td>D07-0008</td><td class="hit">1</td><td class="">0</td><td class="">118</td><td class="">0</td><td class="r"><span>파손</span></td></tr><tr class="f" style="--d:6.4s"><td>D07-0016</td><td class="">0</td><td class="">0</td><td class="hit">127</td><td class="">1</td><td class="r"><span>지연</span></td></tr><tr class="f" style="--d:8.9s"><td>D07-0027</td><td class="">0</td><td class="">0</td><td class="">73</td><td class="hit">1</td><td class="r"><span>부재</span></td></tr><tr class="f" style="--d:3.9s"><td>D07-0483</td><td class="">0</td><td class="hit">1</td><td class="">86</td><td class="">1</td><td class="r"><span>주소 오류</span></td></tr></table></div><ol><li style="--d:1.0s"><b>1. 파손<em></em></b><code>damaged = 1</code></li><li style="--d:3.5s"><b>2. 주소 오류<em></em></b><code>addr_error = 1</code></li><li style="--d:6.0s"><b>3. 지연<em>약속 120분</em></b><code>delivery_min &gt; 120</code></li><li style="--d:8.5s"><b>4. 부재<em></em></b><code>absent = 1</code></li><li class="ok" style="--d:11.0s"><b>남은 행<em></em></b><code>ON_TIME</code></li></ol></div></div></div>
+</section>
+
 <section class="slide lt" data-title="판정 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
   <h2 class="s-title sm">판정 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><svg class="an an-sv" viewBox="0 0 1160 420" xmlns="http://www.w3.org/2000/svg"><style>.an-sv{width:100%;height:auto;max-height:470px;display:block;margin:0 auto;overflow:visible}.an-sv text{dominant-baseline:middle}.an-sv .tt{font-size:19px;font-weight:800;fill:#16233A}.an-sv .ts{font-size:15px;fill:#6B7785}.an-sv .to{font-size:15px;font-weight:800;fill:#EF6C00}.an-sv .tw{font-size:15px;font-weight:800;fill:#FFFFFF}.an-sv .tn{font-size:15px;font-weight:700;fill:#16233A}.an-sv .tm{font-size:14px;font-weight:700;fill:#16233A;font-family:var(--mono,monospace)}@media print{.an-sv *{animation:none!important}}@media (prefers-reduced-motion:reduce){.an-sv *{animation:none!important}}@keyframes ansv1{0%{opacity:0}1%{opacity:0}4%{opacity:1}100%{opacity:1}}@keyframes ansv2{0%{opacity:0}3%{opacity:0}6%{opacity:1}100%{opacity:1}}@keyframes ansv3{0%{opacity:0}5%{opacity:0}8%{opacity:1}100%{opacity:1}}@keyframes ansv4{0%{opacity:0}7%{opacity:0}10%{opacity:1}100%{opacity:1}}@keyframes ansv5{0%{opacity:0}9%{opacity:0}12%{opacity:1}100%{opacity:1}}@keyframes ansv6{0%{opacity:0}11%{opacity:0}14%{opacity:1}100%{opacity:1}}@keyframes ansv7{0%{opacity:0}14%{opacity:0}17%{opacity:1}100%{opacity:1}}@keyframes ansv8{0%{transform:translate(40px,168px);opacity:0}18%{transform:translate(40px,168px);opacity:1}20%{transform:translate(113px,168px);opacity:1}22.4%{transform:translate(295px,168px);opacity:1}24.8%{transform:translate(477px,168px);opacity:1}27.2%{transform:translate(659px,168px);opacity:1}29.6%{transform:translate(841px,168px);opacity:1}32%{transform:translate(1023px,168px);opacity:1}34.4%{transform:translate(1135px,168px);opacity:1}37.4%{transform:translate(1135px,268px);opacity:1}100%{transform:translate(1135px,268px);opacity:1}}@keyframes ansv9{0%{opacity:0}38.4%{opacity:0}41.4%{opacity:1}100%{opacity:1}}@keyframes ansv10{0%{transform:translate(40px,168px);opacity:0}46%{transform:translate(40px,168px);opacity:1}48%{transform:translate(113px,168px);opacity:1}50.4%{transform:translate(295px,168px);opacity:1}52.8%{transform:translate(477px,168px);opacity:1}55.8%{transform:translate(477px,314px);opacity:1}100%{transform:translate(477px,314px);opacity:1}}@keyframes ansv11{0%{opacity:0}56.8%{opacity:0}59.8%{opacity:1}100%{opacity:1}}@keyframes ansv12{0%{transform:translate(40px,168px);opacity:0}72%{transform:translate(40px,168px);opacity:1}74%{transform:translate(113px,168px);opacity:1}77%{transform:translate(113px,360px);opacity:1}100%{transform:translate(113px,360px);opacity:1}}@keyframes ansv13{0%{opacity:0}78%{opacity:0}81%{opacity:1}100%{opacity:1}}</style><defs><marker id="ansvk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1F3A5F"/></marker><marker id="ansvo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#F28C28"/></marker><marker id="ansvr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#C62828"/></marker><marker id="ansvg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2E7D32"/></marker></defs><g style="animation:ansv1 14s linear 1 both;"><rect x="30" y="120" width="166" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5"/><text x="113" y="148" text-anchor="middle" class="tt" style="font-size:17px">1. 크랙 있음</text><text x="113" y="176" text-anchor="middle" class="tm" style="font-size:13px">crack ≠ 0</text><text x="113" y="200" text-anchor="middle" class="ts" style="font-size:13px">bin 5</text></g><g style="animation:ansv2 14s linear 1 both;"><rect x="212" y="120" width="166" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5"/><text x="295" y="148" text-anchor="middle" class="tt" style="font-size:17px">2. 오픈 · 쇼트</text><text x="295" y="176" text-anchor="middle" class="tm" style="font-size:13px">rc_ohm > 15</text><text x="295" y="200" text-anchor="middle" class="ts" style="font-size:13px">bin 4</text></g><g style="animation:ansv3 14s linear 1 both;"><rect x="394" y="120" width="166" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5"/><text x="477" y="148" text-anchor="middle" class="tt" style="font-size:17px">3. 누설전류</text><text x="477" y="176" text-anchor="middle" class="tm" style="font-size:13px">ioff_na > 10</text><text x="477" y="200" text-anchor="middle" class="ts" style="font-size:13px">bin 3</text></g><g style="animation:ansv4 14s linear 1 both;"><rect x="576" y="120" width="166" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5"/><text x="659" y="148" text-anchor="middle" class="tt" style="font-size:17px">4. 문턱전압 이탈</text><text x="659" y="176" text-anchor="middle" class="tm" style="font-size:13px">vth_v 0.38~0.52 밖</text><text x="659" y="200" text-anchor="middle" class="ts" style="font-size:13px">bin 2</text></g><g style="animation:ansv5 14s linear 1 both;"><rect x="758" y="120" width="166" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5"/><text x="841" y="148" text-anchor="middle" class="tt" style="font-size:17px">5. 파티클</text><text x="841" y="176" text-anchor="middle" class="tm" style="font-size:13px">particle_cnt ≥ 5</text><text x="841" y="200" text-anchor="middle" class="ts" style="font-size:13px">bin 6</text></g><g style="animation:ansv6 14s linear 1 both;"><rect x="940" y="120" width="166" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5"/><text x="1023" y="148" text-anchor="middle" class="tt" style="font-size:17px">6. 기타 파라미터</text><text x="1023" y="176" text-anchor="middle" class="tm" style="font-size:13px">idsat < 0.92 · ox 밖</text><text x="1023" y="200" text-anchor="middle" class="ts" style="font-size:13px">bin 7</text></g><g style="animation:ansv7 14s linear 1 both;"><rect x="1120" y="120" width="30" height="96" rx="8" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2.5"/></g><text x="580" y="60" text-anchor="middle" class="tn" style="font-size:17px">위에서부터 차례로 검사 · 처음 걸린 단계에서 멈춤</text><path d="M20 168 H1150" stroke="#D9DDE3" stroke-width="2" stroke-dasharray="4 6"/><g style="animation:ansv8 14s linear 1 both;"><circle r="12" fill="#2E7D32"/></g><g style="animation:ansv9 14s linear 1 both;"><text x="1115" y="268" text-anchor="end" class="tn" style="fill:#2E7D32;font-size:17px">다이 A → 양품 · bin 1</text></g><g style="animation:ansv10 14s linear 1 both;"><circle r="12" fill="#C62828"/></g><g style="animation:ansv11 14s linear 1 both;"><text x="497" y="314" text-anchor="start" class="tn" style="fill:#C62828;font-size:17px">다이 B → 누설전류 · bin 3</text></g><g style="animation:ansv12 14s linear 1 both;"><circle r="12" fill="#C62828"/></g><g style="animation:ansv13 14s linear 1 both;"><text x="133" y="360" text-anchor="start" class="tn" style="fill:#C62828;font-size:17px">다이 C → 크랙 · bin 5</text></g></svg></div></div>
+</section>
+
+<section class="slide lt" data-title="다이 판정 조건">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">다이 판정 조건</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="p0j"><div><table><tr><th>die</th><th>crack</th><th>rc_ohm</th><th>ioff_na</th><th>vth_v</th><th>particle_cnt</th><th>idsat_ma</th><th>ox_thk_nm</th><th>판정</th></tr><tr class="ok" style="--d:16.4s"><td>(-4, -14)</td><td class="">0</td><td class="">7.92</td><td class="">2.76</td><td class="">0.459</td><td class="">0</td><td class="">0.97</td><td class="">3.011</td><td class="r"><span>양품</span></td></tr><tr class="f" style="--d:8.9s"><td>(-3, -14)</td><td class="">0</td><td class="">9.33</td><td class="">2.4</td><td class="hit">0.567</td><td class="">0</td><td class="">1.066</td><td class="">2.992</td><td class="r"><span>문턱전압 이탈</span></td></tr><tr class="ok" style="--d:16.4s"><td>(-2, -14)</td><td class="">0</td><td class="">8.34</td><td class="">2.4</td><td class="">0.492</td><td class="">0</td><td class="">1.054</td><td class="">3.02</td><td class="r"><span>양품</span></td></tr><tr class="f" style="--d:6.4s"><td>(-7, -12)</td><td class="">0</td><td class="">8.45</td><td class="hit">51.13</td><td class="">0.467</td><td class="">0</td><td class="">1.036</td><td class="">2.994</td><td class="r"><span>누설전류</span></td></tr><tr class="f" style="--d:13.9s"><td>(5, -12)</td><td class="">0</td><td class="">6.3</td><td class="">1.38</td><td class="">0.46</td><td class="">0</td><td class="">1.057</td><td class="hit">2.842</td><td class="r"><span>기타 파라미터</span></td></tr><tr class="f" style="--d:3.9s"><td>(-5, -4)</td><td class="">0</td><td class="hit">17.67</td><td class="">2.24</td><td class="">0.476</td><td class="">0</td><td class="">1.108</td><td class="">2.954</td><td class="r"><span>오픈 · 쇼트</span></td></tr><tr class="f" style="--d:1.4s"><td>(5, -4)</td><td class="hit">1</td><td class="">9.81</td><td class="">2.88</td><td class="">0.439</td><td class="">0</td><td class="">1.09</td><td class="">2.843</td><td class="r"><span>크랙</span></td></tr><tr class="f" style="--d:11.4s"><td>(11, -4)</td><td class="">0</td><td class="">8.18</td><td class="">7.88</td><td class="">0.499</td><td class="hit">8</td><td class="">1.042</td><td class="">2.904</td><td class="r"><span>파티클</span></td></tr></table></div><ol><li style="--d:1.0s"><b>1. 크랙<em>bin 5</em></b><code>crack &gt; 0</code></li><li style="--d:3.5s"><b>2. 오픈 · 쇼트<em>bin 4</em></b><code>rc_ohm &gt; 15</code></li><li style="--d:6.0s"><b>3. 누설전류<em>bin 3</em></b><code>ioff_na &gt; 10</code></li><li style="--d:8.5s"><b>4. 문턱전압 이탈<em>bin 2</em></b><code>vth_v 0.38~0.52 밖</code></li><li style="--d:11.0s"><b>5. 파티클<em>bin 6</em></b><code>particle_cnt &gt; 4</code></li><li style="--d:13.5s"><b>6. 기타 파라미터<em>bin 7</em></b><code>idsat_ma &lt; 0.92 · ox_thk_nm 2.85~3.15 밖</code></li><li class="ok" style="--d:16.0s"><b>남은 행<em>bin 1</em></b><code>PASS</code></li></ol></div></div></div>
 </section>
 
 <section class="slide lt" data-title="수율">
@@ -1330,7 +1370,7 @@ print(round(rate, 2))</code></pre></div><div class="r">70.25%</div><span style="
   <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
   <h2 class="s-title sm">Claude Code 의 데이터 작업 고리</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><svg class="an an-dl" viewBox="0 0 1160 430" xmlns="http://www.w3.org/2000/svg"><style>.an-dl{width:100%;height:auto;max-height:470px;display:block;margin:0 auto;overflow:visible}.an-dl text{dominant-baseline:middle}.an-dl .tt{font-size:19px;font-weight:800;fill:#16233A}.an-dl .ts{font-size:15px;fill:#6B7785}.an-dl .to{font-size:15px;font-weight:800;fill:#EF6C00}.an-dl .tw{font-size:15px;font-weight:800;fill:#FFFFFF}.an-dl .tn{font-size:15px;font-weight:700;fill:#16233A}.an-dl .tm{font-size:14px;font-weight:700;fill:#16233A;font-family:var(--mono,monospace)}@media print{.an-dl *{animation:none!important}}@media (prefers-reduced-motion:reduce){.an-dl *{animation:none!important}}@keyframes andl1{0%{opacity:0}1%{opacity:0}4%{opacity:1}100%{opacity:1}}@keyframes andl2{0%{opacity:0}4%{opacity:0}7%{opacity:1}100%{opacity:1}}@keyframes andl3{0%{opacity:0}10%{opacity:0}13%{opacity:1}100%{opacity:1}}@keyframes andl4{0%{opacity:0}16%{opacity:0}19%{opacity:1}100%{opacity:1}}@keyframes andl5{0%{opacity:0}22%{opacity:0}25%{opacity:1}100%{opacity:1}}@keyframes andl6{0%{opacity:0}3%{opacity:0}6%{opacity:1}100%{opacity:1}}@keyframes andl7{0%{opacity:0}9%{opacity:0}12%{opacity:1}100%{opacity:1}}@keyframes andl8{0%{opacity:0}15%{opacity:0}18%{opacity:1}100%{opacity:1}}@keyframes andl9{0%{opacity:0}21%{opacity:0}24%{opacity:1}100%{opacity:1}}@keyframes andl10{0%{opacity:0}40%{opacity:0}43%{opacity:1}62%{opacity:1}65%{opacity:0}100%{opacity:0}}@keyframes andl11{0%{opacity:0}42%{opacity:0}45%{opacity:1}62%{opacity:1}65%{opacity:0}100%{opacity:0}}@keyframes andl12{0%{opacity:0}70%{opacity:0}73%{opacity:1}100%{opacity:1}}@keyframes andl13{0%{opacity:0}74%{opacity:0}77%{opacity:1}100%{opacity:1}}@keyframes andl14{0%{transform:translate(340px,108px);opacity:0}6%{transform:translate(340px,108px);opacity:1}12%{transform:translate(610px,108px);opacity:1}18%{transform:translate(610px,298px);opacity:1}24%{transform:translate(340px,298px);opacity:1}30%{transform:translate(340px,298px);opacity:1}44%{transform:translate(340px,200px);opacity:1}50%{transform:translate(610px,108px);opacity:1}56%{transform:translate(610px,298px);opacity:1}62%{transform:translate(340px,298px);opacity:1}68%{transform:translate(340px,380px);opacity:1}72%{transform:translate(760px,380px);opacity:1}73%{transform:translate(760px,380px);opacity:0}100%{transform:translate(760px,380px);opacity:0}}</style><defs><marker id="andlk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1F3A5F"/></marker><marker id="andlo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#F28C28"/></marker><marker id="andlr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#C62828"/></marker><marker id="andlg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2E7D32"/></marker></defs><g style="animation:andl1 14s linear 1 both;"><rect x="10" y="150" width="170" height="64" rx="32" fill="#16233A"/><text x="95" y="182" text-anchor="middle" class="tw" style="font-size:15px">「W07 수율 알려 줘」</text></g><g style="animation:andl2 14s linear 1 both;"><rect x="230" y="60" width="220" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="340" y="97" text-anchor="middle" class="tt" >CSV 읽기</text><text x="340" y="122" text-anchor="middle" class="ts" >Read · 앞 5줄 · 열 이름</text></g><g style="animation:andl3 14s linear 1 both;"><rect x="500" y="60" width="220" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="610" y="97" text-anchor="middle" class="tt" >파이썬 작성</text><text x="610" y="122" text-anchor="middle" class="ts" >Write · yield.py</text></g><g style="animation:andl4 14s linear 1 both;"><rect x="500" y="250" width="220" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="610" y="287" text-anchor="middle" class="tt" >실행</text><text x="610" y="312" text-anchor="middle" class="ts" >Bash · python yield.py</text></g><g style="animation:andl5 14s linear 1 both;"><rect x="230" y="250" width="220" height="96" rx="14" fill="#FFF3E6" stroke="#F28C28" stroke-width="2.5" /><text x="340" y="287" text-anchor="middle" class="tt" >결과 확인</text><text x="340" y="312" text-anchor="middle" class="ts" >616 · 557 · 90.42%</text></g><g style="animation:andl6 14s linear 1 both;"><path d="M184 182 C 205 182, 205 108, 226 108" fill="none" stroke="#16233A" stroke-width="3" marker-end="url(#andlk)"/></g><g style="animation:andl7 14s linear 1 both;"><path d="M454 108 H496" stroke="#1F3A5F" stroke-width="3" marker-end="url(#andlk)"/></g><g style="animation:andl8 14s linear 1 both;"><path d="M610 160 V246" stroke="#1F3A5F" stroke-width="3" marker-end="url(#andlk)"/></g><g style="animation:andl9 14s linear 1 both;"><path d="M496 298 H454" stroke="#1F3A5F" stroke-width="3" marker-end="url(#andlk)"/></g><g style="animation:andl10 14s linear 1 both;"><rect x="760" y="250" width="380" height="96" rx="14" fill="#FDECEA" stroke="#C62828" stroke-width="2.5"/><text x="950" y="284" text-anchor="middle" class="tm" style="fill:#C62828;font-size:15px">오류 · KeyError 'passfail'</text><text x="950" y="314" text-anchor="middle" class="ts" >열 이름 확인 → 코드 고침 → 다시 실행</text></g><g style="animation:andl11 14s linear 1 both;"><path d="M340 246 C 340 200, 560 200, 560 164" fill="none" stroke="#C62828" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#andlr)"/></g><g style="animation:andl12 14s linear 1 both;"><path d="M340 350 V380 H760" fill="none" stroke="#2E7D32" stroke-width="3" marker-end="url(#andlg)"/></g><g style="animation:andl13 14s linear 1 both;"><rect x="766" y="350" width="374" height="64" rx="14" fill="#E8F5E9" stroke="#2E7D32" stroke-width="3"/><text x="953" y="382" text-anchor="middle" class="tt" style="fill:#2E7D32;font-size:18px">보고 · 수율 90.42% (557 / 616)</text></g><g style="animation:andl14 14s linear 1 both;"><circle r="11" fill="#F28C28"/></g></svg><div class="src">출처 · <a href="https://code.claude.com/docs/en/how-claude-code-works" target="_blank" rel="noopener">Claude Code 문서 · How Claude Code works</a></div></div></div>
+  <div class="body"><div class="mid"><svg class="an an-dl" viewBox="0 0 1160 430" xmlns="http://www.w3.org/2000/svg"><style>.an-dl{width:100%;height:auto;max-height:470px;display:block;margin:0 auto;overflow:visible}.an-dl text{dominant-baseline:middle}.an-dl .tt{font-size:19px;font-weight:800;fill:#16233A}.an-dl .ts{font-size:15px;fill:#6B7785}.an-dl .to{font-size:15px;font-weight:800;fill:#EF6C00}.an-dl .tw{font-size:15px;font-weight:800;fill:#FFFFFF}.an-dl .tn{font-size:15px;font-weight:700;fill:#16233A}.an-dl .tm{font-size:14px;font-weight:700;fill:#16233A;font-family:var(--mono,monospace)}@media print{.an-dl *{animation:none!important}}@media (prefers-reduced-motion:reduce){.an-dl *{animation:none!important}}@keyframes andl1{0%{opacity:0}1%{opacity:0}4%{opacity:1}100%{opacity:1}}@keyframes andl2{0%{opacity:0}4%{opacity:0}7%{opacity:1}100%{opacity:1}}@keyframes andl3{0%{opacity:0}10%{opacity:0}13%{opacity:1}100%{opacity:1}}@keyframes andl4{0%{opacity:0}16%{opacity:0}19%{opacity:1}100%{opacity:1}}@keyframes andl5{0%{opacity:0}22%{opacity:0}25%{opacity:1}100%{opacity:1}}@keyframes andl6{0%{opacity:0}3%{opacity:0}6%{opacity:1}100%{opacity:1}}@keyframes andl7{0%{opacity:0}9%{opacity:0}12%{opacity:1}100%{opacity:1}}@keyframes andl8{0%{opacity:0}15%{opacity:0}18%{opacity:1}100%{opacity:1}}@keyframes andl9{0%{opacity:0}21%{opacity:0}24%{opacity:1}100%{opacity:1}}@keyframes andl10{0%{opacity:0}40%{opacity:0}43%{opacity:1}62%{opacity:1}65%{opacity:0}100%{opacity:0}}@keyframes andl11{0%{opacity:0}42%{opacity:0}45%{opacity:1}62%{opacity:1}65%{opacity:0}100%{opacity:0}}@keyframes andl12{0%{opacity:0}70%{opacity:0}73%{opacity:1}100%{opacity:1}}@keyframes andl13{0%{opacity:0}74%{opacity:0}77%{opacity:1}100%{opacity:1}}</style><defs><marker id="andlk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1F3A5F"/></marker><marker id="andlo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#F28C28"/></marker><marker id="andlr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#C62828"/></marker><marker id="andlg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2E7D32"/></marker></defs><g style="animation:andl1 14s linear 1 both;"><rect x="10" y="150" width="170" height="64" rx="32" fill="#16233A"/><text x="95" y="182" text-anchor="middle" class="tw" style="font-size:15px">「W07 수율 알려 줘」</text></g><g style="animation:andl2 14s linear 1 both;"><rect x="230" y="60" width="220" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="340" y="97" text-anchor="middle" class="tt" >CSV 읽기</text><text x="340" y="122" text-anchor="middle" class="ts" >Read · 앞 5줄 · 열 이름</text></g><g style="animation:andl3 14s linear 1 both;"><rect x="500" y="60" width="220" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="610" y="97" text-anchor="middle" class="tt" >파이썬 작성</text><text x="610" y="122" text-anchor="middle" class="ts" >Write · yield.py</text></g><g style="animation:andl4 14s linear 1 both;"><rect x="500" y="250" width="220" height="96" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="610" y="287" text-anchor="middle" class="tt" >실행</text><text x="610" y="312" text-anchor="middle" class="ts" >Bash · python yield.py</text></g><g style="animation:andl5 14s linear 1 both;"><rect x="230" y="250" width="220" height="96" rx="14" fill="#FFF3E6" stroke="#F28C28" stroke-width="2.5" /><text x="340" y="287" text-anchor="middle" class="tt" >결과 확인</text><text x="340" y="312" text-anchor="middle" class="ts" >616 · 557 · 90.42%</text></g><g style="animation:andl6 14s linear 1 both;"><path d="M184 182 C 205 182, 205 108, 226 108" fill="none" stroke="#16233A" stroke-width="3" marker-end="url(#andlk)"/></g><g style="animation:andl7 14s linear 1 both;"><path d="M454 108 H496" stroke="#1F3A5F" stroke-width="3" marker-end="url(#andlk)"/></g><g style="animation:andl8 14s linear 1 both;"><path d="M610 160 V246" stroke="#1F3A5F" stroke-width="3" marker-end="url(#andlk)"/></g><g style="animation:andl9 14s linear 1 both;"><path d="M496 298 H454" stroke="#1F3A5F" stroke-width="3" marker-end="url(#andlk)"/></g><g style="animation:andl10 14s linear 1 both;"><rect x="760" y="250" width="380" height="96" rx="14" fill="#FDECEA" stroke="#C62828" stroke-width="2.5"/><text x="950" y="284" text-anchor="middle" class="tm" style="fill:#C62828;font-size:15px">오류 · KeyError 'passfail'</text><text x="950" y="314" text-anchor="middle" class="ts" >열 이름 확인 → 코드 고침 → 다시 실행</text></g><g style="animation:andl11 14s linear 1 both;"><path d="M340 246 C 340 200, 560 200, 560 164" fill="none" stroke="#C62828" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#andlr)"/></g><g style="animation:andl12 14s linear 1 both;"><path d="M340 350 V380 H760" fill="none" stroke="#2E7D32" stroke-width="3" marker-end="url(#andlg)"/></g><g style="animation:andl13 14s linear 1 both;"><rect x="766" y="350" width="374" height="64" rx="14" fill="#E8F5E9" stroke="#2E7D32" stroke-width="3"/><text x="953" y="382" text-anchor="middle" class="tt" style="fill:#2E7D32;font-size:18px">보고 · 수율 90.42% (557 / 616)</text></g></svg><div class="src">출처 · <a href="https://code.claude.com/docs/en/how-claude-code-works" target="_blank" rel="noopener">Claude Code 문서 · How Claude Code works</a></div></div></div>
 </section>
 
 <section class="slide lt" data-title="Anthropic 사내 데이터 분석">
@@ -1388,9 +1428,21 @@ crack → open_short(rc_ohm&gt;15) → leakage(ioff_na&gt;10) → vth_shift(vth_
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>칸</span><i></i><span>예</span></div><div class="v2m" style="--d:0.00s"><div class="a">대상</div><i>→</i><div class="b"><b>data/wafer_test_W07.csv</b><small>어느 파일</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">할 일</div><i>→</i><div class="b"><b>행 · 열 · 결측 · 양불 개수 요약</b><small>무엇을</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">결과</div><i>→</i><div class="b"><b>docs/data_dictionary.md</b><small>어디에 남길지</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">조건</div><i>→</i><div class="b"><b>원본 수정 금지 · 앞 5줄만 출력</b><small>하지 말 것</small></div></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 1] 데이터 사전 · CLAUDE.md">
+<section class="slide lt labs" data-title="[실습 1-1] 택배 데이터 읽기 · 판정 조건">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 1</span></div>
+  <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 1-1</span></div>
+  <h2 class="s-title sm">택배 데이터 읽기 · 판정 조건</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="labgrid">
+    <div class="lc goal"><div class="lh">목표</div><p>D07 의 구조를 요약하고 판정 조건을 차례로 적용해 정시율을 다시 구한다</p><div class="lf">사용 파일 · data/practice/delivery_D07.csv</div></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>D07 요약 요청 (행 · 열 · 결측)</li><li>판정 조건 순서 정하기</li><li>조건대로 판정 · 정시율 계산 요청</li><li>status 열과 대조</li></ol></div>
+    <div class="lc done"><div class="lh">완료 기준</div><ul><li>600행 × 14열 · 결측 0</li><li>정시 481 · 80.17%</li></ul></div>
+  </div></div>
+</section>
+
+<section class="slide lt labs" data-title="[실습 1-2] 데이터 사전 · CLAUDE.md">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 1-2</span></div>
   <h2 class="s-title sm">데이터 사전 · CLAUDE.md</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -1400,26 +1452,26 @@ crack → open_short(rc_ohm&gt;15) → leakage(ioff_na&gt;10) → vth_shift(vth_
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 1 순서">
+<section class="slide lt" data-title="실습 1-2 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 1 순서</h2>
+  <h2 class="s-title sm">실습 1-2 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><ol class="v1st"><li style="--d:0.00s"><em>1</em><span>wafer-lab 열기 · Claude Code 실행</span></li><li style="--d:0.25s"><em>2</em><span>W07 요약 요청 (행 · 열 · 결측)</span></li><li style="--d:0.50s"><em>3</em><span>데이터 사전 요청</span></li><li style="--d:0.75s"><em>4</em><span>CLAUDE.md 요청</span></li><li style="--d:1.00s"><em>5</em><span>엑셀 필터로 양품 수 대조</span></li></ol><div class="qk2"><b>확인</b><ul><li>양품 557 · 불량 59</li><li>열 18개의 뜻 · 단위 · 스펙</li></ul></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 1 요청 항목">
+<section class="slide lt" data-title="실습 1-2 요청 항목">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 1 요청 항목</h2>
+  <h2 class="s-title sm">실습 1-2 요청 항목</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1sls"><div class="v1sl" style="--d:0.00s"><b>목표</b><span>W07 의 구조 · 열 뜻 · 기준 숫자 정리</span></div><div class="v1sl" style="--d:0.20s"><b>입력</b><span>wafer_test_W07.csv · spec.csv</span></div><div class="v1sl" style="--d:0.40s"><b>산출물</b><span>docs/data_dictionary.md · CLAUDE.md</span></div><div class="v1sl" style="--d:0.60s"><b>하지 말 것</b><span>data/ 원본 수정 · CSV 전체 출력</span></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 1 확인">
+<section class="slide lt" data-title="실습 1-2 확인">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">1교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 1 확인</h2>
+  <h2 class="s-title sm">실습 1-2 확인</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">요약 대화 예</div><div class="v1b me"><span>나</span><p>data/wafer_test_W07.csv 를 요약해 줘. 행 · 열 수, 결측, 양불 개수만.</p></div><div class="v1b ai"><span>Claude</span><p>616행 × 18열 · 결측 0<br/>PASS 557 · FAIL 59 · 수율 90.42%<br/>불량 1위 crack 25개 — 대각선 위치에 몰려 있음</p></div></div></div></div>
 </section>
@@ -1568,9 +1620,21 @@ crack → open_short(rc_ohm&gt;15) → leakage(ioff_na&gt;10) → vth_shift(vth_
   <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">검사 대화 예</div><div class="v1b me"><span>나</span><p>data/raw 의 W05 · W11 · W19 를 검사해 줘. 고치지 말고 문제만 보고.</p></div><div class="v1b ai"><span>Claude</span><p>W05 · 같은 좌표 12줄 중복 (628행)<br/>W11 · vth_v 중앙값 462 → mV 로 보임<br/>W19 · ioff_na 빈칸 9개</p></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 2] 정제 · 검증 스크립트">
+<section class="slide lt labs" data-title="[실습 2-1] 택배 원시 파일 정제">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">2교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 2</span></div>
+  <div class="eyebrow"><span class="tag">2교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 2-1</span></div>
+  <h2 class="s-title sm">택배 원시 파일 정제</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="labgrid">
+    <div class="lc goal"><div class="lh">목표</div><p>25일 원시 파일의 중복 · 단위 · 결측을 찾아 정제 파일과 보고서를 만든다</p><div class="lf">사용 파일 · data/practice/raw/delivery_D01~D25.csv</div></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>원시 25개 문제 찾기 요청</li><li>중복 기준 · 결측 처리 방법 정하기</li><li>정제 스크립트 요청</li><li>정제 전후 행 수 대조</li></ol></div>
+    <div class="lc done"><div class="lh">완료 기준</div><ul><li>중복 10행 (D05)</li><li>무게 g 기록 (D11)</li><li>배송 시간 결측 8칸 (D19)</li></ul></div>
+  </div></div>
+</section>
+
+<section class="slide lt labs" data-title="[실습 2-2] 정제 · 검증 스크립트">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">2교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 2-2</span></div>
   <h2 class="s-title sm">정제 · 검증 스크립트</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -1580,26 +1644,26 @@ crack → open_short(rc_ohm&gt;15) → leakage(ioff_na&gt;10) → vth_shift(vth_
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 2 순서">
+<section class="slide lt" data-title="실습 2-2 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">2교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 2 순서</h2>
+  <h2 class="s-title sm">실습 2-2 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><ol class="v1st"><li style="--d:0.00s"><em>1</em><span>문제 검사 요청 (고치지 말고 보고)</span></li><li style="--d:0.25s"><em>2</em><span>처리 방법 정하기</span></li><li style="--d:0.50s"><em>3</em><span>clean.py 요청</span></li><li style="--d:0.75s"><em>4</em><span>검증 규칙 · 보고서 요청</span></li><li style="--d:1.00s"><em>5</em><span>세 파일 실행</span></li></ol><div class="qk2"><b>확인</b><ul><li>W11 수율 93.34%</li><li>W19 RETEST 9개</li></ul></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 2 요청 항목">
+<section class="slide lt" data-title="실습 2-2 요청 항목">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">2교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 2 요청 항목</h2>
+  <h2 class="s-title sm">실습 2-2 요청 항목</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1sls"><div class="v1sl" style="--d:0.00s"><b>목표</b><span>원시 CSV 한 장 → 정제본 + 검증 보고서</span></div><div class="v1sl" style="--d:0.20s"><b>입력</b><span>data/raw/ · spec.csv</span></div><div class="v1sl" style="--d:0.40s"><b>산출물</b><span>scripts/clean.py · output/qc_W05 · W11 · W19.md</span></div><div class="v1sl" style="--d:0.60s"><b>하지 말 것</b><span>data/raw/ 수정 · 결측을 평균으로 채우기</span></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 2 확인">
+<section class="slide lt" data-title="실습 2-2 확인">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">2교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 2 확인</h2>
+  <h2 class="s-title sm">실습 2-2 확인</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>파일</span><i></i><span>결과</span></div><div class="v2m" style="--d:0.00s"><div class="a">W05</div><i>→</i><div class="b"><b>628행 → 616행</b><small>중복 12줄 삭제</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">W11</div><i>→</i><div class="b"><b>vth_v ÷ 1000</b><small>수율 93.34%</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">W19</div><i>→</i><div class="b"><b>RETEST 9개</b><small>수율 87.66%</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">검증</div><i>→</i><div class="b"><b>규칙 5개</b><small>세 파일 모두 통과</small></div></div></div></div></div>
 </section>
@@ -1691,9 +1755,21 @@ crack → open_short(rc_ohm&gt;15) → leakage(ioff_na&gt;10) → vth_shift(vth_
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>항목</span><i></i><span>결과</span></div><div class="v2m" style="--d:0.00s"><div class="a">양품 수</div><i>→</i><div class="b"><b>스크립트 557</b><small>엑셀 필터 PASS 557</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">존별 다이 수</div><i>→</i><div class="b"><b>80 · 304 · 232</b><small>합계 616</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">불량 유형 합</div><i>→</i><div class="b"><b>59</b><small>불량 다이 수와 같음</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">25장 수율</div><i>→</i><div class="b"><b>90% 미만 9장</b><small>W17, W18, W19, W20, W21 …</small></div></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 3] 수율 집계 · 엑셀 자동화">
+<section class="slide lt labs" data-title="[실습 3-1] 택배 집계 · Pareto">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">3교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 3</span></div>
+  <div class="eyebrow"><span class="tag">3교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 3-1</span></div>
+  <h2 class="s-title sm">택배 집계 · Pareto</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="labgrid">
+    <div class="lc goal"><div class="lh">목표</div><p>구역별 정시율과 실패 사유 순위를 엑셀 시트로 만든다</p><div class="lf">사용 파일 · data/practice/raw/delivery_D01~D25.csv</div></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>구역별 정시율 요청</li><li>실패 사유 Pareto 요청</li><li>엑셀 저장 요청</li><li>외곽 숫자 대조</li></ol></div>
+    <div class="lc done"><div class="lh">완료 기준</div><ul><li>외곽 69.48% · 도심 94.27%</li><li>지연 2,403건이 1위</li></ul></div>
+  </div></div>
+</section>
+
+<section class="slide lt labs" data-title="[실습 3-2] 수율 집계 · 엑셀 자동화">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">3교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 3-2</span></div>
   <h2 class="s-title sm">수율 집계 · 엑셀 자동화</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -1703,26 +1779,26 @@ crack → open_short(rc_ohm&gt;15) → leakage(ioff_na&gt;10) → vth_shift(vth_
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 3 순서">
+<section class="slide lt" data-title="실습 3-2 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">3교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 3 순서</h2>
+  <h2 class="s-title sm">실습 3-2 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><ol class="v1st"><li style="--d:0.00s"><em>1</em><span>집계 요청 (존별 · 불량 유형)</span></li><li style="--d:0.25s"><em>2</em><span>엑셀 저장 · 필터로 대조</span></li><li style="--d:0.50s"><em>3</em><span>25장 수율 표 요청</span></li><li style="--d:0.75s"><em>4</em><span>90% 미만 웨이퍼 확인</span></li><li style="--d:1.00s"><em>5</em><span>결과 파일 열어 보기</span></li></ol><div class="qk2"><b>확인</b><ul><li>PASS 557 · 엑셀과 같음</li><li>90% 미만 9장</li></ul></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 3 요청 항목">
+<section class="slide lt" data-title="실습 3-2 요청 항목">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">3교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 3 요청 항목</h2>
+  <h2 class="s-title sm">실습 3-2 요청 항목</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1sls"><div class="v1sl" style="--d:0.00s"><b>목표</b><span>W07 집계 엑셀 + 웨이퍼 25장 수율 표</span></div><div class="v1sl" style="--d:0.20s"><b>입력</b><span>wafer_test_W07.csv · data/raw/</span></div><div class="v1sl" style="--d:0.40s"><b>산출물</b><span>output/yield_summary.xlsx · output/wafer_yield.csv</span></div><div class="v1sl" style="--d:0.60s"><b>하지 말 것</b><span>수율 숫자를 손으로 적기</span></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 3 확인">
+<section class="slide lt" data-title="실습 3-2 확인">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">3교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 3 확인</h2>
+  <h2 class="s-title sm">실습 3-2 확인</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">집계 대화 예</div><div class="v1b me"><span>나</span><p>data/raw 의 25장 웨이퍼별 수율 표를 만들어 줘. 90% 미만인 웨이퍼만 따로 알려 줘.</p></div><div class="v1b ai"><span>Claude</span><p>output/wafer_yield.csv 저장 · 25행<br/>90% 미만 9장 · W17, W18, W19, W20, W21, W22, W23, W24, W25</p></div></div></div></div>
 </section>
@@ -1862,9 +1938,21 @@ crack → open_short(rc_ohm&gt;15) → leakage(ioff_na&gt;10) → vth_shift(vth_
   <div class="body"><div class="mid"><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>칸 수</b><span>사각형 616개 = CSV 616행</span></div><div class="v2tile" style="--d:0.08s"><b>색별 개수</b><span>범례 숫자 = 불량 유형 집계 (W07 불량 59)</span></div><div class="v2tile" style="--d:0.16s"><b>방향</b><span>die_y 가 큰 다이가 위쪽</span></div><div class="v2tile" style="--d:0.24s"><b>툴팁 값</b><span>다이 하나를 골라 CSV 행과 대조</span></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 4] 웨이퍼 맵 HTML">
+<section class="slide lt labs" data-title="[실습 4-1] 택배 구역 지도">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">4교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 4</span></div>
+  <div class="eyebrow"><span class="tag">4교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 4-1</span></div>
+  <h2 class="s-title sm">택배 구역 지도</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="labgrid">
+    <div class="lc goal"><div class="lh">목표</div><p>구역 좌표별 정시율을 HTML 지도 한 파일로 그린다</p><div class="lf">사용 파일 · data/practice/raw/delivery_D01~D25.csv</div></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>좌표별 정시율 집계 요청</li><li>HTML 지도 요청 · 색 기준 정하기</li><li>툴팁 추가 요청</li><li>외곽 고리 확인</li></ol></div>
+    <div class="lc done"><div class="lh">완료 기준</div><ul><li>외곽 정시율 69.48%</li><li>물류센터에서 먼 고리일수록 진한 색</li></ul></div>
+  </div></div>
+</section>
+
+<section class="slide lt labs" data-title="[실습 4-2] 웨이퍼 맵 HTML">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">4교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 4-2</span></div>
   <h2 class="s-title sm">웨이퍼 맵 HTML</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -1874,26 +1962,26 @@ crack → open_short(rc_ohm&gt;15) → leakage(ioff_na&gt;10) → vth_shift(vth_
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 4 순서">
+<section class="slide lt" data-title="실습 4-2 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">4교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 4 순서</h2>
+  <h2 class="s-title sm">실습 4-2 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><ol class="v1st"><li style="--d:0.00s"><em>1</em><span>W07 맵 요청 (양불 색 · 범례 · 수율)</span></li><li style="--d:0.25s"><em>2</em><span>브라우저로 열어 확인</span></li><li style="--d:0.50s"><em>3</em><span>툴팁 · 보기 전환 요청</span></li><li style="--d:0.75s"><em>4</em><span>같은 스크립트로 W21</span></li><li style="--d:1.00s"><em>5</em><span>두 맵의 차이 한 줄 기록</span></li></ol><div class="qk2"><b>확인</b><ul><li>범례 숫자 합 = 616</li><li>다이 하나의 툴팁 = CSV 행</li></ul></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 4 요청 항목">
+<section class="slide lt" data-title="실습 4-2 요청 항목">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">4교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 4 요청 항목</h2>
+  <h2 class="s-title sm">실습 4-2 요청 항목</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1sls"><div class="v1sl" style="--d:0.00s"><b>목표</b><span>다이 위치별 양불 · 불량 유형이 보이는 맵</span></div><div class="v1sl" style="--d:0.20s"><b>입력</b><span>웨이퍼 CSV 한 장 (파일 이름만 바꿔 재사용)</span></div><div class="v1sl" style="--d:0.40s"><b>산출물</b><span>output/wafer_map_W07.html · W21.html</span></div><div class="v1sl" style="--d:0.60s"><b>하지 말 것</b><span>외부 라이브러리 · 인터넷 연결 필요한 파일</span></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 4 확인">
+<section class="slide lt" data-title="실습 4-2 확인">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">4교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 4 확인</h2>
+  <h2 class="s-title sm">실습 4-2 확인</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">맵 요청 대화 예</div><div class="v1b me"><span>나</span><p>W07 웨이퍼 맵을 HTML 한 파일로 만들어 줘. 불량 유형별 색과 범례, 수율을 넣고 다이에 마우스를 올리면 측정값이 보이게.</p></div><div class="v1b ai"><span>Claude</span><p>output/wafer_map_W07.html 을 만들었다.<br/>다이 616개 · 양품 557 · 수율 90.42%<br/>크랙 25개가 왼쪽 위에서 오른쪽 아래로 이어짐</p></div></div></div></div>
 </section>
@@ -2020,9 +2108,21 @@ Cpk = 0.0573 / 0.0674 = 0.85</code></pre></div></div><div><div class="v2tiles c1
   <div class="body"><div class="mid"><div class="v1shot"><figure><img src="img/p5_spc_W07.webp" alt="spc_W07.html · spc.py 결과"/><figcaption>spc_W07.html · spc.py 결과</figcaption></figure><div class=v1side><div class="v1sd"><b>왼쪽</b><span>vth 히스토그램 · LSL · USL · Cpk 0.85</span></div><div class="v1sd"><b>오른쪽</b><span>vth × idsat 산점도 · 규격 영역</span></div><div class="v1sd"><b>색</b><span>양품 초록 · 불량 빨강</span></div><div class="v1sd"><b>파일</b><span>HTML 한 파일 · 외부 라이브러리 없음</span></div></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 5] 분포 · Cpk · 이상 다이">
+<section class="slide lt labs" data-title="[실습 5-1] 택배 배송 시간 분포">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">5교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 5</span></div>
+  <div class="eyebrow"><span class="tag">5교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 5-1</span></div>
+  <h2 class="s-title sm">택배 배송 시간 분포</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="labgrid">
+    <div class="lc goal"><div class="lh">목표</div><p>D07 배송 시간의 분포를 그리고 약속 120분을 넘는 건을 센다</p><div class="lf">사용 파일 · data/practice/delivery_D07.csv</div></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>히스토그램 요청</li><li>약속 120분 선 추가 요청</li><li>구역별 분포 비교 요청</li><li>평균 · 표준편차 대조</li></ol></div>
+    <div class="lc done"><div class="lh">완료 기준</div><ul><li>평균 95.0분 · 표준편차 24.8분</li><li>120분 초과 96건</li></ul></div>
+  </div></div>
+</section>
+
+<section class="slide lt labs" data-title="[실습 5-2] 분포 · Cpk · 이상 다이">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">5교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 5-2</span></div>
   <h2 class="s-title sm">분포 · Cpk · 이상 다이</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2032,26 +2132,26 @@ Cpk = 0.0573 / 0.0674 = 0.85</code></pre></div></div><div><div class="v2tiles c1
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 5 순서">
+<section class="slide lt" data-title="실습 5-2 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">5교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 5 순서</h2>
+  <h2 class="s-title sm">실습 5-2 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><ol class="v1st"><li style="--d:0.00s"><em>1</em><span>히스토그램 요청</span></li><li style="--d:0.25s"><em>2</em><span>Cp · Cpk 숫자 확인</span></li><li style="--d:0.50s"><em>3</em><span>산점도 요청</span></li><li style="--d:0.75s"><em>4</em><span>이상 다이 CSV 요청</span></li><li style="--d:1.00s"><em>5</em><span>설비별 Cpk 요청</span></li></ol><div class="qk2"><b>확인</b><ul><li>Cpk 0.85 · Cp 1.04</li><li>이상 다이 12개</li></ul></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 5 요청 항목">
+<section class="slide lt" data-title="실습 5-2 요청 항목">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">5교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 5 요청 항목</h2>
+  <h2 class="s-title sm">실습 5-2 요청 항목</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1sls"><div class="v1sl" style="--d:0.00s"><b>목표</b><span>vth 퍼짐 · 스펙 여유를 숫자와 그림으로</span></div><div class="v1sl" style="--d:0.20s"><b>입력</b><span>W07 정제본 · spec.csv</span></div><div class="v1sl" style="--d:0.40s"><b>산출물</b><span>output/spc_W07.html · outliers_W07.csv</span></div><div class="v1sl" style="--d:0.60s"><b>하지 말 것</b><span>스펙 숫자를 코드에 직접 적기 · spec.csv 를 읽게</span></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 5 확인">
+<section class="slide lt" data-title="실습 5-2 확인">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">5교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 5 확인</h2>
+  <h2 class="s-title sm">실습 5-2 확인</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">Cpk 요청 대화 예</div><div class="v1b me"><span>나</span><p>W07 vth 의 Cp, Cpk 를 spec.csv 기준으로 계산하고 식에 들어간 값도 보여 줘.</p></div><div class="v1b ai"><span>Claude</span><p>μ 0.4627 · σ 0.0225 · LSL 0.38 · USL 0.52<br/>Cp 1.04 · Cpk 0.85<br/>USL 쪽 여유가 더 작음 — 가장자리 다이의 vth 가 높음</p></div></div></div></div>
 </section>
@@ -2199,9 +2299,21 @@ FROM read_csv('practice/clean/*.csv') GROUP BY truck_id</code></pre></div><div c
   <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">Claude Code</div><div class="v2pc" style="--d:0.00s"><b>작성</b><span>pipeline.py · SQL 뷰</span></div><div class="v2pc" style="--d:0.08s"><b>실행</b><span>25장 처리 · 오류 고침</span></div><div class="v2pc" style="--d:0.16s"><b>기록</b><span>pipeline_log.md</span></div></div><div class="v2p on"><div class="v2ph">사람</div><div class="v2pc" style="--d:0.00s"><b>정제 규칙</b><span>중복 기준 · 단위 판단 · 결측 처리</span></div><div class="v2pc" style="--d:0.08s"><b>검증 규칙</b><span>다이 616 · 값 범위</span></div><div class="v2pc" style="--d:0.16s"><b>대조</b><span>설비별 수율을 원본에서 다시 셈</span></div></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 6] 파이프라인">
+<section class="slide lt labs" data-title="[실습 6-1] 택배 25일 적재 · 차량별 SQL">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">6교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 6</span></div>
+  <div class="eyebrow"><span class="tag">6교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 6-1</span></div>
+  <h2 class="s-title sm">택배 25일 적재 · 차량별 SQL</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="labgrid">
+    <div class="lc goal"><div class="lh">목표</div><p>정제한 25일 파일을 DuckDB 에 넣고 차량별 정시율을 SQL 로 구한다</p><div class="lf">사용 파일 · data/practice/raw/delivery_D01~D25.csv</div></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>DuckDB 적재 요청</li><li>차량별 정시율 SQL 요청</li><li>다시 실행해 같은 결과 확인</li><li>행 수 대조</li></ol></div>
+    <div class="lc done"><div class="lh">완료 기준</div><ul><li>15,000행 적재</li><li>TRUCK_C 66.17%</li></ul></div>
+  </div></div>
+</section>
+
+<section class="slide lt labs" data-title="[실습 6-2] 파이프라인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">6교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 6-2</span></div>
   <h2 class="s-title sm">파이프라인</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2211,26 +2323,26 @@ FROM read_csv('practice/clean/*.csv') GROUP BY truck_id</code></pre></div><div c
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 6 순서">
+<section class="slide lt" data-title="실습 6-2 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">6교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 6 순서</h2>
+  <h2 class="s-title sm">실습 6-2 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><ol class="v1st"><li style="--d:0.00s"><em>1</em><span>clean.py 가 있는지 확인</span></li><li style="--d:0.25s"><em>2</em><span>파이프라인 요청</span></li><li style="--d:0.50s"><em>3</em><span>SQL 뷰 요청 (웨이퍼 · 설비 · 불량 유형)</span></li><li style="--d:0.75s"><em>4</em><span>한 번 더 실행</span></li><li style="--d:1.00s"><em>5</em><span>기록 · 숫자 대조</span></li></ol><div class="qk2"><b>확인</b><ul><li>dies 15,400행</li><li>문제 있던 3장이 기록에 남음</li></ul></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 6 요청 항목">
+<section class="slide lt" data-title="실습 6-2 요청 항목">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">6교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 6 요청 항목</h2>
+  <h2 class="s-title sm">실습 6-2 요청 항목</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1sls"><div class="v1sl" style="--d:0.00s"><b>목표</b><span>원시 25장 → 정제 → 적재 → 집계를 명령 하나로</span></div><div class="v1sl" style="--d:0.20s"><b>입력</b><span>data/raw/ · equipment.csv</span></div><div class="v1sl" style="--d:0.40s"><b>산출물</b><span>pipeline.py · warehouse.duckdb · pipeline_log.md</span></div><div class="v1sl" style="--d:0.60s"><b>하지 말 것</b><span>data/raw/ 수정 · 실행마다 행이 늘어나는 적재</span></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 6 확인">
+<section class="slide lt" data-title="실습 6-2 확인">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">6교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 6 확인</h2>
+  <h2 class="s-title sm">실습 6-2 확인</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">SQL 대화 예</div><div class="v1b me"><span>나</span><p>설비별 평균 수율과 목표 미달 웨이퍼 수를 SQL 로 보여 줘.</p></div><div class="v1b ai"><span>Claude</span><p>ETCH_01 · 8장 · 93.3% · 미달 0장<br/>ETCH_02 · 8장 · 93.49% · 미달 0장<br/>ETCH_03 · 9장 · 87.37% · 미달 9장</p></div></div></div></div>
 </section>
@@ -2363,9 +2475,21 @@ FROM read_csv('practice/clean/*.csv') GROUP BY truck_id</code></pre></div><div c
   <div class="body"><div class="mid"><div class="cks"><div class="ck" style="--d:0.00s"><span>1</span><b>KPI 숫자가 SQL 결과와 같은가</b><em>LOT 91.23%</em></div><div class="ck" style="--d:0.12s"><span>2</span><b>목표선이 90% 에 있는가</b><em>축 눈금과 대조</em></div><div class="ck" style="--d:0.24s"><span>3</span><b>점 색과 범례가 맞는가</b><em>설비 세 개</em></div><div class="ck" style="--d:0.36s"><span>4</span><b>새 파일 뒤 웨이퍼 수가 늘었나</b><em>25 → 26</em></div></div><div class="ckr">하나라도 불일치 → 숫자부터 다시</div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 7] 자동화 · 대시보드">
+<section class="slide lt labs" data-title="[실습 7-1] 택배 일별 정시율 자동화">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">7교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 7</span></div>
+  <div class="eyebrow"><span class="tag">7교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 7-1</span></div>
+  <h2 class="s-title sm">택배 일별 정시율 자동화</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="labgrid">
+    <div class="lc goal"><div class="lh">목표</div><p>명령 하나로 25일 일별 정시율 표와 차트를 다시 만든다</p><div class="lf">사용 파일 · data/practice/raw/delivery_D01~D25.csv</div></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>일별 정시율 스크립트 요청</li><li>차트 · 목표선 요청</li><li>명령 하나로 묶기</li><li>다시 실행</li></ol></div>
+    <div class="lc done"><div class="lh">완료 기준</div><ul><li>일별 정시율 25행 · 최저 D25 74.67%</li><li>25일 평균 79.18%</li></ul></div>
+  </div></div>
+</section>
+
+<section class="slide lt labs" data-title="[실습 7-2] 자동화 · 대시보드">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">7교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 7-2</span></div>
   <h2 class="s-title sm">자동화 · 대시보드</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2375,26 +2499,26 @@ FROM read_csv('practice/clean/*.csv') GROUP BY truck_id</code></pre></div><div c
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 7 순서">
+<section class="slide lt" data-title="실습 7-2 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">7교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 7 순서</h2>
+  <h2 class="s-title sm">실습 7-2 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><ol class="v1st"><li style="--d:0.00s"><em>1</em><span>run_all.py 요청</span></li><li style="--d:0.25s"><em>2</em><span>대시보드 요청</span></li><li style="--d:0.50s"><em>3</em><span>점검 네 가지</span></li><li style="--d:0.75s"><em>4</em><span>W26 넣고 다시 실행</span></li><li style="--d:1.00s"><em>5</em><span>원인 후보 한 줄</span></li></ol><div class="qk2"><b>확인</b><ul><li>W26 뒤 웨이퍼 26장</li><li>미달 9 → 10장</li></ul></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 7 요청 항목">
+<section class="slide lt" data-title="실습 7-2 요청 항목">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">7교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 7 요청 항목</h2>
+  <h2 class="s-title sm">실습 7-2 요청 항목</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1sls"><div class="v1sl" style="--d:0.00s"><b>목표</b><span>새 파일이 들어와도 명령 하나로 같은 대시보드</span></div><div class="v1sl" style="--d:0.20s"><b>입력</b><span>warehouse.duckdb 의 SQL 뷰</span></div><div class="v1sl" style="--d:0.40s"><b>산출물</b><span>run_all.py · output/dashboard.html</span></div><div class="v1sl" style="--d:0.60s"><b>하지 말 것</b><span>차트 숫자를 손으로 입력 · 외부 차트 라이브러리</span></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 7 확인">
+<section class="slide lt" data-title="실습 7-2 확인">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">7교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 7 확인</h2>
+  <h2 class="s-title sm">실습 7-2 확인</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">다시 실행 대화 예</div><div class="v1b me"><span>나</span><p>W26 파일을 넣었어. 대시보드를 다시 만들고 바뀐 숫자만 알려 줘.</p></div><div class="v1b ai"><span>Claude</span><p>웨이퍼 25 → 26장<br/>LOT 수율 91.23% → 91.08%<br/>목표 미달 9 → 10장 (W26 · ETCH_03)</p></div></div></div></div>
 </section>
@@ -2547,9 +2671,21 @@ bb942b0 데이터 사전 · CLAUDE.md</code></pre></div></div></div>
   <div class="body"><div class="mid"><div class="flow"><div class="fs hl"><b>데이터 사전</b><span>열 · 단위 · 기준</span></div><div class="fa">→</div><div class="fs"><b>정제 규칙</b><span>중복 · 단위 · 결측</span></div><div class="fa">→</div><div class="fs"><b>파이프라인</b><span>명령 하나</span></div><div class="fa">→</div><div class="fs"><b>대시보드</b><span>목표선 · 비교</span></div><div class="fa">→</div><div class="fs"><b>분석 요약</b><span>근거 숫자</span></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 8] 분석 요약 · 발표">
+<section class="slide lt labs" data-title="[실습 8-1] 택배 분석 요약">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">8교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 8</span></div>
+  <div class="eyebrow"><span class="tag">8교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 8-1</span></div>
+  <h2 class="s-title sm">택배 분석 요약</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="labgrid">
+    <div class="lc goal"><div class="lh">목표</div><p>외곽 지연의 원인 후보를 근거 숫자와 차트로 묶어 한 쪽 요약을 쓴다</p><div class="lf">사용 파일 · data/practice/raw/delivery_D01~D25.csv</div></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>원인 후보 정리 요청</li><li>후보마다 근거 숫자 · 차트</li><li>추가 확인할 것 적기</li><li>숫자 대조</li></ol></div>
+    <div class="lc done"><div class="lh">완료 기준</div><ul><li>외곽 69.48% · TRUCK_C 66.17%</li><li>지연 2,403건</li></ul></div>
+  </div></div>
+</section>
+
+<section class="slide lt labs" data-title="[실습 8-2] 분석 요약 · 발표">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">8교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 8-2</span></div>
   <h2 class="s-title sm">분석 요약 · 발표</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2559,26 +2695,26 @@ bb942b0 데이터 사전 · CLAUDE.md</code></pre></div></div></div>
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 8 순서">
+<section class="slide lt" data-title="실습 8-2 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">8교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 8 순서</h2>
+  <h2 class="s-title sm">실습 8-2 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><ol class="v1st"><li style="--d:0.00s"><em>1</em><span>후보 숫자 요청</span></li><li style="--d:0.25s"><em>2</em><span>분석 요약 초안</span></li><li style="--d:0.50s"><em>3</em><span>숫자 · 출처 대조</span></li><li style="--d:0.75s"><em>4</em><span>README · 커밋</span></li><li style="--d:1.00s"><em>5</em><span>2분 발표</span></li></ol><div class="qk2"><b>확인</b><ul><li>후보마다 숫자 · 차트</li><li>출처 질의를 다시 돌릴 수 있음</li></ul></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 8 요청 항목">
+<section class="slide lt" data-title="실습 8-2 요청 항목">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">8교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 8 요청 항목</h2>
+  <h2 class="s-title sm">실습 8-2 요청 항목</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1sls"><div class="v1sl" style="--d:0.00s"><b>목표</b><span>결과 · 원인 후보 · 근거 · 추가 확인 한 장</span></div><div class="v1sl" style="--d:0.20s"><b>입력</b><span>SQL 뷰 · 대시보드 · 웨이퍼 맵</span></div><div class="v1sl" style="--d:0.40s"><b>산출물</b><span>docs/analysis_summary.md · README.md</span></div><div class="v1sl" style="--d:0.60s"><b>하지 말 것</b><span>숫자 없는 단정 · 원인 확정 표현</span></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 8 확인">
+<section class="slide lt" data-title="실습 8-2 확인">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">8교시</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 8 확인</h2>
+  <h2 class="s-title sm">실습 8-2 확인</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">근거 대화 예</div><div class="v1b me"><span>나</span><p>ETCH_03 가장자리 불량을 원인 후보로 쓰려고 해. 근거 숫자를 설비별로 비교해 줘.</p></div><div class="v1b ai"><span>Claude</span><p>edge 존 수율 · ETCH_01 90.57% · ETCH_02 90.03% · ETCH_03 72.65%<br/>누설전류 · 55 · 66 · 295개<br/>출처 · warehouse.duckdb (dies × equipment)</p></div></div></div></div>
 </section>
