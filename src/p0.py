@@ -257,6 +257,8 @@ def slides():
             ("수치형 변수", "delivery_min · dist_km", "평균 · 합계 · 분포"), ("범주형 변수", "area · truck_id · status", "개수 · 비율 · 묶어 세기"),
             ("판정 열 status", "ON_TIME · 그 외", "약속 120분 안 · 파손 · 주소 · 부재 없음"),
             ("파일 규모", f"{len(df)}행 × {df.shape[1]}열", "하루 한 파일 · 25일치")], "변수", "delivery_D07.csv"), TAG),
+        light("수치형 변수", num_anim(df), TAG),
+        light("범주형 변수", cat_anim(df), TAG),
         light("정시 도착률", big([
             (f"{GEN['D07']['on_time']}", "건", "정시 도착 (10월 7일)"), (f"{GEN['D07']['rows']}", "건", "전체 배송"),
             (f"{GEN['D07']['rate']}", "%", "정시 도착률 = 정시 ÷ 전체", True)], 3), TAG),
@@ -277,3 +279,90 @@ def slides():
 
 
 CSS += "  .v2tile .p0hl{color:#E07A12; font-weight:700;}\n"
+
+
+# ── 변수 종류 애니메이션 · 택배 D07 ─────────────────────
+from anim import _D, _t, N, O, W, K  # noqa: E402
+
+_X0, _X1, _V0, _V1 = 90, 1070, 40, 170          # 수직선 화면 x · 값 범위(분)
+
+
+def _vx(v):
+    return _X0 + (v - _V0) / (_V1 - _V0) * (_X1 - _X0)
+
+
+def _chips(d, vals, y=46):
+    """첫 8행의 값을 위에 칩으로. 칩 중심 x 목록을 돌려준다."""
+    s, xs = "", []
+    for i, v in enumerate(vals):
+        x = 150 + i * 123
+        xs.append(x)
+        s += (f'<g {d.show(1 + i * 1.5)}><rect x="{x - 54}" y="{y - 20}" width="108" height="40" rx="8" fill="{W}" stroke="{K}" stroke-width="2"/>'
+              + _t(x, y + 1, v, "tm", extra='style="font-size:15px"') + "</g>")
+    return s, xs
+
+
+def num_anim(df):
+    """수치형 — 값 8개가 수직선 위에 점으로 → 600건 전체 → 평균 · 표준편차. 16초 · 한 번."""
+    d = _D("vn", 16)
+    v8 = df.delivery_min.head(8).tolist()
+    m, sd = df.delivery_min.mean(), df.delivery_min.std()
+    c, xs = _chips(d, v8)
+    s = c + f'<g {d.show(0)}>' + _t(150 - 54, 4, "delivery_min · 첫 8행", "to", "start") + "</g>"
+    # 수직선
+    s += f'<g {d.show(14)}><line x1="{_X0}" y1="250" x2="{_X1}" y2="250" stroke="{N}" stroke-width="2.5"/>'
+    for t in range(40, 171, 10):
+        s += f'<line x1="{_vx(t):.1f}" y1="250" x2="{_vx(t):.1f}" y2="{258 if t % 50 else 264}" stroke="{N}" stroke-width="1.5"/>'
+        if t % 20 == 0:
+            s += _t(_vx(t), 280, t, "ts", extra='style="font-size:13px"')
+    s += _t(_X1 + 8, 280, "분", "ts", "start") + "</g>"
+    # 8개 점이 수직선 위 제자리에 차례로 (움직이지 않고 나타남)
+    for i, v in enumerate(v8):
+        s += f'<circle cx="{_vx(v):.1f}" cy="236" r="9" fill="{O}" {d.show(22 + i * 2.5)}/>'
+    # 600건 전체 · 점 띠
+    rng = __import__("random").Random(7)
+    dots = "".join(f'<circle cx="{_vx(v):.1f}" cy="{316 + rng.random() * 50:.1f}" r="3" fill="{K}" fill-opacity=".35"/>' for v in df.delivery_min)
+    s += f'<g {d.show(48)}>{dots}' + _t(_X0 - 10, 341, f"{len(df)}건", "tn", "end") + "</g>"
+    # 평균 · 표준편차
+    s += (f'<g {d.show(64)}><line x1="{_vx(m):.1f}" y1="206" x2="{_vx(m):.1f}" y2="380" stroke="{O}" stroke-width="3" stroke-dasharray="7 5"/>'
+          + _t(_vx(m), 192, f"평균 {m:.1f}분", "to", extra='style="font-size:17px"') + "</g>")
+    a, b = _vx(m - sd), _vx(m + sd)
+    s += (f'<g {d.show(80)}><path d="M{a:.1f} 392 V404 H{b:.1f} V392" fill="none" stroke="{K}" stroke-width="2.5"/>'
+          + _t((a + b) / 2, 426, f"표준편차 {sd:.1f}분 · 평균 ± 1σ", "tn", extra='style="font-size:16px"')
+          + _t(_vx(df.delivery_min.min()), 426, f"최솟값 {df.delivery_min.min()}", "ts")
+          + _t(_vx(df.delivery_min.max()), 426, f"최댓값 {df.delivery_min.max()}", "ts") + "</g>")
+    return d.svg(1160, 440, s)
+
+
+def cat_anim(df):
+    """범주형 — 첫 8행을 이름별로 세기 → 600건 개수 막대 → 정시 비율. 16초 · 한 번."""
+    d = _D("vc", 16)
+    v8 = df.truck_id.head(8).tolist()
+    names = sorted(df.truck_id.unique())
+    cnt = df.truck_id.value_counts()
+    on = df[df.status == "ON_TIME"].truck_id.value_counts()
+    bx = {n: 250 + i * 330 for i, n in enumerate(names)}
+    base, H = 388, 200
+    s = f'<g {d.show(0)}>' + _t(150 - 54, 4, "truck_id · 첫 8행", "to", "start") + "</g>"
+    c, xs = _chips(d, [v.replace("TRUCK_", "") for v in v8])
+    s += c
+    s += f'<line x1="70" y1="{base}" x2="1090" y2="{base}" stroke="{N}" stroke-width="2.5" {d.show(14)}/>'
+    for n in names:
+        s += f'<g {d.show(14)}>' + _t(bx[n], base + 26, n, "tt", extra='style="font-size:17px"') + "</g>"
+    # 첫 8행을 이름별로 센 값 (움직이지 않고 나타남)
+    c8 = pd.Series(v8).value_counts()
+    for i, n in enumerate(names):
+        s += f'<g {d.show(22 + i * 8, 46)}>' + _t(bx[n], base - 40, f"첫 8행 중 {c8.get(n, 0)}개", "to", extra='style="font-size:18px"') + "</g>"
+    # 600건 개수 막대 → 정시 부분
+    mx = cnt.max()
+    for n in names:
+        h = cnt[n] / mx * H
+        ho = on.get(n, 0) / mx * H
+        grow = "transform-box:fill-box;transform-origin:50% 100%"
+        st = [(0, "transform:scaleY(0)"), (50, "transform:scaleY(0)"), (60, "transform:scaleY(1)"), (100, "transform:scaleY(1)")]
+        s += f'<rect x="{bx[n] - 60}" y="{base - h:.1f}" width="120" height="{h:.1f}" fill="{K}" {d.a(st, "ease-out", grow)}/>'
+        s += f'<g {d.show(60)}>' + _t(bx[n], base - h - 18, f"{cnt[n]}건", "tt", extra='style="font-size:18px"') + "</g>"
+        s += f'<rect x="{bx[n] - 60}" y="{base - ho:.1f}" width="120" height="{ho:.1f}" fill="{O}" {d.show(76)}/>'
+        s += (f'<g {d.show(80)}>' + _t(bx[n] + 72, base - ho / 2, f"정시 {on.get(n, 0) / cnt[n] * 100:.1f}%", "to", "start",
+                                         'style="font-size:16px"') + "</g>")
+    return d.svg(1160, 440, s)
