@@ -1,87 +1,63 @@
-"""5교시 파라미터 분포 · SPC.
+"""5교시 불합격 차트 · 나눠서 요청하기.
 
-배경(평균은 같고 퍼짐이 다름) → 분포 · 스펙 한계 → 히스토그램 → 비유(차선과 차) → Cp · Cpk 공식 → Cpk 세 장면
-→ 우리 데이터(설비별 Cpk · 반경 경향 · 산점도 · 이상 다이 목록 · 완성 화면) → 실습 5.
-수치는 pv5 가 실습 원시 CSV 에서 계산한다(중복 제거 · mV → V). 공식은 NIST/SEMATECH e-Handbook.
+도입(맵과 차트) → 설명(막대 하나의 구성 · 사유별 막대 · 위치별 합격률 · 두 칸 배치 · 한 번에 요청 vs 나눠 요청 · Git 커밋 · 되돌리기)
+→ 적용(실습 5-1 택배 차트 → 5-2 웨이퍼 차트).
 """
-import pv5
+import pv3
+import sk
 import viz2
 from deck import lab, light
-from hx import code, esc, note
-from pkit import SOL, brief, chat, shot, tag
-from stats_hx import big, src
+from pkit import brief, tag
+from stats_hx import hbars, src
 
 T = tag("5")
-NIST = ("NIST/SEMATECH e-Handbook · Process capability indices", "https://www.itl.nist.gov/div898/handbook/pmc/section1/pmc16.htm")
-EQP = {"ETCH_01": range(1, 9), "ETCH_02": range(9, 17), "ETCH_03": range(17, 26)}
-
-
-def _eqp_stats():
-    out = {}
-    for e, ws in EQP.items():
-        v = [r["vth"] for w in ws for r in pv5.dies(f"W{w:02d}")]
-        k, cp, mu, sd = pv5.cpk(v)
-        out[e] = (k, cp, mu, sd)
-    return out
-
-
-def _outliers():
-    t = (SOL / "output" / "outliers_W07.csv").read_text(encoding="utf-8").strip().split("\n")
-    cols = t[0].split(",")
-    keep = [cols.index(c) for c in ("die_x", "die_y", "zone", "vth_v", "idsat_ma", "fail_type")]
-    rows = [",".join(r.split(",")[i] for i in keep) for r in t[:7]]
-    return "\n".join(rows), len(t) - 1
+WN, DN = sk.WN, sk.DN
+CSS = ""
 
 
 def slides():
-    es = _eqp_stats()
-    v07 = [r["vth"] for r in pv5.dies("W07")]
-    k07, cp07, mu07, sd07 = pv5.cpk(v07)
-    ol, nol = _outliers()
-    rm07, rm21 = pv5.radius_means("W07"), pv5.radius_means("W21")
+    zr = WN["zone"]
     return [
-        # ── 배경
-        light("평균은 같고 퍼짐이 다름", big([
-            (f"{es['ETCH_01'][2]:.3f}", "V", "ETCH_01 · vth 평균"), (f"{es['ETCH_03'][2]:.3f}", "V", "ETCH_03 · vth 평균"),
-            (f"{es['ETCH_01'][3]:.4f}", "", "ETCH_01 · 표준편차 σ"), (f"{es['ETCH_03'][3]:.4f}", "", "ETCH_03 · 표준편차 σ", True)], 4), T),
-        light("분포와 스펙 한계", viz2.tiles([
-            ("분포", "값이 어디에 얼마나 모였나"), ("σ · 표준편차", "평균에서 퍼진 정도"),
-            ("LSL · USL", "스펙 하한 · 상한 (data/spec.csv)"), ("vth_v 스펙", "LSL 0.38 V · USL 0.52 V")], 2), T),
-        light("히스토그램", pv5.hist_build("W07"), T),
-        light("비유 · 차선과 차", pv5.lane(), T),
-        light("Cp 와 Cpk", '<div class="twocol w"><div>' + code("공정 능력 지수", esc(
-            "Cp  = (USL − LSL) / 6σ\n"
-            "Cpk = min(USL − μ, μ − LSL) / 3σ\n\n"
-            f"W07 vth : μ {mu07:.4f} · σ {sd07:.4f}\n"
-            f"Cp  = 0.14 / {6 * sd07:.4f} = {cp07}\n"
-            f"Cpk = {0.52 - mu07:.4f} / {3 * sd07:.4f} = {k07}")) + "</div><div>"
-              + viz2.tiles([("Cp", "스펙 폭 ÷ 분포 폭 · 위치 무시"), ("Cpk", "가까운 쪽 스펙까지 여유 · 치우침 반영"),
-                            ("1 미만", "±3σ 범위가 스펙 밖으로 나감")], 1) + "</div></div>" + src(NIST), T),
-        light("분포 모양과 Cpk", pv5.cpk_shift() + src(NIST), T),
-        # ── 우리 데이터
-        light("설비별 vth Cpk", big([
-            (f"{es['ETCH_01'][0]}", "", f"ETCH_01 · Cp {es['ETCH_01'][1]}"), (f"{es['ETCH_02'][0]}", "", f"ETCH_02 · Cp {es['ETCH_02'][1]}"),
-            (f"{es['ETCH_03'][0]}", "", f"ETCH_03 · Cp {es['ETCH_03'][1]}", True)], 3), T),
-        light("반경과 문턱전압", pv5.radius_trend(), T),
-        light("산점도와 규격 영역", pv5.scatter_spec("W07"), T),
-        light("이상 다이 목록", '<div class="twocol w"><div>' + code(f"output/outliers_W07.csv · {nol}행 중 6행", esc(ol)) + "</div><div>"
-              + viz2.tiles([("뽑는 조건", "vth 스펙 밖 · idsat < 0.92"), ("쓰는 곳", "맵 위치 확인 · 재측정 목록"),
-                            ("대조", f"엑셀 필터 개수 = {nol}")], 1) + "</div></div>", T),
-        light("완성 화면", shot("p5_spc_W07.webp", "spc_W07.html · spc.py 결과", [
-            ("왼쪽", f"vth 히스토그램 · LSL · USL · Cpk {k07}"), ("오른쪽", "vth × idsat 산점도 · 규격 영역"),
-            ("색", "양품 초록 · 불량 빨강"), ("파일", "HTML 한 파일 · 외부 라이브러리 없음")]), T),
-        # ── 실습
-        lab("5-2", "분포 · Cpk · 이상 다이", T, "W07 의 vth 분포와 Cpk 를 구하고, 산점도와 이상 다이 목록을 만든다",
-            ["vth 히스토그램 요청 (LSL · USL 선)", "Cp · Cpk 계산 요청", "vth × idsat 산점도 요청", "이상 다이 CSV 저장", "설비별 Cpk 비교"],
-            [f"W07 vth Cpk {k07}", f"이상 다이 {nol}행 · 엑셀 개수와 같음", f"ETCH_03 Cpk 가 가장 낮음 ({es['ETCH_03'][0]})"],
-            files="output/clean/W07.csv · data/spec.csv"),
+        # ── 도입
+        light("맵과 차트", viz2.pair(
+            "웨이퍼 맵", [("보여 주는 것", "어디에 있나 · 위치"), ("읽는 법", "색이 몰린 곳"), ("예", "가장자리 · 대각선")],
+            "막대 차트", [("보여 주는 것", "얼마나 많나 · 크기"), ("읽는 법", "막대 길이 비교"), ("예", "사유별 칩 수")]), T),
+        # ── 설명
+        light("막대 하나의 구성", viz2.tiles([
+            ("이름", "사유 · 구역"), ("길이", "칩 수 · 합격률"), ("숫자", "막대 끝 값"), ("순서", "많은 순")], 4), T),
+        light("택배 사유별 막대", pv3.pareto([(sk.D_KO[k], v) for k, v in sorted(DN["reason"].items(), key=lambda x: -x[1])]), T),
+        light("칩 사유별 막대", pv3.pareto([(sk.KO[k], v) for k, v in sorted(WN["reason"].items(), key=lambda x: -x[1])]), T),
+        light("위치별 합격률 막대", '<div class="twocol w"><div>'
+              + hbars([(a, DN["area"][a], a == "외곽", f"{DN['area'][a]}%") for a in sk.AREA], top=100, title="택배 · 구역별 정시율")
+              + "</div><div>"
+              + hbars([(sk.ZONE_KO[z], zr[z], False, f"{zr[z]}%") for z in ("center", "mid", "edge")], top=100, title="칩 · 위치별 합격률")
+              + "</div></div>", T),
+        light("두 칸 배치", viz2.maprows([
+            ("위", "숫자 카드 4개", "한 줄"), ("왼쪽", "웨이퍼 맵", "넓게"), ("오른쪽 위", "사유별 막대", "많은 순"),
+            ("오른쪽 아래", "위치별 합격률", "3개")], "자리", "내용"), T),
+        # ── 설명 · Claude 활용
+        light("한 번에 요청과 나눠 요청", viz2.pair(
+            "한 번에", [("요청", "「차트 두 개 · 배치 · 색 다 해 줘」"), ("결과", "여러 곳이 동시에 바뀜"), ("틀리면", "어디서 틀렸는지 모름")],
+            "나눠서", [("1", "사유별 막대 → 확인"), ("2", "위치별 막대 → 확인"), ("3", "배치 → 확인")]), T),
+        light("Git 커밋", viz2.maprows([
+            ("커밋", "지금 상태를 저장 지점으로", "「지금 상태 커밋해 줘」"), ("기록", "언제 · 무엇을 바꿨나", "「커밋 기록 보여 줘」"),
+            ("되돌리기", "저장 지점으로 돌아감", "「직전 커밋으로 되돌려 줘」")], "말", "요청 예"), T),
+        light("체크포인트", viz2.tiles([
+            ("자동 저장", "Claude 가 파일을 고치기 전 상태"), ("되감기", "Esc 두 번 · /rewind"),
+            ("Git 과 차이", "체크포인트는 이 대화 안 · Git 은 계속 남음")], 3)
+              + src(("Claude Code 문서 · Checkpointing", "https://code.claude.com/docs/en/checkpointing")), T),
+        # ── 적용
+        lab("5-1", "택배 차트", T, "delivery_sim.html 에 실패 사유별 막대 · 구역별 정시율 막대를 넣고 두 칸으로 배치한다",
+            ["사유별 막대 → 확인 · 커밋", "구역별 막대 → 확인 · 커밋", "두 칸 배치 → 확인 · 커밋", "읽히는 사실 세 가지"],
+            [f"지연 {DN['reason']['late']}건 1위", f"외곽 {DN['area']['외곽']}% 최저"], files="output/delivery_sim.html"),
+        light("택배 차트 결과", sk.one("sim/delivery_s5.webp", "택배 차트"), T),
+        lab("5-2", "웨이퍼 차트", T, "simulator.html 에 불합격 사유별 막대 · 위치별 합격률 막대를 넣고 맵 왼쪽 · 차트 오른쪽으로 배치한다",
+            ["사유별 막대 → 확인 · 커밋", "위치별 막대 → 확인 · 커밋", "두 칸 배치 → 확인 · 커밋", "읽히는 사실 세 가지"],
+            [f"깨짐 · 긁힘 {WN['reason']['crack']}개 1위", f"중심 {zr['center']}% · 가장자리 {zr['edge']}%"], files="output/simulator.html"),
         brief("5-2", T,
-              ["히스토그램 요청", "Cp · Cpk 숫자 확인", "산점도 요청", "이상 다이 CSV 요청", "설비별 Cpk 요청"],
-              [("목표", "vth 퍼짐 · 스펙 여유를 숫자와 그림으로"), ("입력", "W07 정제본 · spec.csv"),
-               ("산출물", "output/spc_W07.html · outliers_W07.csv"), ("하지 말 것", "스펙 숫자를 코드에 직접 적기 · spec.csv 를 읽게")],
-              [], [f"Cpk {k07} · Cp {cp07}", f"이상 다이 {nol}개"], ""),
-        light("실습 5-2 확인", chat([
-            ("me", "W07 vth 의 Cp, Cpk 를 spec.csv 기준으로 계산하고 식에 들어간 값도 보여 줘."),
-            ("ai", f"μ {mu07:.4f} · σ {sd07:.4f} · LSL 0.38 · USL 0.52\nCp {cp07} · Cpk {k07}\n"
-                   "USL 쪽 여유가 더 작음 — 가장자리 다이의 vth 가 높음")], "Cpk 요청 대화 예"), T),
+              ["사유별 막대", "위치별 막대", "두 칸 배치", "읽히는 사실"],
+              [("목표", "차트 2종 · 두 칸 배치"), ("입력", "fail_type · zone · pass_fail"),
+               ("산출물", "simulator.html 맵 오른쪽"), ("하지 말 것", "맵 · 카드 지우기 · 한 번에 다 요청")],
+              [], [f"막대 합계 {WN['fail']}", "커밋 3개"], ""),
+        light("웨이퍼 차트 결과", sk.one("sim/wafer_s5.webp", "웨이퍼 차트"), T),
     ]

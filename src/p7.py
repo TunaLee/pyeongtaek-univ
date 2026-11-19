@@ -1,94 +1,83 @@
-"""7교시 자동화 · 대시보드.
+"""7교시 조절 바 전체 · Skill.
 
-배경(매일 들어오는 파일 · 자동화의 조건) → 비유(자동 세차장) → 새 파일 하나 · 명령 하나 애니메이션 → run_all.py
-→ 대시보드 구성 · 차트 고르는 기준 · 목표선과 색 → 원인 후보 좁히기 애니메이션 → W26 반영 → 정기 실행(claude -p) → 점검 → 실습 7.
-숫자는 labs/solution/output(slide_numbers.json · w26_rerun.json)에서 읽는다.
+도입(조절 바 설계표) → 설명(왼쪽 조절 · 오른쪽 결과 · 처음 값과 원본 대비 · 숫자 점검 · 컨텍스트 · 비우기와 요약 · Skill · Skill 폴더)
+→ 적용(실습 7-1 택배 조절 바 전체 → 7-2 웨이퍼 조절 바 8종).
 """
-import json
-
-import pv7
+import psim
+import sk
 import viz2
 from deck import lab, light
-from hx import checks, code, esc, note
-from pkit import SOL, brief, chat, codemap, shot, tag
+from hx import code, esc
+from pkit import brief, tag
 from stats_hx import src
 
 T = tag("7")
-NUM = json.loads((SOL / "output" / "slide_numbers.json").read_text(encoding="utf-8"))
-RE = json.loads((SOL / "output" / "w26_rerun.json").read_text(encoding="utf-8"))
-B, A = RE["before"], RE["after"]
-EQ = NUM["eqp_yield"]
-EDGE = [(e["eqp"], NUM["eqp_zone"][f"{e['eqp']}|edge"]) for e in EQ]
-F = NUM["eqp_fail"]
+WN, DN = sk.WN, sk.DN
+CSS = ""
+
+WS, DS = sk.SIM["wafer"], sk.SIM["delivery"]
+UNIT = {"rc_ohm": "Ω", "ioff_na": "nA", "vth_v": "V", "particle_cnt": "개", "idsat_ma": "mA", "ox_thk_nm": "nm", "radius_mm": "mm"}
 
 
-def _fails():
-    """불량 유형별 ETCH_03 개수 vs 나머지 두 설비 평균 — 차이가 큰 두 유형."""
-    out = []
-    for t, ko in (("leakage", "누설전류"), ("vth_shift", "문턱전압 이탈")):
-        other = round((F.get(f"ETCH_01|{t}", 0) + F.get(f"ETCH_02|{t}", 0)) / 2)
-        out.append((ko, F[f"ETCH_03|{t}"], other))
-    return out
+SKILL = """---
+name: sim-check
+description: 시뮬레이터 숫자를 점검할 때. 조절 바를
+  움직인 뒤 카드 · 맵 · 차트 숫자를 대조한다.
+---
+1. 조절 바 네 가지를 정답표.md 순서로 움직인다
+2. 카드 · 맵 · 차트 · 분포 숫자를 기록한다
+3. 정답표와 다르면 다른 곳만 표로 보고한다"""
 
 
-RUN = [('for s in ("pipeline.py", "dashboard.py"):', "pipeline → dashboard 순서"),
-       ('    print(f"── {s}")', "지금 단계를 화면에 표시"),
-       ('    runpy.run_path(HERE / s, run_name="__main__")', "그 스크립트를 실행")]
-
-CLAUDE_P = 'claude -p "output/pipeline_log.md 를 읽고\n  검증 실패한 파일과 이유를 세 줄로 요약해 줘"'
+def _design():
+    rows = []
+    for c, v in WS["spec"].items():
+        if "on" in v:
+            rows.append((sk.COL_KO[c], c, "체크 · 판정 켜기"))
+            continue
+        lo, hi, u = v.get("lo"), v.get("hi"), UNIT[c]
+        cond = f"{lo:g} ~ {hi:g} {u}" if lo is not None and hi is not None else (f"{lo:g} {u} 이상" if lo is not None else f"{hi:g} {u} 이하")
+        rows.append(("집계 범위 · 중심에서 거리" if c == "radius_mm" else sk.COL_KO[c], c, cond))
+    return viz2.maprows(rows, "조절 바", "열 · 처음 값")
 
 
 def slides():
+    chk = WS["s7_checks"]
     return [
-        # ── 배경
-        light("매일 들어오는 파일", viz2.tiles([
-            ("새 LOT", "웨이퍼 25장이 한꺼번에"), ("재측정", "같은 웨이퍼 파일이 다시"), ("새 설비", "equipment.csv 에 한 줄 추가")], 3), T),
-        light("자동화의 조건", viz2.tiles([
-            ("입력 위치 고정", "새 파일은 data/raw/ 에만"), ("명령 하나", "python scripts/run_all.py"),
-            ("검증 실패면 멈춤", "틀린 숫자를 그리지 않음"), ("결과 위치 고정", "output/dashboard.html")], 2), T),
-        light("비유 · 자동 세차장", viz2.maprows([
-            ("차를 넣음", "입구에 차 한 대", "data/raw/ 에 파일 하나"), ("버튼 하나", "시작 버튼", "run_all.py"),
-            ("정해진 순서", "세척 → 헹굼 → 건조", "정제 → 적재 → 집계 → 그리기"), ("나오는 차", "몇 대를 넣어도 같은 상태", "dashboard.html")],
-            "세차장", "파이프라인"), T),
-        light("새 파일 하나 · 명령 하나", pv7.new_file(B, A), T),
-        light("run_all.py", codemap(RUN, ask="파이프라인과 대시보드를 명령 하나로", title="scripts/run_all.py · 핵심 세 줄"), T),
-        # ── 대시보드
-        light("대시보드 구성", shot("p7_dash_mid.webp", "output/dashboard.html · 가운데 줄", [
-            ("위 · KPI", f"LOT 수율 {B['lot_yield']}% · 미달 {B['below_target']}장"), ("위 · 웨이퍼별 수율", "목표선 90% · 점 색 = 설비"),
-            ("가운데 · 설비별 · Pareto", "평균 수율 · 불량 유형 순위"), ("아래 · 웨이퍼 맵", "최저 수율 웨이퍼")]), T),
-        light("차트 고르는 기준", viz2.tiles([
-            ("비교", "막대 · 설비별 평균 수율"), ("순서 · 추이", "선 · 웨이퍼 번호순 수율"),
-            ("순위", "Pareto · 많은 불량 유형부터"), ("위치", "웨이퍼 맵 · 다이 좌표")], 2), T),
-        light("목표선과 색", shot("p7_dash_top.webp", "웨이퍼별 수율 · 목표 90%", [
-            ("목표선", "90% 빨간 점선 · 아래가 미달"), ("점 색", "남 ETCH_01 · 하늘 ETCH_02 · 주황 ETCH_03"),
-            ("읽히는 것", f"주황 점 {B['etch03']['wafers']}장이 모두 선 아래")]), T),
-        light("원인 후보 좁히기", pv7.narrow(B["lot_yield"], [(e["eqp"], e["yield"]) for e in EQ], EDGE, _fails()), T),
-        light("W26 반영", shot("p7_dash26_top.webp", "W26 을 넣고 run_all.py 한 번", [
-            ("웨이퍼", f"{B['wafers']}장 → {A['wafers']}장"), ("LOT 수율", f"{B['lot_yield']}% → {A['lot_yield']}%"),
-            ("목표 미달", f"{B['below_target']}장 → {A['below_target']}장 · W26 도 ETCH_03")]), T),
-        # ── 정기 실행
-        light("정기 실행", pv7.schedule(), T),
-        light("claude -p", code("터미널 · 대화 없이 한 번 실행", esc(CLAUDE_P))
-              + viz2.tiles([("-p", "질문 하나 → 답 출력 → 종료"), ("쓰는 곳", "예약 작업 · 스크립트 안"),
-                            ("결과", "글 요약 · 사람이 읽고 판단")], 3)
-              + src(("Claude Code 문서 · Overview", "https://code.claude.com/docs/en/overview")), T),
-        light("대시보드 점검", checks([
-            ("KPI 숫자가 SQL 결과와 같은가", f"LOT {B['lot_yield']}%"), ("목표선이 90% 에 있는가", "축 눈금과 대조"),
-            ("점 색과 범례가 맞는가", "설비 세 개"), ("새 파일 뒤 웨이퍼 수가 늘었나", f"{B['wafers']} → {A['wafers']}")],
-            "하나라도 불일치 → 숫자부터 다시"), T),
-        # ── 실습
-        lab("7-2", "자동화 · 대시보드", T, "명령 하나로 파이프라인과 대시보드를 다시 만들고 새 웨이퍼 파일로 확인한다",
-            ["run_all.py 요청", "대시보드 요청 (KPI · 수율 선 · 설비 · Pareto · 맵)", "점검 네 가지", "data/new/ 의 W26 을 raw/ 로 옮기고 다시 실행",
-             "원인 후보 한 줄 쓰기"],
-            [f"웨이퍼 {A['wafers']}장 · LOT {A['lot_yield']}%", "목표선 · 범례 · 축 단위", "원인 후보 한 줄"],
-            files="data/raw/ · data/new/wafer_test_W26.csv"),
+        # ── 도입
+        light("조절 바 설계표", _design(), T),
+        # ── 설명
+        light("왼쪽 조절 · 오른쪽 결과", sk.duo("sim/wafer_s7.webp", "sim/wafer_s7_moved.webp", "처음 값", "누설전류 상한 5 nA"), T),
+        light("처음 값과 원본 대비", viz2.tiles([
+            ("처음 값 버튼", "조절 바 8개를 기준표 값으로"), ("원본 대비", f"엑셀 원본 수율 {WN['yield']}% 와 차이 · 예 {chk[0]['delta_pp']:+.2f}%p"),
+            ("걸림 수", "조절 바마다 그 기준에 걸린 칩 수")], 3), T),
+        light("숫자 점검 네 가지", viz2.maprows([(c["op"], f"수율 {c['rate']}%", f"합격 {c['pass']} / {c['total']} · {c['delta_pp']:+.2f}%p") for c in chk], "조작", "기대 숫자"), T),
+        # ── 설명 · 컨텍스트 · Skill
+        light("컨텍스트", psim.context_fill()
+              + src(("Claude Code 문서 · Context window", "https://code.claude.com/docs/en/context-window")), T),
+        light("비우기와 요약", viz2.tiles([
+            ("/clear", "대화를 비움 · CLAUDE.md 는 다시 읽음"), ("/compact", "지금까지를 요약해 이어 감"),
+            ("쓰는 때", "교시가 바뀔 때 · 다른 일로 넘어갈 때"), ("남기는 법", "결정 · 숫자는 파일로(docs/)")], 2)
+              + src(("Claude Code 문서 · Commands", "https://code.claude.com/docs/en/commands")), T),
+        light("매번 같은 설명", viz2.pair(
+            "요청마다 설명", [("1교시", "「숫자 보고할 때 네 가지 다」"), ("6교시", "「상한 5 · 20 숫자도」"), ("7교시", "「여덟 개 다 · 같은 형식」")],
+            "Skill 한 번", [("저장", ".claude/skills/sim-check/SKILL.md"), ("부르기", "「숫자 점검해 줘」"), ("결과", "매번 같은 순서 · 같은 표")]), T),
+        light("Skill 이 열리는 단계", psim.skill_trigger()
+              + src(("Claude Code 문서 · Skills", "https://code.claude.com/docs/en/skills")), T),
+        light("SKILL.md", '<div class="twocol w"><div>' + code(".claude/skills/sim-check/SKILL.md", esc(SKILL)) + "</div><div>"
+              + viz2.tiles([("name", "Skill 이름 · 폴더 이름과 같게"), ("description", "언제 쓰는지 · Claude 가 고르는 기준"),
+                            ("본문", "단계 · 산출물 형식")], 1) + "</div></div>", T),
+        # ── 적용
+        lab("7-1", "택배 조절 바 6종", T, "판정 4종(파손 · 주소 오류 · 부재 체크 · 약속 시간)과 집계 범위 2종(거리 · 무게) 조절 바를 만들고 두 칸으로 배치한다",
+            ["조절 바 설계표 요청", "조절 바 전체 · 처음 값 버튼", "두 칸 배치", "sim-check Skill 로 숫자 점검"],
+            [f"{DS['s7_checks'][0]['op']} → {DS['s7_checks'][0]['rate']}%", f"{DS['s7_checks'][1]['op']} → {DS['s7_checks'][1]['rate']}%", "처음 값 버튼 → 원래 숫자"], files="output/delivery_sim.html"),
+        light("택배 조절 바 6종 결과", sk.one("sim/delivery_s7.webp", "택배 조절 바 6종"), T),
+        lab("7-2", "조절 바 8종", T, "기준표 일곱 측정값 + 집계 범위(중심에서 거리)에 조절 바를 만들고 처음 값 · 원본 대비를 넣는다",
+            ["조절 바 설계표 요청", "조절 바 8종 · 분포 · 합격선", "왼쪽 조절 · 오른쪽 결과", "처음 값 · 원본 대비", "숫자 점검 네 가지"],
+            ["점검 네 가지 · " + " · ".join(f"{c['rate']}%" for c in chk), f"처음 값 → {WN['yield']}%"], files="output/simulator.html"),
         brief("7-2", T,
-              ["run_all.py 요청", "대시보드 요청", "점검 네 가지", "W26 넣고 다시 실행", "원인 후보 한 줄"],
-              [("목표", "새 파일이 들어와도 명령 하나로 같은 대시보드"), ("입력", "warehouse.duckdb 의 SQL 뷰"),
-               ("산출물", "run_all.py · output/dashboard.html"), ("하지 말 것", "차트 숫자를 손으로 입력 · 외부 차트 라이브러리")],
-              [], [f"W26 뒤 웨이퍼 {A['wafers']}장", f"미달 {B['below_target']} → {A['below_target']}장"], ""),
-        light("실습 7-2 확인", chat([
-            ("me", "W26 파일을 넣었어. 대시보드를 다시 만들고 바뀐 숫자만 알려 줘."),
-            ("ai", f"웨이퍼 {B['wafers']} → {A['wafers']}장\nLOT 수율 {B['lot_yield']}% → {A['lot_yield']}%\n"
-                   f"목표 미달 {B['below_target']} → {A['below_target']}장 (W26 · ETCH_03)")], "다시 실행 대화 예"), T),
+              ["설계표", "조절 바 8종", "배치", "처음 값 · 원본 대비", "숫자 점검"],
+              [("목표", "기준표 전 항목 조절 바"), ("입력", "합격기준표.md"),
+               ("산출물", "simulator.html 왼쪽 조절 · 오른쪽 결과"), ("하지 말 것", "판정 순서 바꾸기 · 기존 화면 지우기")],
+              [], [f"처음 값 → {WN['yield']}%", "네 가지 점검 숫자 일치"], ""),
     ]

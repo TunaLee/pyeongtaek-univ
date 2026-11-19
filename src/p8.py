@@ -1,117 +1,74 @@
-"""8교시 분석 리포트 · 발표.
+"""8교시 시뮬레이터 완성 · 하네스 · 발표.
 
-배경(차트에서 결정까지) → 분석 요약 네 칸 애니메이션 → 결과 → 원인 후보 3건(웨이퍼 맵 · 숫자) → 근거 묶기
-→ 상관과 원인(날짜와 설비가 겹침 애니메이션) → 추가 확인 → Git 기록 · README → 발표 2분 → 사람이 정할 것 → 내 데이터 적용 → 실습 8.
-숫자는 labs/ref.json · labs/solution/output(slide_numbers.json · git_log_example.txt) · docs/analysis_summary.md 에서 읽는다.
+도입(남은 기능 세 가지) → 설명(다른 파일 불러오기 · 목표 수율 · 내려받기 · 실험 기록 · 하네스 · Hook · 이 과정의 하네스)
+→ 적용(실습 8-1 택배 완성 → 8-2 웨이퍼 완성 · 발표 · 제출물).
 """
-import json
-
-import pv8
+import psim
+import sk
 import viz2
-from deck import flow, lab, light
-from hx import code, esc, note
-from pkit import REF, SOL, brief, chat, shot, tag
-from stats_hx import big, src
+from deck import lab, light
+from pkit import brief, tag
+from stats_hx import src
 
 T = tag("8")
-NUM = json.loads((SOL / "output" / "slide_numbers.json").read_text(encoding="utf-8"))
-EQ = {e["eqp"]: e for e in NUM["eqp_yield"]}
-E3 = EQ["ETCH_03"]
-Z = NUM["eqp_zone"]
-F = NUM["eqp_fail"]
-WF = NUM["wafer_fail"]
-LOT_Y = json.loads((SOL / "output" / "w26_rerun.json").read_text(encoding="utf-8"))["before"]["lot_yield"]  # 정제 뒤 LOT 수율
-GITLOG = (SOL / "output" / "git_log_example.txt").read_text(encoding="utf-8").strip()
-README = (SOL / "README.md").read_text(encoding="utf-8")
-
-OS_OTHERS = [v for k, v in WF.items() if k.endswith("|open_short") and not k.startswith("W12")]
-CRACK_WAFERS = sorted({k.split("|")[0] for k in WF if k.endswith("|crack")})
-def _clean_yield(w):
-    """정제 뒤 수율 — DuckDB 결과와 같은 기준 (W19 재측정 9개 반영)."""
-    import sys
-    import pandas as pd
-    sys.path.insert(0, str(SOL / "scripts"))
-    from clean import clean
-    df, _ = clean(pd.read_csv(SOL.parent / "wafer-lab" / "data" / "raw" / f"wafer_test_{w}.csv"))
-    return round((df.pass_fail == "PASS").mean() * 100, 2)
-
-
-SAME_DAY = [(w, REF["wafers"][w]["eqp"], _clean_yield(w)) for w in ("W16", "W17", "W18", "W19", "W20")]
-DATE_ROWS = [(d, v[0], v[1]) for d, v in sorted(NUM["date"].items())]
-E1_OTHERS = [v["yield"] for w, v in REF["wafers"].items() if v["eqp"] == "ETCH_01" and w != "W07"]
-CH3 = (NUM["chamber"]["ETCH_03|CHA"], NUM["chamber"]["ETCH_03|CHB"])
-
-
-def _readme():
-    """README 의 실행 표 → 「교시 · 명령」 두 칸만 (한 줄이 화면 폭을 넘지 않게)."""
-    out = ["# 웨이퍼 테스트 분석", "", "## 실행"]
-    for ln in README.splitlines():
-        if ln.startswith("| ") and "python" in ln:
-            c = [x.strip().strip("`") for x in ln.strip("|").split("|")]
-            out.append(f"{c[0]:>5}교시  {c[1].split(' · ')[0].strip('`')}")
-    return "\n".join(out[:10])
+WN, DN = sk.WN, sk.DN
+CSS = ""
+WS, DS = sk.SIM["wafer"], sk.SIM["delivery"]
+TARGET = WS["s8_target"]["target"]
 
 
 def slides():
+    w21, d25 = WS["s8_alt"], DS["s8_alt"]
+    wp, dp = WS["s8_target"]["pick"], DS["s8_target"]["pick"]
+    combo = lambda p: " · ".join(f"{x['label']} {x['display']}" for x in p["set"])  # noqa: E731
     return [
-        # ── 배경
-        light("차트에서 결정까지", viz2.tiles([
-            ("읽는 사람", "팀장 · 공정 엔지니어 · 설비 담당"), ("필요한 것", "무엇이 문제 · 왜 그렇게 보나 · 다음에 할 일"),
-            ("대시보드만 보내면", "차트 해석이 사람마다 다름")], 3), T),
-        light("분석 요약 네 칸", pv8.summary([
-            ("결과", f"LOT 수율 {LOT_Y}% · 목표 미달 {E3['below']}장"),
-            ("원인 후보", "ETCH_03 가장자리 · W07 스크래치 · W12 중심 오픈·쇼트"),
-            ("근거", "SQL 뷰 숫자 · 설비별 · 존별 수율 · 웨이퍼 맵"),
-            ("추가 확인", "날짜 · 챔버 영향 · 장비 이력")]), T),
-        light("결과", big([
-            (f"{LOT_Y}", "%", "LOT 수율 · 웨이퍼 25장"), (f"{E3['below']}", "장", "목표 90% 미달", True),
-            (f"{E3['yield']}", "%", "ETCH_03 평균 · 나머지 두 설비 93%대")], 3), T),
-        light("원인 후보 1 · ETCH_03 가장자리", shot("p8_wafer_map_W21.webp", "W21 (ETCH_03) · 수율 최저", [
-            ("edge 존 수율", f"ETCH_03 {Z['ETCH_03|edge']}% · ETCH_01 {Z['ETCH_01|edge']}% · ETCH_02 {Z['ETCH_02|edge']}%"),
-            ("누설전류", f"ETCH_03 {F['ETCH_03|leakage']}개 · 나머지 {F['ETCH_01|leakage']} · {F['ETCH_02|leakage']}개"),
-            ("문턱전압 이탈", f"ETCH_03 {F['ETCH_03|vth_shift']}개 · 나머지 {F['ETCH_01|vth_shift']} · {F['ETCH_02|vth_shift']}개")]), T),
-        light("원인 후보 2 · W07 스크래치", shot("sol_wafer_map_W07.webp", "W07 (ETCH_01) · 크랙이 대각선 한 줄", [
-            ("크랙", f"{REF['wafers']['W07']['crack']}개 · LOT 에서 {', '.join(CRACK_WAFERS)} 에만"),
-            ("모양", "대각선 한 줄로 이어짐 · 무작위 분포와 다름"),
-            ("수율", f"{REF['wafers']['W07']['yield']}% · 같은 설비 다른 웨이퍼 {min(E1_OTHERS):.0f}~{max(E1_OTHERS):.0f}%")]), T),
-        light("원인 후보 3 · W12 중심 오픈·쇼트", shot("p8_wafer_map_W12.webp", "W12 (ETCH_02) · 중심에 오픈·쇼트 묶음", [
-            ("오픈·쇼트", f"{WF['W12|open_short']}개 · 다른 웨이퍼 {min(OS_OTHERS)}~{max(OS_OTHERS)}개"),
-            ("center 존 수율", f"{NUM['wafer_zone']['W12|center']}% · 같은 웨이퍼 mid {NUM['wafer_zone']['W12|mid']}%"),
-            ("모양", "중심 근처에 뭉침 · 무작위 분포와 다름")]), T),
-        light("근거 묶기", viz2.maprows([
-            ("주장", "ETCH_03 가장자리 불량", "한 문장"), ("숫자", f"edge {Z['ETCH_03|edge']}% vs {Z['ETCH_01|edge']}%", "SQL 결과 그대로"),
-            ("차트", "존별 수율 · W21 웨이퍼 맵", "숫자를 눈으로 확인"), ("출처", "warehouse.duckdb · eqp_zone 질의", "다시 뽑을 수 있게")], "칸", "예"), T),
-        light("상관과 원인", pv8.confound_svg(DATE_ROWS, SAME_DAY), T),
-        light("추가 확인", viz2.tiles([
-            ("챔버", f"ETCH_03 CHA {CH3[0]}% · CHB {CH3[1]}% · 차이 작음 → 후보 제외"),
-            ("장비 이력", "식각 균일도 · 정비(PM) 기록 · 이 데이터에는 없음"),
-            ("다음 LOT", "ETCH_03 가장자리 수율이 반복되는지")], 3), T),
-        # ── 기록 · 공유
-        light("Git 커밋 기록", code("git log --oneline · 과정 프로젝트 예", esc(GITLOG)), T),
-        light("README", code("README.md · 일부", esc(_readme())), T),
-        light("발표 2분", flow([("결과", "20초 · KPI 세 개"), ("원인 후보", "60초 · 후보 3건"), ("근거", "30초 · 맵 · 차트 한 장씩"),
-                              ("추가 확인", "10초 · 다음에 볼 것")], hl=1), T),
-        light("사람의 판단 영역", viz2.pair(
-            "Claude Code", [("숫자 뽑기", "SQL · 집계"), ("차트 · 맵", "근거 그림"), ("초안", "analysis_summary.md")],
-            "사람", [("판정 · 지표 정의", "스펙 · 수율 계산 방식"), ("원인 판단", "상관과 원인 구분"), ("다음 행동", "점검 · 재측정 결정")], hl="r")
-              + src(("Claude 블로그 · How Anthropic enables self-service data analytics",
-                     "https://claude.com/blog/how-anthropic-enables-self-service-data-analytics-with-claude")), T),
-        light("내 데이터에 적용", flow([("데이터 사전", "열 · 단위 · 기준"), ("정제 규칙", "중복 · 단위 · 결측"), ("파이프라인", "명령 하나"),
-                                    ("대시보드", "목표선 · 비교"), ("분석 요약", "근거 숫자")], hl=0), T),
-        # ── 실습
-        lab("8-2", "분석 요약 · 발표", T, "원인 후보 3건을 근거 숫자 · 차트와 묶은 분석 요약을 쓰고 2분 발표한다",
-            ["원인 후보 숫자 요청 (설비 · 존 · 웨이퍼)", "분석 요약 초안 요청", "숫자 · 출처 대조", "README · 커밋", "짝꿍 발표 · 질문"],
-            ["네 칸 모두 숫자 포함", "후보마다 차트 하나", "발표 2분 이내"],
-            files="warehouse.duckdb · output/dashboard.html"),
+        # ── 도입
+        light("남은 기능 세 가지", viz2.tiles([
+            ("불러오기", "다른 엑셀 · CSV 를 골라 화면 전체를 다시"), ("목표 수율", f"목표 {TARGET}% · 달성 여부 표시"),
+            ("내려받기", "판정 결과 · 기준값 CSV")], 3), T),
+        # ── 설명
+        light("다른 파일 불러오기", viz2.maprows([
+            ("W07 (처음)", f"수율 {WN['yield']}%", f"합격 {WN['pass']} / {WN['rows']}"),
+            ("W21 불러옴", f"수율 {w21['rate']}%", f"합격 {w21['pass']} / {w21['total']} · 가장자리 {w21['zones']['가장자리']['rate']}%"),
+            ("D07 → D25 (택배)", f"정시율 {DN['rate']}% → {d25['rate']}%", f"정시 {d25['pass']} / {d25['total']}")], "파일", "결과"), T),
+        light("목표 수율 표시", sk.duo("sim/wafer_s8_loaded.webp", "sim/wafer_s8_target.webp",
+                                       f"W21 · {w21['rate']}% · 목표 {TARGET}% 미달", f"{combo(wp)} → {wp['rate']}%"), T),
+        light("판정 결과 내려받기", viz2.maprows([
+            ("판정 결과 CSV", "칩마다 · 새 판정 · 사유", f"{WN['rows']}행"), ("기준값 CSV", "조절 바 8개 값", "실험 조건"),
+            ("파일 이름", "날짜 · 시각 포함", "덮어쓰지 않음")], "파일", "내용"), T),
+        light("실험 기록", viz2.maprows([
+            ("실험 1", f"W21 · 누설전류 상한 30", f"{sk.yld(sk.wafer('W21'), ioff_na=(None, 30))[1]}%"),
+            ("실험 2", "W21 · 문턱전압 상한 0.55", f"{sk.yld(sk.wafer('W21'), vth_v=(0.38, 0.55))[1]}%"),
+            ("실험 3", combo(wp), f"{wp['rate']}% · 목표 {TARGET}% 달성")], "실험", "조건 · 수율"), T),
+        # ── 설명 · 하네스
+        light("하네스", viz2.maprows([
+            ("CLAUDE.md", "프로젝트 규칙 · 정답 숫자", "2교시"), ("Plan Mode · 권한", "계획 먼저 · 확인 받기", "3교시"),
+            ("Git · 체크포인트", "되돌릴 지점", "5교시"), ("검증", "기대 숫자 · 화면 증거", "6교시"),
+            ("Skill", "반복 절차 · sim-check", "7교시"), ("Hook", "원본 보호 · 자동 차단", "8교시")], "부품", "역할"), T),
+        light("부탁과 Hook", viz2.pair(
+            "CLAUDE.md 부탁", [("규칙", "「data/ 는 수정 금지」"), ("지킴", "대부분"), ("어길 때", "막을 장치 없음")],
+            "Hook", [("규칙", "data/ 쓰기 직전 검사"), ("지킴", "매번 · 자동"), ("어길 때", "실행 전에 차단 · 이유를 Claude 에게")]), T),
+        light("Hook 이 끼어드는 시점", psim.hook_gate()
+              + src(("Claude Code 문서 · Hooks", "https://code.claude.com/docs/en/hooks")), T),
+        # ── 적용
+        lab("8-1", "택배 시뮬레이터 완성", T, f"다른 택배 파일 불러오기 · 목표 정시율 {TARGET}% · 결과 내려받기를 넣고 실험을 기록한다",
+            ["불러오기 요청 · D25 로 확인", "목표 정시율 표시", "내려받기", "실험 세 가지 기록"],
+            [f"D25 → 정시율 {d25['rate']}%", f"D07 · {combo(dp)} → {dp['rate']}%", "docs/실험기록.md"], files="output/delivery_sim.html · data/delivery_D25.xlsx"),
+        light("택배 시뮬레이터 완성", sk.one("sim/delivery_s8.webp", "택배 시뮬레이터 완성"), T),
+        lab("8-2", "수율 시뮬레이터 완성", T, "불러오기 · 목표 수율 · 내려받기를 넣고 목표 수율을 맞춘 조합을 기록해 1분 발표한다",
+            ["불러오기 · W21 로 확인", "목표 수율 · 내려받기", f"W21 에서 목표 {TARGET}% 조합 찾기 · 기록", "1분 발표", "폴더 제출"],
+            [f"W21 → 수율 {w21['rate']}%", f"목표 {TARGET}% 조합 예 · {wp['rate']}%", "simulator.html · 실험기록.md · 내려받은 CSV"],
+            files="output/simulator.html · data/wafer_test_W21.xlsx"),
         brief("8-2", T,
-              ["후보 숫자 요청", "분석 요약 초안", "숫자 · 출처 대조", "README · 커밋", "2분 발표"],
-              [("목표", "결과 · 원인 후보 · 근거 · 추가 확인 한 장"), ("입력", "SQL 뷰 · 대시보드 · 웨이퍼 맵"),
-               ("산출물", "docs/analysis_summary.md · README.md"), ("하지 말 것", "숫자 없는 단정 · 원인 확정 표현")],
-              [], ["후보마다 숫자 · 차트", "출처 질의를 다시 돌릴 수 있음"], ""),
-        light("실습 8-2 확인", chat([
-            ("me", "ETCH_03 가장자리 불량을 원인 후보로 쓰려고 해. 근거 숫자를 설비별로 비교해 줘."),
-            ("ai", f"edge 존 수율 · ETCH_01 {Z['ETCH_01|edge']}% · ETCH_02 {Z['ETCH_02|edge']}% · ETCH_03 {Z['ETCH_03|edge']}%\n"
-                   f"누설전류 · {F['ETCH_01|leakage']} · {F['ETCH_02|leakage']} · {F['ETCH_03|leakage']}개\n"
-                   "출처 · warehouse.duckdb (dies × equipment)")], "근거 대화 예"), T),
+              ["불러오기", "목표 수율 · 내려받기", "조합 찾기 · 기록", "발표"],
+              [("목표", "완성 시뮬레이터 · 실험 기록"), ("입력", "W07 · W21 엑셀"),
+               ("산출물", "simulator.html · docs/실험기록.md · CSV"), ("하지 말 것", "data/ 원본 수정 · 기존 기능 지우기")],
+              [], [f"W21 수율 {w21['rate']}%", f"목표 {TARGET}% 달성 조합 하나"], ""),
+        light("웨이퍼 시뮬레이터 완성", sk.one("sim/wafer_s8.webp", "수율 시뮬레이터 완성"), T),
+        light("1분 발표", viz2.maprows([
+            ("화면", "시뮬레이터 띄우기", "10초"), ("실험", "조절 바 세 가지 · 수율 변화", "30초"),
+            ("결과", f"목표 {TARGET}% 를 맞춘 조합", "10초"), ("다음", "내 엑셀로 해 볼 것", "10초")], "순서", "내용"), T),
+        light("제출물", viz2.tiles([
+            ("output/", "simulator.html · delivery_sim.html · 내려받은 CSV"), ("docs/", "데이터_요약.md · 실험기록.md"),
+            ("CLAUDE.md · .claude/", "규칙 · Skill · Hook")], 3), T),
     ]
-

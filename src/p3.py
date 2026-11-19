@@ -1,80 +1,91 @@
-"""3교시 수율 집계 · 엑셀 자동화.
+"""3교시 HTML 첫 화면 · 요청 쓰는 법.
 
-수율 집계(엑셀 피벗이 하던 일 · 존별 · 불량 Pareto(애니) · 엑셀 세 시트) → 웨이퍼 25장 한 번에 → 결과 대조 → 실습 3.
-숫자는 W07 · 원시 25장을 직접 계산해 얻는다.
+도입(웹 화면의 세 부분) → 설명(한 파일 안의 위치 · 예시 파일 고치기 · 요청 네 칸 · Plan Mode · 권한 모드)
+→ 적용(실습 3-1 택배 숫자 카드 → 3-2 웨이퍼 숫자 카드 · 꾸밈 전후).
 """
-import sys
-
-import pandas as pd
-
-import pv3
+import sk
 import viz2
-from deck import flow, lab, light
-from hx import note
-from pkit import LAB, REF, SOL, W, brief, chat, codemap, tag
-from stats_hx import big, hbars, src
-
-sys.path.insert(0, str(SOL / "scripts"))
-from common import KO  # noqa: E402
-from svg import line  # noqa: E402
+from deck import lab, light
+from hx import code, esc
+from pkit import brief, tag
+from stats_hx import src
 
 T = tag("3")
-W07 = W("W07")
-DF = pd.read_csv(LAB / "wafer-lab" / "data" / "wafer_test_W07.csv")
-OK = DF.pass_fail == "PASS"
-ZONE = (DF.assign(ok=OK).groupby("zone").ok.agg(["size", "sum"]).reindex(["center", "mid", "edge"]))
-ZONE["y"] = (ZONE["sum"] / ZONE["size"] * 100).round(2)
-FAIL = DF[~OK].fail_type.value_counts()
-TOP = FAIL.index[0]
-TOP_PCT = FAIL.iloc[0] / FAIL.sum() * 100
-RAW = LAB / "wafer-lab" / "data" / "raw"
-WY = [(w, v["yield"], v["eqp"]) for w, v in REF["wafers"].items()]   # 테스터 판정 기준 웨이퍼별 수율
-LOW = [w for w, y, _ in WY if y < 90]
-XL_PASS = int(OK.sum())
-
-
+WN, DN = sk.WN, sk.DN
 CSS = """
-  .p3eq{font-size:40px; font-weight:800; color:#16233A; text-align:center; margin:18px 0 22px; letter-spacing:-.01em;}
-  .p3eq em{font-style:normal; color:#F28C28;}
-  .p3eq small{display:block; font-size:16px; font-weight:600; color:#6B7785; margin-top:10px;}
+  .sksn{margin:0; background:#1E1E2E; color:#E6E6E6; border-radius:10px; padding:12px 14px; font-family:var(--mono); font-size:13px; line-height:1.6; white-space:pre; overflow:hidden;}
 """
+
+HTML = """<h1>W07 수율</h1>
+<div class="card">수율
+  <span id="y">-</span></div>"""
+CSS_ = """.card { border-radius: 12px;
+  box-shadow: 0 2px 10px #0002; }
+#y { color: #2BA84A; }"""
+JS = f"""const y = {WN['pass']} / {WN['rows']} * 100;
+document.getElementById("y")
+  .textContent = y.toFixed(2) + "%";"""
+
+ONEFILE = """<!doctype html>
+<html>
+<head>
+  <style>   … 꾸밈 (CSS) …   </style>
+</head>
+<body>
+  … 뼈대 (HTML) …
+  <script>  … 동작 (JS) …    </script>
+</body>
+</html>"""
+
+
+def _hcj():
+    pv_h = '<div class="pv"><div style="font-size:22px;font-weight:800">W07 수율</div><div>수율</div><div>-</div></div>'
+    pv_c = ('<div class="pv"><div style="font-size:22px;font-weight:800">W07 수율</div><div style="margin-top:8px;padding:12px;border-radius:12px;'
+            'box-shadow:0 2px 10px rgba(0,0,0,.12)"><b>수율</b><div style="color:#2BA84A;font-size:30px;font-weight:800">-</div></div></div>')
+    pv_j = ('<div class="pv"><div style="font-size:22px;font-weight:800">W07 수율</div><div style="margin-top:8px;padding:12px;border-radius:12px;'
+            f'box-shadow:0 2px 10px rgba(0,0,0,.12)"><b>수율</b><div style="color:#2BA84A;font-size:30px;font-weight:800">{WN["yield"]:.2f}%</div></div></div>')
+    snip = lambda t: f'<pre class="sksn">{esc(t)}</pre>'  # noqa: E731
+    cols = [("HTML", "뼈대 · 무엇이 있나", snip(HTML), pv_h), ("CSS", "꾸밈 · 어떻게 보이나", snip(CSS_), pv_c),
+            ("JS", "동작 · 계산 · 바꿈", snip(JS), pv_j)]
+    return '<div class="skhcj">' + "".join(
+        f'<div style="--d:{.3 + i * 2.2:.1f}s"><b>{h}<small>{s}</small></b>{c}{p}</div>' for i, (h, s, c, p) in enumerate(cols)) + "</div>"
 
 
 def slides():
     return [
-        # ── 수율 집계
-        light("수율 집계 세 가지", viz2.tiles([
-            ("전체 수율", f"양품 ÷ 전체 · W07 {W07['yield']}%"), ("존별 수율", "center · mid · edge 구역마다"),
-            ("불량 유형별 개수", "어떤 불량이 많은가 · Pareto")], 3), T),
-        light("피벗 테이블과 요청", viz2.maprows([
-            ("행", "zone", "「존별로」"), ("값", "pass_fail 이 PASS 인 개수", "「양품 수와 수율」"),
-            ("정렬", "개수 큰 순", "「많은 순으로」"), ("저장", "시트 하나", "「엑셀 시트로」")], "피벗 설정", "요청에 들어갈 말"), T),
-        light("존별 수율 · W07", hbars([
-            (f"center · 중심 {ZONE['size']['center']}개", ZONE["y"]["center"], True, f"{ZONE['y']['center']}%"),
-            (f"mid · 중간 {ZONE['size']['mid']}개", ZONE["y"]["mid"], False, f"{ZONE['y']['mid']}%"),
-            (f"edge · 가장자리 {ZONE['size']['edge']}개", ZONE["y"]["edge"], False, f"{ZONE['y']['edge']}%")], top=100), T),
-        light("불량 유형 Pareto · W07", pv3.pareto([(KO[t], int(v)) for t, v in FAIL.items()]), T),
-        light("엑셀 세 시트", viz2.tiles([
-            ("요약", f"총 다이 {len(DF)} · 양품 {int(OK.sum())} · 불량 {int((~OK).sum())} · 수율 {W07['yield']}%"),
-            ("존별", "구역 · 다이 수 · 양품 · 수율"), ("불량 유형", "유형 · 개수 · 누적 %")], 3), T),
-        # ── Gross die
-        # ── 결함 밀도 · 수율 모델
-        # ── 실습
-        light("웨이퍼 25장 한 번에", line([(w, y) for w, y, _ in WY], w=1160, h=330, unit="%", target=90, ymin=84, ymax=97,
-                                       color_of=lambda w: "#C62828" if REF["wafers"][w]["yield"] < 90 else "#1F3A5F"), T),
-        light("집계 결과 대조", viz2.maprows([
-            ("양품 수", f"스크립트 {XL_PASS}", f"엑셀 필터 PASS {XL_PASS}"), ("존별 다이 수", " · ".join(str(int(v)) for v in ZONE["size"]), "합계 616"),
-            ("불량 유형 합", f"{int(FAIL.sum())}", "불량 다이 수와 같음"), ("25장 수율", f"90% 미만 {len(LOW)}장", ", ".join(LOW[:5]) + " …")], "항목", "결과"), T),
-        lab("3-2", "수율 집계 · 엑셀 자동화", T, "W07 을 존별 · 불량 유형으로 집계해 엑셀에 저장하고, 원시 25장의 웨이퍼별 수율 표를 만든다",
-            ["존별 · 불량 유형 집계 요청", "엑셀 세 시트 저장", "엑셀 필터로 대조", "25장 웨이퍼별 수율 표 요청", "90% 미만 웨이퍼 확인"],
-            [f"존별 수율 center {ZONE['y']['center']}%", f"25장 중 90% 미만 {len(LOW)}장", "yield_summary.xlsx · wafer_yield.csv"],
-            files="data/wafer_test_W07.csv · data/raw/*.csv"),
+        # ── 도입
+        light("웹 화면의 세 부분", _hcj(), T),
+        # ── 설명
+        light("한 파일 안의 위치", '<div class="twocol w"><div>' + code("simulator.html", esc(ONEFILE)) + "</div><div>"
+              + viz2.tiles([("&lt;style&gt;", "꾸밈 · head 안"), ("본문 태그", "뼈대 · body 안"), ("&lt;script&gt;", "동작 · body 끝")], 1)
+              + "</div></div>", T),
+        light("예시 파일 고쳐 보기", viz2.maprows([
+            ("브라우저로 열기", "html_css_js_예시.html 더블클릭", "화면"), ("메모장 · VS Code 로 열기", "같은 파일", "글자"),
+            ("색 한 줄 바꾸기", "#2BA84A → #E8344E", "저장 → 새로 고침"), ("세 구역 찾기", "style · body · script", "위치 확인")], "할 일", "결과"), T),
+        light("요청 네 칸", viz2.pair(
+            "한 줄 요청", [("요청", "「수율 화면 만들어 줘」"), ("파일", "추측"), ("숫자 · 모양", "추측")],
+            "네 칸을 채운 요청", [("목표", "제목과 숫자 카드 4개 · 꾸밈 없이"), ("입력", "output/wafer_test_W07.csv"),
+                             ("산출물", "output/simulator.html 한 파일"), ("하지 말 것", "외부 라이브러리 · 원본 수정")]), T),
+        light("Plan Mode", viz2.tiles([
+            ("켜는 법", "Shift + Tab 두 번 · 입력창 아래 plan mode"), ("하는 일", "파일을 고치지 않고 계획만 보여 줌"),
+            ("고치는 법", "계획에 말로 수정 · 다시 계획"), ("실행", "계획 승인 → 그때 파일 작성")], 2)
+              + src(("Claude Code 문서 · Permission modes", "https://code.claude.com/docs/en/permission-modes")), T),
+        light("권한 모드", viz2.maprows([
+            ("기본", "파일 수정 · 명령 실행 전에 물어봄", "처음 쓸 때"), ("자동 수락", "파일 수정은 묻지 않음", "익숙해진 뒤"),
+            ("Plan", "읽기만 · 계획만", "큰 변경 전")], "모드", "동작")
+              + src(("Claude Code 문서 · Permission modes", "https://code.claude.com/docs/en/permission-modes")), T),
+        # ── 적용
+        lab("3-1", "택배 숫자 카드", T, "택배 CSV 로 전체 · 정시 · 실패 · 정시율 카드 4개 화면을 만들고 꾸밈을 넣는다",
+            ["Plan Mode 로 계획 받기", "꾸밈 없이 숫자 4개 화면", "CSS 로 카드 4장", "말로 색 · 크기 바꾸기 · 되돌리기"],
+            [f"{DN['rows']} · {DN['pass']} · {DN['fail']} · {DN['rate']}%", "output/delivery_sim.html"], files="output/delivery_D07.csv"),
+        light("택배 카드 전후", sk.duo("sim/delivery_s3a.webp", "sim/delivery_s3b.webp", "꾸밈 전", "꾸밈 후"), T),
+        lab("3-2", "웨이퍼 숫자 카드", T, "W07 CSV 로 숫자 카드 4개 simulator.html 을 만들고 꾸밈을 넣는다",
+            ["Plan Mode 로 계획 받기", "꾸밈 없이 숫자 4개 화면", "CSS 로 카드 4장", "말로 색 · 크기 바꾸기 · 되돌리기"],
+            [f"{WN['rows']} · {WN['pass']} · {WN['fail']} · {WN['yield']}%", "output/simulator.html"], files="output/wafer_test_W07.csv"),
         brief("3-2", T,
-              ["집계 요청 (존별 · 불량 유형)", "엑셀 저장 · 필터로 대조", "25장 수율 표 요청", "90% 미만 웨이퍼 확인", "결과 파일 열어 보기"],
-              [("목표", "W07 집계 엑셀 + 웨이퍼 25장 수율 표"), ("입력", "wafer_test_W07.csv · data/raw/"),
-               ("산출물", "output/yield_summary.xlsx · output/wafer_yield.csv"), ("하지 말 것", "수율 숫자를 손으로 적기")],
-              [], [f"PASS {XL_PASS} · 엑셀과 같음", f"90% 미만 {len(LOW)}장"], ""),
-        light("실습 3-2 확인", chat([
-            ("me", "data/raw 의 25장 웨이퍼별 수율 표를 만들어 줘. 90% 미만인 웨이퍼만 따로 알려 줘."),
-            ("ai", f"output/wafer_yield.csv 저장 · 25행\n90% 미만 {len(LOW)}장 · {', '.join(LOW)}")], "집계 대화 예"), T),
+              ["Plan Mode 로 계획 받기", "뼈대 · 계산 요청", "꾸밈 요청", "색 · 크기 바꾸기"],
+              [("목표", "제목 + 숫자 카드 4개"), ("입력", "output/wafer_test_W07.csv"),
+               ("산출물", "output/simulator.html 한 파일"), ("하지 말 것", "외부 라이브러리 · 파일 여러 개")],
+              [], [f"수율 {WN['yield']}%", "브라우저 새로 고침으로 확인"], ""),
+        light("웨이퍼 카드 전후", sk.duo("sim/wafer_s3a.webp", "sim/wafer_s3b.webp", "꾸밈 전", "꾸밈 후"), T),
     ]

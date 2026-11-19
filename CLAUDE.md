@@ -1,7 +1,9 @@
-# 평택대 · 반도체 품질데이터 분석 · 엔지니어링 (Claude Code)
+# 평택대 · 엑셀 데이터로 만드는 수율 시뮬레이터 (바이브코딩 · Claude Code)
 
-1일 8교시 강의 덱. 강사는 **Claude 를 활용한 데이터 분석 강사**다 — 반도체 공정 · 이론 · 산업 통계 · 원인 매핑 장은 만들지 않는다.
-데이터가 어떤 모양으로 생기는지(테스트 결과 → CSV) 정도만 둔다.
+1일 8교시 강의 덱. **교육 목표는 바이브코딩** — 엑셀 데이터로 HTML 수율 시뮬레이터(`simulator.html`)를 교시마다 기능 하나씩 더해 완성하고,
+Claude Code 를 잘 쓰는 법(요청 · Plan Mode · CLAUDE.md · 검증 · Git · Skill · Hook)을 설명 위주로 넣는다.
+설계 기준은 고객 폴더 `평택대 반도체 시뮬레이터 바이브코딩 자료/00_교시별_소제목_설계.html`(커밋 금지).
+반도체 용어는 칩 · 합격/불합격 · 수율 세 개만. 측정값 이름은 「몰라도 됨」. 공정 · 이론 · 통계 장은 만들지 않는다.
 
 ## 작업 규칙
 - 답 · 진행 메시지는 한국어. 작업이 끝나면 바로 commit + push (Co-Authored-By 줄 없이).
@@ -18,14 +20,15 @@ bash ~/.claude/skills/lecture-deck/scripts/capture_anim.sh $PWD/docs/index.html 
 바꾼 장은 반드시 캡처해서 본다(글자 잘림 · 내비 바 겹침 · 애니메이션 끝 장면). 캡처 출력은 스크래치 폴더에.
 
 ## 구조
-- `src/build.py` 표지 · 과정 지도 → 개요(`p0.py` · 데이터 · 저장 형식 · AI 이전/이후 · 분석 개념 · 택배 적용) → 교시마다 [간지 + `pgen.slides_for(u)` + `p{u}.slides()`] → 마지막 장
-- **실습은 택배 먼저 → 반도체.** 교시마다 `[실습 N-1]` 택배(`pgen.practice_lab`, build.py 가 `[실습 N-2]` 바로 앞에 끼움) → `[실습 N-2]` 반도체. 판정 · 조건 같은 설명도 택배 예 → 반도체 순서. 「기법별 반도체 적용」 같은 대놓고 비교하는 장은 더 만들지 않는다.
+- `src/build.py` 표지 · 과정 지도 → 개요(`p0.py` · 데이터 · 저장 형식 · AI 이전/이후 · 바이브코딩 · 행과 열 · 변수) → 교시마다 [간지 + `p{u}.slides()`] → 마지막 장
+- **실습은 택배 먼저 → 웨이퍼.** 교시마다 `[실습 N-1]` 택배(delivery_sim.html) → `[실습 N-2]` 웨이퍼(simulator.html). 각 교시 모듈 안에 순서대로 둔다. 판정 · 조건 같은 설명도 택배 예 → 반도체 순서. 「기법별 반도체 적용」 같은 대놓고 비교하는 장은 더 만들지 않는다.
 - **모든 교시는 도입 → 설명 → 적용 순서.** `build.py` 의 `PHASES` 에 도입 · 설명 장 제목을 적고 나머지는 적용. 장을 더하거나 제목을 바꾸면 `PHASES` 도 고친다(없는 제목은 빌드가 멈춘다).
 - `docs/index.html` 은 빌드 결과물이다. 직접 고치지 말고 `src/` 를 고친 뒤 빌드한다.
-- `src/pkit.py` 교시 목록 UNITS · REF(labs/ref.json) · 공통 헬퍼 / `src/p1~p8.py` 교시 본문 / `src/pviz.py · pv2~pv8.py` 애니메이션(anim._D, 접두어 고유)
+- `src/pkit.py` 교시 목록 UNITS / `src/sk.py` 데이터 · 판정 · 기준 숫자(W07 · D07 · 조절 바 실험) · 화면 도구 / `src/p1~p8.py` 교시 본문 / `src/psim.py · pviz.py · pv3 · pv4` 애니메이션(anim._D, 접두어 고유)
+- `labs/sim-lab/` 수강생 실습 폴더 · `labs/sim-solution/stage*` 교시별 완성본 · `labs/make_sim.py` 재생성 · `docs/img/sim/` 완성본 캡처
 - 공통 모듈(deck · hx · viz2 · v1kit · v3kit · anim …)은 vibe-coding 저장소에서 복사한 것.
 - `labs/make_data.py` 웨이퍼 25장 합성(시드 2611 · ETCH_03 가장자리 · W05 중복 · W11 mV · W19 결측 · W26 은 data/new) · `labs/make_general.py` 택배 25일치 · `labs/make_secom.py` UCI SECOM(CC BY 4.0)
-- `labs/wafer-lab/` 수강생 실습 폴더 · `labs/solution/` 완성본 스크립트(실행 전 `cp -r ../wafer-lab/data ./data`, duckdb 는 `.venv/bin/python`)
+- `labs/wafer-lab/data` 원본 합성 데이터(sk.py · make_sim.py 가 읽음) · `labs/solution/` 은 이전 분석 과정 완성본(덱에서 안 씀)
 - **화면 숫자는 손으로 적지 않는다** — ref.json · 완성본 출력 · CSV 에서 코드로 계산해 넣는다.
 
 ## 화면 문구 (사용자 반복 지적)

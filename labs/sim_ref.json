@@ -1,0 +1,673 @@
+{
+ "note": "labs/make_sim.py 가 계산 · 합성 데이터 기준 · rate 는 % (소수 둘째 자리)",
+ "wafer": {
+  "file": "wafer_test_W07.xlsx",
+  "rows": 616,
+  "cols": 18,
+  "total": 616,
+  "pass": 557,
+  "fail": 59,
+  "rate": 90.42,
+  "reasons": {
+   "crack": 25,
+   "open_short": 6,
+   "leakage": 6,
+   "vth_shift": 7,
+   "particle": 6,
+   "parametric": 9
+  },
+  "reasons_sorted": [
+   [
+    "깨짐·긁힘",
+    25
+   ],
+   [
+    "기타 측정값",
+    9
+   ],
+   [
+    "문턱전압 범위 밖",
+    7
+   ],
+   [
+    "접촉저항 초과",
+    6
+   ],
+   [
+    "누설전류 초과",
+    6
+   ],
+   [
+    "먼지 많음",
+    6
+   ]
+  ],
+  "zones": {
+   "중심": {
+    "total": 80,
+    "pass": 70,
+    "rate": 87.5
+   },
+   "중간": {
+    "total": 304,
+    "pass": 274,
+    "rate": 90.13
+   },
+   "가장자리": {
+    "total": 232,
+    "pass": 213,
+    "rate": 91.81
+   }
+  },
+  "rejudge_mismatch": 0,
+  "rejudge_match": true,
+  "spec": {
+   "crack": {
+    "on": true
+   },
+   "rc_ohm": {
+    "lo": null,
+    "hi": 15
+   },
+   "ioff_na": {
+    "lo": null,
+    "hi": 10
+   },
+   "vth_v": {
+    "lo": 0.38,
+    "hi": 0.52
+   },
+   "particle_cnt": {
+    "lo": null,
+    "hi": 4
+   },
+   "idsat_ma": {
+    "lo": 0.92,
+    "hi": null
+   },
+   "ox_thk_nm": {
+    "lo": 2.85,
+    "hi": 3.15
+   },
+   "radius_mm": {
+    "hi": 140
+   }
+  },
+  "s6_slider": {
+   "col": "ioff_na",
+   "name": "누설전류",
+   "unit": "nA",
+   "base": 10,
+   "tries": {
+    "5": {
+     "total": 616,
+     "pass": 542,
+     "fail": 74,
+     "rate": 87.99,
+     "delta_pp": -2.43
+    },
+    "15": {
+     "total": 616,
+     "pass": 557,
+     "fail": 59,
+     "rate": 90.42,
+     "delta_pp": 0.0
+    },
+    "20": {
+     "total": 616,
+     "pass": 558,
+     "fail": 58,
+     "rate": 90.58,
+     "delta_pp": 0.16
+    },
+    "30": {
+     "total": 616,
+     "pass": 560,
+     "fail": 56,
+     "rate": 90.91,
+     "delta_pp": 0.49
+    }
+   }
+  },
+  "s7_checks": [
+   {
+    "op": "누설전류 상한 10 → 5 nA",
+    "total": 616,
+    "pass": 542,
+    "fail": 74,
+    "rate": 87.99,
+    "delta_pp": -2.43,
+    "hash": "#ioff_na_hi=5"
+   },
+   {
+    "op": "문턱전압 범위 0.38~0.52 → 0.36~0.54 V",
+    "total": 616,
+    "pass": 558,
+    "fail": 58,
+    "rate": 90.58,
+    "delta_pp": 0.16,
+    "hash": "#vth_v_lo=0.36&vth_v_hi=0.54"
+   },
+   {
+    "op": "깨짐·긁힘 판정 끄기",
+    "total": 616,
+    "pass": 581,
+    "fail": 35,
+    "rate": 94.32,
+    "delta_pp": 3.9,
+    "hash": "#crack_on=0"
+   },
+   {
+    "op": "중심에서 거리 상한 140 → 120 mm",
+    "total": 448,
+    "pass": 407,
+    "fail": 41,
+    "rate": 90.85,
+    "delta_pp": 0.43,
+    "hash": "#radius_mm_hi=120"
+   }
+  ],
+  "s8_alt": {
+   "file": "wafer_test_W21.xlsx",
+   "rows": 616,
+   "total": 616,
+   "pass": 531,
+   "fail": 85,
+   "rate": 86.2,
+   "orig_rate": 86.2,
+   "reasons": {
+    "crack": 0,
+    "open_short": 9,
+    "leakage": 33,
+    "vth_shift": 30,
+    "particle": 6,
+    "parametric": 7
+   },
+   "zones": {
+    "중심": {
+     "total": 80,
+     "pass": 79,
+     "rate": 98.75
+    },
+    "중간": {
+     "total": 304,
+     "pass": 288,
+     "rate": 94.74
+    },
+    "가장자리": {
+     "total": 232,
+     "pass": 164,
+     "rate": 70.69
+    }
+   },
+   "scope_max": {
+    "radius_mm": 140
+   }
+  },
+  "s8_target": {
+   "target": 90,
+   "main": {
+    "base_rate": 90.42,
+    "reached_at_base": true,
+    "single": [
+     {
+      "col": "crack",
+      "flag_off": true,
+      "total": 616,
+      "pass": 581,
+      "fail": 35,
+      "rate": 94.32,
+      "delta_pp": 3.9,
+      "reach": true
+     },
+     {
+      "col": "rc_ohm",
+      "side": "hi",
+      "value": 15.1,
+      "total": 616,
+      "pass": 557,
+      "fail": 59,
+      "rate": 90.42,
+      "delta_pp": 0.0
+     },
+     {
+      "col": "ioff_na",
+      "side": "hi",
+      "value": 10.1,
+      "total": 616,
+      "pass": 557,
+      "fail": 59,
+      "rate": 90.42,
+      "delta_pp": 0.0
+     },
+     {
+      "col": "vth_v",
+      "side": "lo",
+      "value": 0.37,
+      "total": 616,
+      "pass": 557,
+      "fail": 59,
+      "rate": 90.42,
+      "delta_pp": 0.0
+     },
+     {
+      "col": "vth_v",
+      "side": "hi",
+      "value": 0.53,
+      "total": 616,
+      "pass": 558,
+      "fail": 58,
+      "rate": 90.58,
+      "delta_pp": 0.16
+     },
+     {
+      "col": "particle_cnt",
+      "side": "hi",
+      "value": 5,
+      "total": 616,
+      "pass": 560,
+      "fail": 56,
+      "rate": 90.91,
+      "delta_pp": 0.49
+     },
+     {
+      "col": "idsat_ma",
+      "side": "lo",
+      "value": 0.91,
+      "total": 616,
+      "pass": 557,
+      "fail": 59,
+      "rate": 90.42,
+      "delta_pp": 0.0
+     },
+     {
+      "col": "ox_thk_nm",
+      "side": "lo",
+      "value": 2.84,
+      "total": 616,
+      "pass": 559,
+      "fail": 57,
+      "rate": 90.75,
+      "delta_pp": 0.33
+     },
+     {
+      "col": "ox_thk_nm",
+      "side": "hi",
+      "value": 3.16,
+      "total": 616,
+      "pass": 557,
+      "fail": 59,
+      "rate": 90.42,
+      "delta_pp": 0.0
+     }
+    ]
+   },
+   "alt": {
+    "base_rate": 86.2,
+    "reached_at_base": false,
+    "single": [
+     {
+      "col": "crack",
+      "flag_off": true,
+      "total": 616,
+      "pass": 531,
+      "fail": 85,
+      "rate": 86.2,
+      "delta_pp": 0.0,
+      "reach": false
+     },
+     {
+      "col": "ioff_na",
+      "side": "hi",
+      "value": 48.6,
+      "total": 616,
+      "pass": 555,
+      "fail": 61,
+      "rate": 90.1,
+      "delta_pp": 3.9
+     },
+     {
+      "col": "vth_v",
+      "side": "hi",
+      "value": 0.59,
+      "total": 616,
+      "pass": 558,
+      "fail": 58,
+      "rate": 90.58,
+      "delta_pp": 4.38
+     }
+    ]
+   },
+   "pick": {
+    "data": "alt",
+    "data_file": "wafer_test_W21.xlsx",
+    "set": [
+     {
+      "col": "ioff_na",
+      "side": "hi",
+      "value": 30,
+      "label": "누설전류 상한",
+      "display": "30"
+     },
+     {
+      "col": "vth_v",
+      "side": "hi",
+      "value": 0.55,
+      "label": "문턱전압 상한",
+      "display": "0.55"
+     }
+    ],
+    "total": 616,
+    "pass": 556,
+    "fail": 60,
+    "rate": 90.26,
+    "delta_pp": 4.06,
+    "hash": "#ioff_na_hi=30&vth_v_hi=0.55"
+   }
+  }
+ },
+ "delivery": {
+  "file": "delivery_D07.xlsx",
+  "rows": 600,
+  "cols": 14,
+  "total": 600,
+  "pass": 481,
+  "fail": 119,
+  "rate": 80.17,
+  "reasons": {
+   "damaged": 4,
+   "addr_error": 8,
+   "late": 95,
+   "absent": 12
+  },
+  "reasons_sorted": [
+   [
+    "지연",
+    95
+   ],
+   [
+    "부재",
+    12
+   ],
+   [
+    "주소 오류",
+    8
+   ],
+   [
+    "파손",
+    4
+   ]
+  ],
+  "zones": {
+   "도심": {
+    "total": 55,
+    "pass": 54,
+    "rate": 98.18
+   },
+   "중간": {
+    "total": 182,
+    "pass": 172,
+    "rate": 94.51
+   },
+   "외곽": {
+    "total": 363,
+    "pass": 255,
+    "rate": 70.25
+   }
+  },
+  "rejudge_mismatch": 0,
+  "rejudge_match": true,
+  "spec": {
+   "damaged": {
+    "on": true
+   },
+   "addr_error": {
+    "on": true
+   },
+   "delivery_min": {
+    "lo": null,
+    "hi": 120
+   },
+   "absent": {
+    "on": true
+   },
+   "dist_km": {
+    "hi": 14.8
+   },
+   "weight_kg": {
+    "hi": 15.1
+   }
+  },
+  "s6_slider": {
+   "col": "delivery_min",
+   "name": "약속 시간",
+   "unit": "분",
+   "base": 120,
+   "tries": {
+    "90": {
+     "total": 600,
+     "pass": 248,
+     "fail": 352,
+     "rate": 41.33,
+     "delta_pp": -38.84
+    },
+    "100": {
+     "total": 600,
+     "pass": 335,
+     "fail": 265,
+     "rate": 55.83,
+     "delta_pp": -24.34
+    },
+    "150": {
+     "total": 600,
+     "pass": 564,
+     "fail": 36,
+     "rate": 94.0,
+     "delta_pp": 13.83
+    },
+    "180": {
+     "total": 600,
+     "pass": 572,
+     "fail": 28,
+     "rate": 95.33,
+     "delta_pp": 15.16
+    }
+   }
+  },
+  "s7_checks": [
+   {
+    "op": "약속 시간 120 → 150분",
+    "total": 600,
+    "pass": 564,
+    "fail": 36,
+    "rate": 94.0,
+    "delta_pp": 13.83,
+    "hash": "#delivery_min_hi=150"
+   },
+   {
+    "op": "부재 판정 끄기",
+    "total": 600,
+    "pass": 493,
+    "fail": 107,
+    "rate": 82.17,
+    "delta_pp": 2.0,
+    "hash": "#absent_on=0"
+   },
+   {
+    "op": "거리 상한 14.8 → 8 km",
+    "total": 237,
+    "pass": 226,
+    "fail": 11,
+    "rate": 95.36,
+    "delta_pp": 15.19,
+    "hash": "#dist_km_hi=8"
+   },
+   {
+    "op": "무게 상한 15.1 → 10 kg",
+    "total": 599,
+    "pass": 480,
+    "fail": 119,
+    "rate": 80.13,
+    "delta_pp": -0.04,
+    "hash": "#weight_kg_hi=10"
+   }
+  ],
+  "s8_alt": {
+   "file": "delivery_D25.xlsx",
+   "rows": 600,
+   "total": 600,
+   "pass": 448,
+   "fail": 152,
+   "rate": 74.67,
+   "orig_rate": 74.67,
+   "reasons": {
+    "damaged": 10,
+    "addr_error": 14,
+    "late": 113,
+    "absent": 15
+   },
+   "zones": {
+    "도심": {
+     "total": 53,
+     "pass": 49,
+     "rate": 92.45
+    },
+    "중간": {
+     "total": 169,
+     "pass": 156,
+     "rate": 92.31
+    },
+    "외곽": {
+     "total": 378,
+     "pass": 243,
+     "rate": 64.29
+    }
+   },
+   "scope_max": {
+    "dist_km": 14.8,
+    "weight_kg": 12.5
+   }
+  },
+  "s8_target": {
+   "target": 90,
+   "main": {
+    "base_rate": 80.17,
+    "reached_at_base": false,
+    "single": [
+     {
+      "col": "damaged",
+      "flag_off": true,
+      "total": 600,
+      "pass": 485,
+      "fail": 115,
+      "rate": 80.83,
+      "delta_pp": 0.66,
+      "reach": false
+     },
+     {
+      "col": "addr_error",
+      "flag_off": true,
+      "total": 600,
+      "pass": 487,
+      "fail": 113,
+      "rate": 81.17,
+      "delta_pp": 1.0,
+      "reach": false
+     },
+     {
+      "col": "delivery_min",
+      "side": "hi",
+      "value": 136,
+      "total": 600,
+      "pass": 540,
+      "fail": 60,
+      "rate": 90.0,
+      "delta_pp": 9.83
+     },
+     {
+      "col": "absent",
+      "flag_off": true,
+      "total": 600,
+      "pass": 493,
+      "fail": 107,
+      "rate": 82.17,
+      "delta_pp": 2.0,
+      "reach": false
+     }
+    ]
+   },
+   "alt": {
+    "base_rate": 74.67,
+    "reached_at_base": false,
+    "single": [
+     {
+      "col": "damaged",
+      "flag_off": true,
+      "total": 600,
+      "pass": 457,
+      "fail": 143,
+      "rate": 76.17,
+      "delta_pp": 1.5,
+      "reach": false
+     },
+     {
+      "col": "addr_error",
+      "flag_off": true,
+      "total": 600,
+      "pass": 459,
+      "fail": 141,
+      "rate": 76.5,
+      "delta_pp": 1.83,
+      "reach": false
+     },
+     {
+      "col": "delivery_min",
+      "side": "hi",
+      "value": 148,
+      "total": 600,
+      "pass": 541,
+      "fail": 59,
+      "rate": 90.17,
+      "delta_pp": 15.5
+     },
+     {
+      "col": "absent",
+      "flag_off": true,
+      "total": 600,
+      "pass": 463,
+      "fail": 137,
+      "rate": 77.17,
+      "delta_pp": 2.5,
+      "reach": false
+     }
+    ]
+   },
+   "pick": {
+    "data": "main",
+    "data_file": "delivery_D07.xlsx",
+    "set": [
+     {
+      "col": "delivery_min",
+      "side": "hi",
+      "value": 130,
+      "label": "약속 시간 상한",
+      "display": "130"
+     },
+     {
+      "col": "absent",
+      "side": "on",
+      "value": false,
+      "label": "부재 판정",
+      "display": "끄기"
+     }
+    ],
+    "total": 600,
+    "pass": 540,
+    "fail": 60,
+    "rate": 90.0,
+    "delta_pp": 9.83,
+    "hash": "#delivery_min_hi=130&absent_on=0"
+   }
+  }
+ }
+}

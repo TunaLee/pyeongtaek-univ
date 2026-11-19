@@ -15,6 +15,7 @@ import explain
 import hx
 import intro
 import p0
+import sk
 import pgen
 import pkit
 import stats_hx
@@ -22,7 +23,7 @@ import v1kit
 import v3kit
 
 ROOT = pkit.ROOT
-BASE_CSS = (p0.CSS + intro.CSS + explain.CSS + deck.CSS + deck_gas.CSS + hx.CSS + stats_hx.CSS + hx.mcp_fig.CSS + hx.viz2.CSS
+BASE_CSS = (p0.CSS + sk.CSS + intro.CSS + explain.CSS + deck.CSS + deck_gas.CSS + hx.CSS + stats_hx.CSS + hx.mcp_fig.CSS + hx.viz2.CSS
             + v3kit.CSS + v1kit.CSS)
 
 
@@ -33,8 +34,8 @@ def _tpl(css):
 def cover():
     return '''<section class="slide dk cover-dk active" data-title="표지">
   <div class="glow"></div>
-  <div class="kick">평택대학교 · 반도체 품질데이터 · Claude Code</div>
-  <h1>반도체 품질데이터<br/>분석 · 엔지니어링</h1>
+  <div class="kick">평택대학교 · 반도체 품질데이터 · 바이브코딩</div>
+  <h1>엑셀 데이터로 만드는<br/>수율 시뮬레이터</h1>
 </section>'''
 
 
@@ -46,23 +47,22 @@ def roadmap():
 
 # 교시마다 도입 → 설명 → 적용. 도입 · 설명은 장 제목을 순서대로 적고, 나머지는 적용(원래 순서 · 「반도체 적용」 먼저).
 PHASES = {
-    "1": (["반도체 적용", "테스트 결과가 CSV 가 되는 과정", "데이터 규모"],
-          ["데이터 용어", "열 18개 네 묶음", "택배 판정 조건", "판정 순서", "다이 판정 조건", "수율", "Claude 와 Claude Code", "Claude Code 의 데이터 작업 고리",
-           "Anthropic 사내 데이터 분석", "CLAUDE.md", "데이터 사전"]),
-    "2": (["택배 원시 파일의 문제", "공정 데이터가 지저분한 이유", "실제 공정 데이터 · UCI SECOM", "SECOM 의 결측 · 상수 열"],
-          ["비유 · 택배 분류장 검수", "결측 처리 세 가지", "원본 보존"]),
-    "3": (["구역별 정시 도착률", "실패 사유 Pareto"],
-          ["수율 집계 세 가지", "피벗 테이블과 요청"]),
-    "4": (["구역 지도", "지도의 효과"],
-          ["표와 맵", "웨이퍼 맵", "좌표에서 사각형까지", "HTML · SVG 한 파일", "WM-811K 공개 데이터셋", "불량 패턴 9종", "패턴 비율"]),
-    "5": (["배송 시간 분포", "평균은 같고 퍼짐이 다름"],
-          ["분포와 스펙 한계", "비유 · 차선과 차", "Cp 와 Cpk", "분포 모양과 Cpk"]),
-    "6": (["매일 쌓이는 배송 파일", "차량별 정시율", "매일 쌓이는 테스트 파일", "업계 사례 · 테스트 데이터 레이크"],
-          ["비유 · 물류센터", "파이프라인 다섯 단계", "CSV 와 Parquet", "같은 데이터의 파일 크기", "DuckDB", "다시 돌려도 같은 결과"]),
-    "7": (["배송 현황판", "매일 들어오는 파일"],
-          ["자동화의 조건", "비유 · 자동 세차장", "차트 고르는 기준", "정기 실행", "claude -p"]),
-    "8": (["외곽 지연의 원인 후보", "차트에서 결정까지"],
-          ["분석 요약 네 칸", "근거 묶기", "상관과 원인", "발표 2분", "사람의 판단 영역"]),
+    "1": (["완성 시뮬레이터", "웨이퍼와 칩", "엑셀 행과 맵 칸"],
+          ["열 18개 네 묶음", "택배 판정 조건", "칩 판정 조건", "수율", "채팅과 에이전트", "에이전트 루프",
+           "Claude Code 의 데이터 작업 고리", "요청 한 문장의 구성"]),
+    "2": (["손 집계와 요청"],
+          ["수율 계산", "택배 집계 표", "칩 사유별 개수", "위치별 합격률", "엑셀 시트 세 장", "화면용 CSV",
+           "CLAUDE.md", "확인할 수 있는 문장", "숫자 대조"]),
+    "3": (["웹 화면의 세 부분"], ["한 파일 안의 위치", "예시 파일 고쳐 보기", "요청 네 칸", "Plan Mode", "권한 모드"]),
+    "4": (["표와 맵"], ["좌표에서 사각형까지", "택배 구역 지도", "색과 범례", "칩 정보 풍선", "흐린 요청과 구체적 요청", "화면 캡처 첨부"]),
+    "5": (["맵과 차트"], ["막대 하나의 구성", "택배 사유별 막대", "칩 사유별 막대", "위치별 합격률 막대", "두 칸 배치",
+                        "한 번에 요청과 나눠 요청", "Git 커밋", "체크포인트"]),
+    "6": (["약속 시간 조절 바"], ["누설전류 합격선", "조절 바 동작 네 단계", "함께 바뀌는 네 곳", "완료처럼 보이는 결과",
+                              "다시 지시하는 법", "검증 루프"]),
+    "7": (["조절 바 설계표"], ["왼쪽 조절 · 오른쪽 결과", "처음 값과 원본 대비", "숫자 점검 네 가지", "컨텍스트", "비우기와 요약",
+                          "매번 같은 설명", "Skill 이 열리는 단계", "SKILL.md"]),
+    "8": (["남은 기능 세 가지"], ["다른 파일 불러오기", "목표 수율 표시", "판정 결과 내려받기", "실험 기록", "하네스", "부탁과 Hook",
+                             "Hook 이 끼어드는 시점"]),
 }
 STEPS = ("도입", "설명", "적용")
 
@@ -88,9 +88,6 @@ def phased(u, slides):
     pick = lambda ts: [by[t][0] for t in ts]  # noqa: E731
     used = set(intro_t + expl_t)
     rest = [sl for sl in slides if _title(sl) not in used]
-    rest.sort(key=lambda sl: _title(sl) != "반도체 적용")
-    k = next(i for i, sl in enumerate(rest) if _title(sl).startswith(f"[실습 {u}-2]"))
-    rest.insert(k, pgen.practice_lab(u))  # 택배 실습 → 반도체 실습
     return ([_mark(x, "도입") for x in pick(intro_t)] + [_mark(x, "설명") for x in pick(expl_t)]
             + [_mark(x, "적용") for x in rest])
 
@@ -107,10 +104,10 @@ def main():
         parts += [_mark(x, k) for x in ph0[k]]
     for u, t, o, m in mods:
         parts.append(deck.divider(u, t, "").replace(f'<div class="kick">{u}</div>', f'<div class="kick">{u}교시</div>'))
-        parts += phased(u, pgen.slides_for(u) + m.slides())
+        parts += phased(u, m.slides())
     parts.append(pkit.nextup("8"))
     out = ROOT / "docs" / "index.html"
-    out.write_text(_tpl(css).replace("{{DECK_TITLE}}", "반도체 품질데이터 분석 · 엔지니어링").replace("{{SLIDES}}", "\n\n".join(parts)))
+    out.write_text(_tpl(css).replace("{{DECK_TITLE}}", "엑셀 데이터로 만드는 수율 시뮬레이터").replace("{{SLIDES}}", "\n\n".join(parts)))
     print(out.name, len(parts) - 1, "장")
 
 

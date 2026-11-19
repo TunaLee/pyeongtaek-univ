@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>__TITLE__</title>
+</head>
+<body>
+<h1 id="title"></h1>
+<p><span id="lTotal"></span>: <span id="kTotal"></span></p>
+<p><span id="lPass"></span>: <span id="kPass"></span></p>
+<p><span id="lFail"></span>: <span id="kFail"></span></p>
+<p><span id="lRate"></span>: <span id="kRate"></span>%</p>
+
+<script>
+// ① 데이터: 엑셀을 CSV 글자로 저장해 그대로 붙여 넣었다 (한 줄 = 하나)
+const CSV_TEXT = `__CSV__`;
+
+// ② 설정: 열 이름 · 화면 이름
+const CFG = /*__CFG__*/{};
+
+const $ = id => document.getElementById(id);
+
+function parseCSV(text) {
+  const lines = text.replace(/^﻿/, '').trim().split(/\r?\n/);
+  const head = lines[0].split(',').map(s => s.trim());
+  return lines.slice(1).filter(l => l.trim()).map(l => {
+    const c = l.split(','), o = {};
+    head.forEach((h, i) => o[h] = (c[i] ?? '').trim());
+    return o;
+  });
+}
+const rows = parseCSV(CSV_TEXT);
+
+// ③ 숫자 네 개: 전체 · 합격 · 불합격 · 수율
+const total = rows.length;
+const pass = rows.filter(r => r[CFG.judgeCol] === CFG.passValue).length;
+$('kTotal').textContent = total;
+$('kPass').textContent = pass;
+$('kFail').textContent = total - pass;
+$('kRate').textContent = (pass / total * 100).toFixed(2);
+
+document.title = CFG.title;
+$('title').textContent = CFG.title;
+['total', 'pass', 'fail', 'rate'].forEach(k => $('l' + k[0].toUpperCase() + k.slice(1)).textContent = CFG.labels[k]);
+</script>
+</body>
+</html>

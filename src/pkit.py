@@ -20,14 +20,14 @@ FOLDER = "wafer-lab"
 
 # (교시, 제목, 남는 것)
 UNITS = [
-    ("1", "반도체 테스트 데이터와 Claude Code", "데이터 사전 · CLAUDE.md"),
-    ("2", "데이터 정제 · 검증", "clean.py · 검증 보고서"),
-    ("3", "수율 집계 · 엑셀 자동화", "yield_summary.xlsx · wafer_yield.csv"),
-    ("4", "웨이퍼 맵과 불량 패턴", "wafer_map.html"),
-    ("5", "파라미터 분포 · SPC", "SPC 차트 · 이상 다이 목록"),
-    ("6", "데이터 파이프라인", "pipeline.py · warehouse.duckdb"),
-    ("7", "자동화 · 대시보드", "dashboard.html · run_all.py"),
-    ("8", "분석 리포트 · 발표", "분석 요약 · Git 저장소"),
+    ("1", "엑셀 데이터 구조 · Claude Code 시작", "데이터 요약 문서"),
+    ("2", "엑셀 집계 자동화 · CLAUDE.md", "yield_summary.xlsx · CSV"),
+    ("3", "HTML 첫 화면 · 요청 쓰는 법", "simulator.html · 숫자 카드"),
+    ("4", "웨이퍼 맵 · 화면 보고 고치기", "simulator.html · 웨이퍼 맵"),
+    ("5", "불합격 차트 · 나눠서 요청하기", "simulator.html · 차트 2종"),
+    ("6", "분포와 조절 바 · 검증", "simulator.html · 조절 바 1개"),
+    ("7", "조절 바 전체 · Skill", "simulator.html · 조절 바 8종"),
+    ("8", "시뮬레이터 완성 · 하네스 · 발표", "simulator.html 완성 · 실험 기록"),
 ]
 BY = {u[0]: u for u in UNITS}
 SLUG = {"1": "data", "2": "clean", "3": "yield", "4": "wafer-map", "5": "spc", "6": "pipeline", "7": "dashboard", "8": "report"}
@@ -62,7 +62,7 @@ def roadmap(u):
         cls = "on" if i == cur else ("done" if i < cur else "")
         cells.append(f'<a class="v1u {cls}" href="{file_of(c)}"><span class="c">{c}교시</span><b>{t}</b><small>{out}</small></a>')
     return light("과정 지도", f'<div class="v1map">{"".join(cells)}</div>'
-                 + note("공통 데이터", "LOT2611-07 · 웨이퍼 25장 · 다이 616개/장 · 설비 3대"), tag(u))
+                 + "", tag(u))
 
 
 def nextup(u):
@@ -72,7 +72,7 @@ def nextup(u):
         c, t, nout = UNITS[i + 1]
         nxt = f'<a class="v1next" href="{file_of(c)}"><span>{c}교시</span><b>{t}</b><small>→ {nout}</small></a>'
     else:
-        nxt = '<div class="v1next"><span>과정 이후</span><b>내 데이터로 같은 순서</b><small>→ 정제 · 적재 · 집계 · 대시보드</small></div>'
+        nxt = '<div class="v1next"><span>과정 이후</span><b>내 엑셀로 같은 순서</b><small>→ 요약 · 집계 · 화면 · 조절 바</small></div>'
     return f'''<section class="slide dk" data-title="다음 교시">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="v1end"><div class="v1got"><span>{u}교시 산출물</span><b>{out}</b></div>{nxt}</div>

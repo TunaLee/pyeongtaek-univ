@@ -209,8 +209,6 @@ def slides():
     late = round(rs["late"] / sum(rs.values()) * 100)
     d05 = pd.read_csv(P / "raw" / "delivery_D05.csv")
     dup = int(d05.duplicated(subset=["order_id"]).sum())
-    on = '<span style="color:#E07A12;font-weight:800">이 과정 1~8교시</span>'
-    off = "<span>이 과정 밖</span>"
 
     dd = [
         light("데이터의 정의", viz2.maprows([
@@ -235,20 +233,10 @@ def slides():
         light("분석 요청 경로", viz2.pair(
             "AI 이전", [("질문", "현업 담당자"), ("요청", "분석가에게 전달 · 순서 대기"), ("작업", "분석가가 SQL · 파이썬 작성"), ("결과", "보고서 · 엑셀 파일")],
             "Claude Code", [("질문", "현업 담당자"), ("요청", "요청 한 문장 · 바로 실행"), ("작업", "Claude 가 코드 작성 · 실행 · 오류 수정"), ("결과", "파일 + 사람이 숫자 확인")]), TAG),
-        light("데이터 · 정보 · 인사이트 · 결정", viz2.maprows([
-            ("데이터", f"배송 기록 {len(df)}행", f"delivery_D07.csv · 열 {df.shape[1]}개"),
-            ("정보", f"외곽 정시율 {by['외곽']}%", f"{int((o.status == 'ON_TIME').sum())} ÷ {len(o)} · 도심 {by['도심']}%"),
-            ("인사이트", "외곽 지연은 TRUCK_C 쪽", f"외곽 {len(oc)}건 · 정시율 {rate(oc)}%"),
-            ("결정", "외곽 배차 조정", "사람이 정함")], "단계", "택배 예 · 10월 7일"), TAG),
-        light("분석의 네 종류", _tiles([
-            ("기술", f"<span>무엇이 일어났나</span><span>정시율 {GEN['D07']['rate']}%</span>{on}"),
-            ("진단", f"<span>왜 일어났나</span><span>외곽 · TRUCK_C 지연</span>{on}"),
-            ("예측", f"<span>무엇이 일어날까</span><span>11월 지연 건수 추정</span>{off}"),
-            ("처방", f"<span>무엇을 할까</span><span>배차 조정안</span>{off}")], 4), TAG),
-        light("데이터 분석의 흐름", pgen.flow_anim(), TAG),
-        light("분석과 엔지니어링", viz2.pair(
-            "데이터 분석", [("질문", "외곽 배송은 왜 늦나"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
-            "데이터 엔지니어링", [("질문", "매일 정시율 집계 자동화"), ("결과", "정제 · 적재 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), TAG),
+        light("기존 코딩과 바이브코딩", viz2.pair(
+            "기존 코딩", [("만드는 사람", "코드를 직접 씀"), ("배우는 것", "문법 · 라이브러리"), ("수정", "코드를 찾아 고침")],
+            "바이브코딩", [("만드는 사람", "말로 요청 · Claude 가 코드 작성"), ("배우는 것", "요청 · 확인 · 되돌리기"),
+                         ("수정", "화면을 보고 다시 요청")]), TAG),
         light("테이블의 행과 열", table_terms(df), TAG),
     ]
     ap = [
@@ -262,19 +250,8 @@ def slides():
         light("정시 도착률", big([
             (f"{GEN['D07']['on_time']}", "건", "정시 도착 (10월 7일)"), (f"{GEN['D07']['rows']}", "건", "전체 배송"),
             (f"{GEN['D07']['rate']}", "%", "정시 도착률 = 정시 ÷ 전체", True)], 3), TAG),
-        light("택배 데이터의 분석 기법", _tiles([
-            ("정제", f'<span>중복 · 단위 · 결측</span><span class="p0hl">D05 송장 중복 {dup}행 · D11 무게 g 기록</span>'),
-            ("집계 · Pareto", f'<span>구역별 정시율 · 실패 사유 순위</span><span class="p0hl">외곽 {GEN["area"]["외곽"]}% · 지연이 실패의 {late}%</span>'),
-            ("지도", '<span>좌표별 정시율</span><span class="p0hl">물류센터에서 먼 고리일수록 낮음</span>'),
-            ("분포", f'<span>배송 시간의 퍼짐</span><span class="p0hl">평균 {GEN["D07"]["mean_min"]}분 · 표준편차 {GEN["D07"]["std_min"]}분 (D07)</span>'),
-            ("그룹 비교", f'<span>차량별 정시율 SQL</span><span class="p0hl">TRUCK_C {tr["TRUCK_C"]}%</span>'),
-            ("자동화", '<span>매일 같은 집계</span><span class="p0hl">25일 파일 · 명령 하나로 갱신</span>')], 3), TAG),
-        light("기법별 반도체 적용", viz2.maprows([
-            ("정제", "다이 좌표 중복 · vth 단위 · 결측", "2교시"), ("집계 · Pareto", "존별 수율 · 불량 유형 순위", "3교시"),
-            ("지도", "웨이퍼 맵 · 불량 패턴", "4교시"), ("분포", "vth 분포 · Cpk", "5교시"),
-            ("그룹 비교", "설비별 수율 · ETCH_03", "6교시"), ("자동화", "대시보드 · run_all.py", "7교시")], "택배에서 쓴 기법", "반도체 데이터"), TAG),
     ]
-    div = divider("0", "데이터와 데이터 분석", "").replace('<div class="kick">0</div>', f'<div class="kick">{TAG}</div>')
+    div = divider("0", "데이터와 바이브코딩", "").replace('<div class="kick">0</div>', f'<div class="kick">{TAG}</div>')
     return div, {"도입": dd, "설명": ex, "적용": ap}
 
 
@@ -445,8 +422,8 @@ def judge_wafer():
     dd = P.parent
     df = pd.read_csv(dd / "raw" / "wafer_test_W07.csv")
     spec = pd.read_csv(dd / "spec.csv")
-    ko = {"crack": "크랙", "open_short": "오픈 · 쇼트", "leakage": "누설전류", "vth_shift": "문턱전압 이탈",
-          "particle": "파티클", "parametric": "기타 파라미터"}
+    import sk
+    ko = {k: sk.KO[k] for k in sk.ORDER}
 
     def bad(r, p):
         s = spec[spec.param == p].iloc[0]
@@ -469,4 +446,4 @@ def judge_wafer():
     pick = pd.DataFrame(pick).sort_values(["die_y", "die_x"])
     cols = ["crack", "rc_ohm", "ioff_na", "vth_v", "particle_cnt", "idsat_ma", "ox_thk_nm"]
     return judge_build(pick, ("die", lambda r: f"({int(r.die_x)}, {int(r.die_y)})"), cols, steps,
-                       ("남은 행", "PASS", f"bin {binno['none']}", "양품"))
+                       ("남은 행", "PASS", f"bin {binno['none']}", "합격"))
