@@ -319,35 +319,38 @@ def num_anim(df):
 
 
 def cat_anim(df):
-    """범주형 — 첫 8행을 이름별로 세기 → 600건 개수 막대 → 정시 비율. 16초 · 한 번."""
+    """범주형 — 첫 8행 구역 칩(색 = 범주) → 구역별 건수 막대 → 정시 비율. 16초 · 한 번."""
     d = _D("vc", 16)
-    v8 = df.truck_id.head(8).tolist()
-    names = sorted(df.truck_id.unique())
-    cnt = df.truck_id.value_counts()
-    on = df[df.status == "ON_TIME"].truck_id.value_counts()
+    names = sk.AREA
+    col = {"도심": "#2F6DB5", "중간": "#2BA38F", "외곽": "#E07A12"}
+    tint = {"도심": "#E6EEF8", "중간": "#E3F4F0", "외곽": "#FFF1E3"}
+    pick = sorted(sum((df.index[df.area == a][:k].tolist() for a, k in (("도심", 2), ("중간", 3), ("외곽", 3))), []))
+    v8 = df.area.loc[pick].tolist()
+    cnt = df.area.value_counts()
+    on = df[df.status == "ON_TIME"].area.value_counts()
     bx = {n: 250 + i * 330 for i, n in enumerate(names)}
     base, H = 388, 200
-    s = f'<g {d.show(0)}>' + _t(150 - 54, 4, "truck_id · 첫 8행", "to", "start") + "</g>"
-    c, xs = _chips(d, [v.replace("TRUCK_", "") for v in v8])
-    s += c
+    s = f'<g {d.show(0)}>' + _t(150 - 54, 4, "area · 기록 8건", "to", "start") + "</g>"
+    for i, v in enumerate(v8):
+        x = 150 + i * 123
+        s += (f'<g {d.show(1 + i * 1.5)}><rect x="{x - 54}" y="26" width="108" height="40" rx="8" fill="{tint[v]}" stroke="{col[v]}" stroke-width="2"/>'
+              + _t(x, 47, v, "tm", extra=f'style="font-size:16px;fill:{col[v]};font-weight:700"') + "</g>")
     s += f'<line x1="70" y1="{base}" x2="1090" y2="{base}" stroke="{N}" stroke-width="2.5" {d.show(14)}/>'
     for n in names:
-        s += f'<g {d.show(14)}>' + _t(bx[n], base + 26, n, "tt", extra='style="font-size:17px"') + "</g>"
-    # 첫 8행을 이름별로 센 값 (움직이지 않고 나타남)
+        s += f'<g {d.show(14)}>' + _t(bx[n], base + 28, n, "tt", extra=f'style="font-size:19px;fill:{col[n]}"') + "</g>"
     c8 = pd.Series(v8).value_counts()
     for i, n in enumerate(names):
-        s += f'<g {d.show(22 + i * 8, 46)}>' + _t(bx[n], base - 40, f"첫 8행 중 {c8.get(n, 0)}개", "to", extra='style="font-size:18px"') + "</g>"
-    # 600건 개수 막대 → 정시 부분
+        s += f'<g {d.show(22 + i * 8, 46)}>' + _t(bx[n], base - 40, f"8건 중 {c8.get(n, 0)}건", "to", extra='style="font-size:18px"') + "</g>"
     mx = cnt.max()
     for n in names:
         h = cnt[n] / mx * H
         ho = on.get(n, 0) / mx * H
         grow = "transform-box:fill-box;transform-origin:50% 100%"
         st = [(0, "transform:scaleY(0)"), (50, "transform:scaleY(0)"), (60, "transform:scaleY(1)"), (100, "transform:scaleY(1)")]
-        s += f'<rect x="{bx[n] - 60}" y="{base - h:.1f}" width="120" height="{h:.1f}" fill="{K}" {d.a(st, "ease-out", grow)}/>'
+        s += f'<rect x="{bx[n] - 60}" y="{base - h:.1f}" width="120" height="{h:.1f}" fill="{tint[n]}" stroke="{col[n]}" stroke-width="2" {d.a(st, "ease-out", grow)}/>'
         s += f'<g {d.show(60)}>' + _t(bx[n], base - h - 18, f"{cnt[n]}건", "tt", extra='style="font-size:18px"') + "</g>"
-        s += f'<rect x="{bx[n] - 60}" y="{base - ho:.1f}" width="120" height="{ho:.1f}" fill="{O}" {d.show(76)}/>'
-        s += (f'<g {d.show(80)}>' + _t(bx[n] + 72, base - ho / 2, f"정시 {on.get(n, 0) / cnt[n] * 100:.1f}%", "to", "start",
+        s += f'<rect x="{bx[n] - 60}" y="{base - ho:.1f}" width="120" height="{ho:.1f}" fill="{col[n]}" {d.show(76)}/>'
+        s += (f'<g {d.show(80)}>' + _t(bx[n] + 72, base - ho / 2, f"정시 {on.get(n, 0) / cnt[n] * 100:.2f}%", "to", "start",
                                          'style="font-size:16px"') + "</g>")
     return d.svg(1160, 440, s)
 
