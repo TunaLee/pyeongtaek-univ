@@ -8,6 +8,7 @@
 import pandas as pd
 
 import pgen
+import sk
 import viz2
 from deck import divider, light
 from hx import code, esc
@@ -48,7 +49,11 @@ CSS = """
   .p0t ol code{white-space:nowrap;}
   .p0t ol{margin:0; padding-left:20px; font-size:15px; color:#3B4756; line-height:1.7;}
   .p0t ol code{font-family:var(--mono); font-size:13px; background:#F4F6F9; border-radius:4px; padding:1px 5px;}
-  .p0t .r{margin-top:auto; font-size:17px; font-weight:800; color:#E07A12;}
+  .p0t .r{margin-top:auto; font-size:26px; font-weight:800; color:#E07A12; display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
+  .p0t .r small{font-size:15px; font-weight:700; color:#3B4756;}
+  .p0tq{display:flex; align-items:baseline; gap:14px; margin-bottom:14px; padding:10px 18px; border-left:5px solid #F28C28; background:#FFF8F1; border-radius:8px; font-size:20px; font-weight:700; color:#16233A; opacity:0; animation:p0In .5s 0s forwards;}
+  .p0tq b{font-size:15px; color:#E07A12;}
+  .p0tq span{margin-left:auto; font-size:15px; font-weight:600; color:#6B7785;}
   .p0ph{display:inline-flex; gap:3px; margin-left:4px;}
   .p0ph i{font-style:normal; font-family:var(--sans); font-size:11px; font-weight:700; letter-spacing:0; padding:3px 8px; border-radius:6px; background:#EEF1F5; color:#9AA3AF;}
   .p0ph i.on{background:#F28C28; color:#fff;}
@@ -146,9 +151,12 @@ def three_tools():
     cc = chat([("me", "delivery_D07.csv 에서 외곽 정시율 알려 줘"), ("ai", f"외곽 {n}건 중 정시 {k}건 · {rate}%")], "Claude Code")
     cols = [("엑셀", xl, "사람이 수식 입력", False), ("파이썬", code("outer_rate.py", esc(py)), "분석가가 코드 작성", False),
             ("Claude Code", cc, "요청 한 문장 · 코드는 Claude 가 작성", True)]
-    t = "".join(f'<div class="p0t{" on" if on else ""}" style="--d:{i * .4:.1f}s"><b>{h}</b>{body}<div class="r">{rate}%</div>'
+    t = "".join(f'<div class="p0t{" on" if on else ""}" style="--d:{i * .4 + .4:.1f}s"><b>{h}</b>{body}'
+                f'<div class="r"><small>외곽 정시율 · {k} / {n}</small>{rate}%</div>'
                 f'<span style="font-size:14px;color:#6B7785">{who}</span></div>' for i, (h, body, who, on) in enumerate(cols))
-    return f'<div class="p0tl">{t}</div>'
+    q = (f'<div class="p0tq"><b>질문</b>외곽 구역 배송 {n}건 중 약속 시간({sk.PROMISE}분) 안에 도착한 비율'
+         f'<span>정시율 = 정시 건수 ÷ 전체 건수</span></div>')
+    return f'{q}<div class="p0tl">{t}</div>'
 
 
 def table_terms(df):
@@ -218,11 +226,10 @@ def slides():
         light("데이터 저장 형식의 변화", formats(), TAG),
         light("엑셀 · CSV · 데이터베이스", _tiles([
             ("엑셀 .xlsx", "<span>사람이 보고 고치는 표 · 수식 · 차트</span><span>시트당 최대 1,048,576행</span>"
-                          '<span style="color:#E07A12;font-weight:700">3교시 · 수율 요약 엑셀</span>'),
+                          '<span style="color:#E07A12;font-weight:700">1교시 · 웨이퍼 테스트 엑셀</span>'),
             ("CSV .csv", "<span>쉼표로 나눈 글자 · 서식 없음</span><span>어느 프로그램이나 읽음</span>"
-                        '<span style="color:#E07A12;font-weight:700">1교시 · 웨이퍼 테스트 결과</span>'),
-            ("데이터베이스", "<span>표 여러 개를 키로 연결 · 여러 사람이 동시에</span><span>SQL 로 질의</span>"
-                           '<span style="color:#E07A12;font-weight:700">6교시 · DuckDB</span>')], 3), TAG),
+                        '<span style="color:#E07A12;font-weight:700">2교시 · 화면용 CSV</span>'),
+            ("데이터베이스", "<span>표 여러 개를 키로 연결 · 여러 사람이 동시에</span><span>SQL 로 질의</span>")], 3), TAG),
     ]
     ex = [
         light("AI 이전의 데이터 처리", _tiles([

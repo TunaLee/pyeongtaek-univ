@@ -51,7 +51,7 @@ def slides():
         light("처음 값과 원본 대비", viz2.tiles([
             ("처음 값 버튼", "조절 바 8개를 기준표 값으로"), ("원본 대비", f"엑셀 원본 수율 {WN['yield']}% 와 차이 · 예 {chk[0]['delta_pp']:+.2f}%p"),
             ("걸림 수", "조절 바마다 그 기준에 걸린 칩 수")], 3), T),
-        light("숫자 점검 네 가지", viz2.maprows([(c["op"], f"수율 {c['rate']}%", f"합격 {c['pass']} / {c['total']} · {c['delta_pp']:+.2f}%p") for c in chk], "조작", "기대 숫자"), T),
+        light("숫자 점검 항목", viz2.maprows([(c["op"], f"수율 {c['rate']}%", f"합격 {c['pass']} / {c['total']} · {c['delta_pp']:+.2f}%p") for c in chk], "조작", "기대 숫자"), T),
         # ── 설명 · 컨텍스트 · Skill
         light("컨텍스트", psim.context_fill()
               + src(("Claude Code 문서 · Context window", "https://code.claude.com/docs/en/context-window")), T),
@@ -73,7 +73,7 @@ def slides():
             [f"{DS['s7_checks'][0]['op']} → {DS['s7_checks'][0]['rate']}%", f"{DS['s7_checks'][1]['op']} → {DS['s7_checks'][1]['rate']}%", "처음 값 버튼 → 원래 숫자"], files="output/delivery_sim.html"),
         light("택배 조절 바 6종 결과", sk.one("sim/delivery_s7.webp", "택배 조절 바 6종"), T),
         lab("7-2", "조절 바 8종", T, "기준표 일곱 측정값 + 집계 범위(중심에서 거리)에 조절 바를 만들고 처음 값 · 원본 대비를 넣는다",
-            ["조절 바 설계표 요청", "조절 바 8종 · 분포 · 합격선", "왼쪽 조절 · 오른쪽 결과", "처음 값 · 원본 대비", "숫자 점검 네 가지"],
+            ["조절 바 설계표 요청", "조절 바 8종 · 분포 · 합격선", "왼쪽 조절 · 오른쪽 결과", "처음 값 · 원본 대비", "숫자 점검 항목"],
             ["점검 네 가지 · " + " · ".join(f"{c['rate']}%" for c in chk), f"처음 값 → {WN['yield']}%"], files="output/simulator.html"),
         brief("7-2", T,
               ["설계표", "조절 바 8종", "배치", "처음 값 · 원본 대비", "숫자 점검"],

@@ -370,7 +370,11 @@
   .p0t ol code{white-space:nowrap;}
   .p0t ol{margin:0; padding-left:20px; font-size:15px; color:#3B4756; line-height:1.7;}
   .p0t ol code{font-family:var(--mono); font-size:13px; background:#F4F6F9; border-radius:4px; padding:1px 5px;}
-  .p0t .r{margin-top:auto; font-size:17px; font-weight:800; color:#E07A12;}
+  .p0t .r{margin-top:auto; font-size:26px; font-weight:800; color:#E07A12; display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
+  .p0t .r small{font-size:15px; font-weight:700; color:#3B4756;}
+  .p0tq{display:flex; align-items:baseline; gap:14px; margin-bottom:14px; padding:10px 18px; border-left:5px solid #F28C28; background:#FFF8F1; border-radius:8px; font-size:20px; font-weight:700; color:#16233A; opacity:0; animation:p0In .5s 0s forwards;}
+  .p0tq b{font-size:15px; color:#E07A12;}
+  .p0tq span{margin-left:auto; font-size:15px; font-weight:600; color:#6B7785;}
   .p0ph{display:inline-flex; gap:3px; margin-left:4px;}
   .p0ph i{font-style:normal; font-family:var(--sans); font-size:11px; font-weight:700; letter-spacing:0; padding:3px 8px; border-radius:6px; background:#EEF1F5; color:#9AA3AF;}
   .p0ph i.on{background:#F28C28; color:#fff;}
@@ -1160,7 +1164,7 @@
   <div class="eyebrow"><span class="tag">개요</span><span class="p0ph"><i class="on">도입</i><i>설명</i><i>적용</i></span></div>
   <h2 class="s-title sm">엑셀 · CSV · 데이터베이스</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>엑셀 .xlsx</b><span>사람이 보고 고치는 표 · 수식 · 차트</span><span>시트당 최대 1,048,576행</span><span style="color:#E07A12;font-weight:700">3교시 · 수율 요약 엑셀</span></div><div class="v2tile" style="--d:0.08s"><b>CSV .csv</b><span>쉼표로 나눈 글자 · 서식 없음</span><span>어느 프로그램이나 읽음</span><span style="color:#E07A12;font-weight:700">1교시 · 웨이퍼 테스트 결과</span></div><div class="v2tile" style="--d:0.16s"><b>데이터베이스</b><span>표 여러 개를 키로 연결 · 여러 사람이 동시에</span><span>SQL 로 질의</span><span style="color:#E07A12;font-weight:700">6교시 · DuckDB</span></div></div></div></div>
+  <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>엑셀 .xlsx</b><span>사람이 보고 고치는 표 · 수식 · 차트</span><span>시트당 최대 1,048,576행</span><span style="color:#E07A12;font-weight:700">1교시 · 웨이퍼 테스트 엑셀</span></div><div class="v2tile" style="--d:0.08s"><b>CSV .csv</b><span>쉼표로 나눈 글자 · 서식 없음</span><span>어느 프로그램이나 읽음</span><span style="color:#E07A12;font-weight:700">2교시 · 화면용 CSV</span></div><div class="v2tile" style="--d:0.16s"><b>데이터베이스</b><span>표 여러 개를 키로 연결 · 여러 사람이 동시에</span><span>SQL 로 질의</span></div></div></div></div>
 </section>
 
 <section class="slide lt" data-title="AI 이전의 데이터 처리">
@@ -1176,11 +1180,11 @@
   <div class="eyebrow"><span class="tag">개요</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
   <h2 class="s-title sm">같은 질문, 세 가지 도구</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="p0tl"><div class="p0t" style="--d:0.0s"><b>엑셀</b><ol><li>파일 열기 · 열 필터</li><li><code>=COUNTIFS(F:F,"외곽",N:N,"ON_TIME")</code></li><li><code>=COUNTIF(F:F,"외곽")</code> 로 나누기</li><li>파일 25개면 25번 반복</li></ol><div class="r">70.25%</div><span style="font-size:14px;color:#6B7785">사람이 수식 입력</span></div><div class="p0t" style="--d:0.4s"><b>파이썬</b><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">outer_rate.py</span></div><pre><code>import pandas as pd
+  <div class="body"><div class="mid"><div class="p0tq"><b>질문</b>외곽 구역 배송 363건 중 약속 시간(120분) 안에 도착한 비율<span>정시율 = 정시 건수 ÷ 전체 건수</span></div><div class="p0tl"><div class="p0t" style="--d:0.4s"><b>엑셀</b><ol><li>파일 열기 · 열 필터</li><li><code>=COUNTIFS(F:F,"외곽",N:N,"ON_TIME")</code></li><li><code>=COUNTIF(F:F,"외곽")</code> 로 나누기</li><li>파일 25개면 25번 반복</li></ol><div class="r"><small>외곽 정시율 · 255 / 363</small>70.25%</div><span style="font-size:14px;color:#6B7785">사람이 수식 입력</span></div><div class="p0t" style="--d:0.8s"><b>파이썬</b><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">outer_rate.py</span></div><pre><code>import pandas as pd
 df = pd.read_csv("delivery_D07.csv")
 outer = df[df.area == "외곽"]
 rate = (outer.status == "ON_TIME").mean() * 100
-print(round(rate, 2))</code></pre></div><div class="r">70.25%</div><span style="font-size:14px;color:#6B7785">분석가가 코드 작성</span></div><div class="p0t on" style="--d:0.8s"><b>Claude Code</b><div class="v1chat"><div class="v1ch">Claude Code</div><div class="v1b me"><span>나</span><p>delivery_D07.csv 에서 외곽 정시율 알려 줘</p></div><div class="v1b ai"><span>Claude</span><p>외곽 363건 중 정시 255건 · 70.25%</p></div></div><div class="r">70.25%</div><span style="font-size:14px;color:#6B7785">요청 한 문장 · 코드는 Claude 가 작성</span></div></div></div></div>
+print(round(rate, 2))</code></pre></div><div class="r"><small>외곽 정시율 · 255 / 363</small>70.25%</div><span style="font-size:14px;color:#6B7785">분석가가 코드 작성</span></div><div class="p0t on" style="--d:1.2s"><b>Claude Code</b><div class="v1chat"><div class="v1ch">Claude Code</div><div class="v1b me"><span>나</span><p>delivery_D07.csv 에서 외곽 정시율 알려 줘</p></div><div class="v1b ai"><span>Claude</span><p>외곽 363건 중 정시 255건 · 70.25%</p></div></div><div class="r"><small>외곽 정시율 · 255 / 363</small>70.25%</div><span style="font-size:14px;color:#6B7785">요청 한 문장 · 코드는 Claude 가 작성</span></div></div></div></div>
 </section>
 
 <section class="slide lt" data-title="분석 요청 경로">
@@ -1600,10 +1604,10 @@ document.getElementById("y")
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>할 일</span><i></i><span>결과</span></div><div class="v2m" style="--d:0.00s"><div class="a">브라우저로 열기</div><i>→</i><div class="b"><b>html_css_js_예시.html 더블클릭</b><small>화면</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">메모장 · VS Code 로 열기</div><i>→</i><div class="b"><b>같은 파일</b><small>글자</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">색 한 줄 바꾸기</div><i>→</i><div class="b"><b>#2BA84A → #E8344E</b><small>저장 → 새로 고침</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">세 구역 찾기</div><i>→</i><div class="b"><b>style · body · script</b><small>위치 확인</small></div></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="요청 네 칸">
+<section class="slide lt" data-title="요청 구성">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">3교시</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
-  <h2 class="s-title sm">요청 네 칸</h2>
+  <h2 class="s-title sm">요청 구성</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">한 줄 요청</div><div class="v2pc" style="--d:0.00s"><b>요청</b><span>「수율 화면 만들어 줘」</span></div><div class="v2pc" style="--d:0.08s"><b>파일</b><span>추측</span></div><div class="v2pc" style="--d:0.16s"><b>숫자 · 모양</b><span>추측</span></div></div><div class="v2p on"><div class="v2ph">네 칸을 채운 요청</div><div class="v2pc" style="--d:0.00s"><b>목표</b><span>제목과 숫자 카드 4개 · 꾸밈 없이</span></div><div class="v2pc" style="--d:0.08s"><b>입력</b><span>output/wafer_test_W07.csv</span></div><div class="v2pc" style="--d:0.16s"><b>산출물</b><span>output/simulator.html 한 파일</span></div><div class="v2pc" style="--d:0.24s"><b>하지 말 것</b><span>외부 라이브러리 · 원본 수정</span></div></div></div></div></div>
 </section>
@@ -1965,10 +1969,10 @@ document.getElementById("y")
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>단계</span><i></i><span>하는 일</span></div><div class="v2m" style="--d:0.00s"><div class="a">1 움직임</div><i>→</i><div class="b"><b>조절 바 값이 바뀜</b><small>input 이벤트</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">2 기준 바꿈</div><i>→</i><div class="b"><b>누설전류 상한 = 조절 바 값</b><small>변수 하나</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">3 판정 다시</div><i>→</i><div class="b"><b>616행 전부 · 기준표 순서</b><small>같은 판정 함수</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">4 다시 그림</div><i>→</i><div class="b"><b>카드 · 맵 · 차트 · 분포</b><small>네 곳</small></div></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="함께 바뀌는 네 곳">
+<section class="slide lt" data-title="함께 바뀌는 화면">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">6교시</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
-  <h2 class="s-title sm">함께 바뀌는 네 곳</h2>
+  <h2 class="s-title sm">함께 바뀌는 화면</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><svg class="an an-smf" viewBox="0 0 1160 430" xmlns="http://www.w3.org/2000/svg"><style>.an-smf{width:100%;height:auto;max-height:470px;display:block;margin:0 auto;overflow:visible}.an-smf text{dominant-baseline:middle}.an-smf .tt{font-size:19px;font-weight:800;fill:#16233A}.an-smf .ts{font-size:15px;fill:#6B7785}.an-smf .to{font-size:15px;font-weight:800;fill:#EF6C00}.an-smf .tw{font-size:15px;font-weight:800;fill:#FFFFFF}.an-smf .tn{font-size:15px;font-weight:700;fill:#16233A}.an-smf .tm{font-size:14px;font-weight:700;fill:#16233A;font-family:var(--mono,monospace)}@media print{.an-smf *{animation:none!important}}@media (prefers-reduced-motion:reduce){.an-smf *{animation:none!important}}@keyframes ansmf1{0%{opacity:0}2%{opacity:0}5%{opacity:1}100%{opacity:1}}@keyframes ansmf2{0%{opacity:0}12%{opacity:0}15%{opacity:1}100%{opacity:1}}@keyframes ansmf3{0%{opacity:0}14%{opacity:0}17%{opacity:1}100%{opacity:1}}@keyframes ansmf4{0%{opacity:0}30%{opacity:0}33%{opacity:1}100%{opacity:1}}@keyframes ansmf5{0%{opacity:0}32%{opacity:0}35%{opacity:1}100%{opacity:1}}@keyframes ansmf6{0%{opacity:0}36%{opacity:0}39%{opacity:1}100%{opacity:1}}@keyframes ansmf7{0%{opacity:0}44%{opacity:0}47%{opacity:1}100%{opacity:1}}@keyframes ansmf8{0%{opacity:0}46%{opacity:0}49%{opacity:1}100%{opacity:1}}@keyframes ansmf9{0%{opacity:0}50%{opacity:0}53%{opacity:1}100%{opacity:1}}@keyframes ansmf10{0%{opacity:0}58%{opacity:0}61%{opacity:1}100%{opacity:1}}@keyframes ansmf11{0%{opacity:0}60%{opacity:0}63%{opacity:1}100%{opacity:1}}@keyframes ansmf12{0%{opacity:0}64%{opacity:0}67%{opacity:1}100%{opacity:1}}@keyframes ansmf13{0%{opacity:0}72%{opacity:0}75%{opacity:1}100%{opacity:1}}@keyframes ansmf14{0%{opacity:0}74%{opacity:0}77%{opacity:1}100%{opacity:1}}@keyframes ansmf15{0%{opacity:0}78%{opacity:0}81%{opacity:1}100%{opacity:1}}@keyframes ansmf16{0%{opacity:0}92%{opacity:0}95%{opacity:1}100%{opacity:1}}</style><defs><marker id="ansmfk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1F3A5F"/></marker><marker id="ansmfo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#F28C28"/></marker><marker id="ansmfr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#C62828"/></marker><marker id="ansmfg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2E7D32"/></marker></defs><g style="animation:ansmf1 12s linear 1 both;"><rect x="20" y="160" width="200" height="90" rx="14" fill="#FFF3E6" stroke="#F28C28" stroke-width="2.5" /><text x="120" y="194" text-anchor="middle" class="tt" >조절 바</text><text x="120" y="219" text-anchor="middle" class="ts" >값이 바뀜</text></g><g style="animation:ansmf2 12s linear 1 both;"><path d="M224 205 H286" stroke="#1F3A5F" stroke-width="3" marker-end="url(#ansmfk)"/></g><g style="animation:ansmf3 12s linear 1 both;"><rect x="292" y="160" width="220" height="90" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="402" y="194" text-anchor="middle" class="tt" >판정 다시</text><text x="402" y="219" text-anchor="middle" class="ts" >616행 전부 · 기준표 순서</text></g><g style="animation:ansmf4 12s linear 1 both;"><path d="M516 205 C 560 205, 560 60, 610 60" fill="none" stroke="#1F3A5F" stroke-width="2.5" marker-end="url(#ansmfk)"/></g><g style="animation:ansmf5 12s linear 1 both;"><rect x="616" y="20" width="260" height="80" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="746" y="49" text-anchor="middle" class="tt" >숫자 카드</text><text x="746" y="74" text-anchor="middle" class="ts" >합격 · 불합격 · 수율</text></g><g style="animation:ansmf6 12s linear 1 both;"><circle cx="910" cy="60" r="14" fill="#2E7D32"/><path d="M903 60 l5 5 l9 -10" fill="none" stroke="#FFFFFF" stroke-width="3"/></g><g style="animation:ansmf7 12s linear 1 both;"><path d="M516 205 C 560 205, 560 160, 610 160" fill="none" stroke="#1F3A5F" stroke-width="2.5" marker-end="url(#ansmfk)"/></g><g style="animation:ansmf8 12s linear 1 both;"><rect x="616" y="120" width="260" height="80" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="746" y="149" text-anchor="middle" class="tt" >웨이퍼 맵</text><text x="746" y="174" text-anchor="middle" class="ts" >칸 색</text></g><g style="animation:ansmf9 12s linear 1 both;"><circle cx="910" cy="160" r="14" fill="#2E7D32"/><path d="M903 160 l5 5 l9 -10" fill="none" stroke="#FFFFFF" stroke-width="3"/></g><g style="animation:ansmf10 12s linear 1 both;"><path d="M516 205 C 560 205, 560 260, 610 260" fill="none" stroke="#1F3A5F" stroke-width="2.5" marker-end="url(#ansmfk)"/></g><g style="animation:ansmf11 12s linear 1 both;"><rect x="616" y="220" width="260" height="80" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="746" y="249" text-anchor="middle" class="tt" >사유별 차트</text><text x="746" y="274" text-anchor="middle" class="ts" >막대 길이</text></g><g style="animation:ansmf12 12s linear 1 both;"><circle cx="910" cy="260" r="14" fill="#2E7D32"/><path d="M903 260 l5 5 l9 -10" fill="none" stroke="#FFFFFF" stroke-width="3"/></g><g style="animation:ansmf13 12s linear 1 both;"><path d="M516 205 C 560 205, 560 360, 610 360" fill="none" stroke="#1F3A5F" stroke-width="2.5" marker-end="url(#ansmfk)"/></g><g style="animation:ansmf14 12s linear 1 both;"><rect x="616" y="320" width="260" height="80" rx="14" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5" /><text x="746" y="349" text-anchor="middle" class="tt" >분포</text><text x="746" y="374" text-anchor="middle" class="ts" >합격선 위치</text></g><g style="animation:ansmf15 12s linear 1 both;"><circle cx="910" cy="360" r="14" fill="#2E7D32"/><path d="M903 360 l5 5 l9 -10" fill="none" stroke="#FFFFFF" stroke-width="3"/></g><g style="animation:ansmf16 12s linear 1 both;"><text x="940" y="420" text-anchor="start" class="to" style="font-size:15px">한 곳이라도 그대로면 → 다시 요청</text></g></svg></div></div>
 </section>
@@ -2092,10 +2096,10 @@ document.getElementById("y")
   <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>처음 값 버튼</b><span>조절 바 8개를 기준표 값으로</span></div><div class="v2tile" style="--d:0.08s"><b>원본 대비</b><span>엑셀 원본 수율 90.42% 와 차이 · 예 -2.43%p</span></div><div class="v2tile" style="--d:0.16s"><b>걸림 수</b><span>조절 바마다 그 기준에 걸린 칩 수</span></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="숫자 점검 네 가지">
+<section class="slide lt" data-title="숫자 점검 항목">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">7교시</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
-  <h2 class="s-title sm">숫자 점검 네 가지</h2>
+  <h2 class="s-title sm">숫자 점검 항목</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>조작</span><i></i><span>기대 숫자</span></div><div class="v2m" style="--d:0.00s"><div class="a">누설전류 상한 10 → 5 nA</div><i>→</i><div class="b"><b>수율 87.99%</b><small>합격 542 / 616 · -2.43%p</small></div></div><div class="v2m" style="--d:0.12s"><div class="a">문턱전압 범위 0.38~0.52 → 0.36~0.54 V</div><i>→</i><div class="b"><b>수율 90.58%</b><small>합격 558 / 616 · +0.16%p</small></div></div><div class="v2m" style="--d:0.24s"><div class="a">깨짐·긁힘 판정 끄기</div><i>→</i><div class="b"><b>수율 94.32%</b><small>합격 581 / 616 · +3.90%p</small></div></div><div class="v2m" style="--d:0.36s"><div class="a">중심에서 거리 상한 140 → 120 mm</div><i>→</i><div class="b"><b>수율 90.85%</b><small>합격 407 / 448 · +0.43%p</small></div></div></div></div></div>
 </section>
@@ -2174,7 +2178,7 @@ description: 시뮬레이터 숫자를 점검할 때. 조절 바를
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
     <div class="lc goal"><div class="lh">목표</div><p>기준표 일곱 측정값 + 집계 범위(중심에서 거리)에 조절 바를 만들고 처음 값 · 원본 대비를 넣는다</p><div class="lf">사용 파일 · output/simulator.html</div></div>
-    <div class="lc steps"><div class="lh">단계</div><ol><li>조절 바 설계표 요청</li><li>조절 바 8종 · 분포 · 합격선</li><li>왼쪽 조절 · 오른쪽 결과</li><li>처음 값 · 원본 대비</li><li>숫자 점검 네 가지</li></ol></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>조절 바 설계표 요청</li><li>조절 바 8종 · 분포 · 합격선</li><li>왼쪽 조절 · 오른쪽 결과</li><li>처음 값 · 원본 대비</li><li>숫자 점검 항목</li></ol></div>
     <div class="lc done"><div class="lh">완료 기준</div><ul><li>점검 네 가지 · 87.99% · 90.58% · 94.32% · 90.85%</li><li>처음 값 → 90.42%</li></ul></div>
   </div></div>
 </section>
@@ -2202,10 +2206,10 @@ description: 시뮬레이터 숫자를 점검할 때. 조절 바를
   
 </section>
 
-<section class="slide lt" data-title="남은 기능 세 가지">
+<section class="slide lt" data-title="남은 기능">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">8교시</span><span class="p0ph"><i class="on">도입</i><i>설명</i><i>적용</i></span></div>
-  <h2 class="s-title sm">남은 기능 세 가지</h2>
+  <h2 class="s-title sm">남은 기능</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>불러오기</b><span>다른 엑셀 · CSV 를 골라 화면 전체를 다시</span></div><div class="v2tile" style="--d:0.08s"><b>목표 수율</b><span>목표 90% · 달성 여부 표시</span></div><div class="v2tile" style="--d:0.16s"><b>내려받기</b><span>판정 결과 · 기준값 CSV</span></div></div></div></div>
 </section>
