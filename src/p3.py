@@ -1,7 +1,7 @@
 """3교시 HTML 첫 화면 · 요청 쓰는 법.
 
 도입(웹 화면의 세 부분) → 설명(한 파일 안의 위치 · 예시 파일 고치기 · 요청 네 칸 · Plan Mode · 권한 모드)
-→ 적용(실습 3-1 택배 숫자 카드 → 3-2 웨이퍼 숫자 카드 · 꾸밈 전후).
+→ 적용(실습 3-1 사과 숫자 카드 → 3-2 웨이퍼 숫자 카드 · 꾸밈 전후).
 """
 import sk
 import viz2
@@ -75,10 +75,10 @@ def slides():
             ("Plan", "읽기만 · 계획만", "큰 변경 전")], "모드", "동작")
               + src(("Claude Code 문서 · Permission modes", "https://code.claude.com/docs/en/permission-modes")), T),
         # ── 적용
-        lab("3-1", "택배 숫자 카드", T, "택배 CSV 로 전체 · 정시 · 실패 · 정시율 카드 4개 화면을 만들고 꾸밈을 넣는다",
+        lab("3-1", "사과 숫자 카드", T, "사과 CSV 로 전체 · 상품 · 불량 · 상품률 카드 4개 화면을 만들고 꾸밈을 넣는다",
             ["Plan Mode 로 계획 받기", "꾸밈 없이 숫자 4개 화면", "CSS 로 카드 4장", "말로 색 · 크기 바꾸기 · 되돌리기"],
-            [f"{DN['rows']} · {DN['pass']} · {DN['fail']} · {DN['rate']}%", "output/delivery_sim.html"], files="output/delivery_D07.csv"),
-        light("택배 카드 전후", sk.duo("sim/delivery_s3a.webp", "sim/delivery_s3b.webp", "꾸밈 전", "꾸밈 후"), T),
+            [f"{DN['rows']} · {DN['pass']} · {DN['fail']} · {DN['rate']}%", "output/apple_sim.html"], files="output/apple_A07.csv"),
+        light("사과 카드 전후", sk.duo("sim/apple_s3a.webp", "sim/apple_s3b.webp", "꾸밈 전", "꾸밈 후"), T),
         lab("3-2", "웨이퍼 숫자 카드", T, "W07 CSV 로 숫자 카드 4개 simulator.html 을 만들고 꾸밈을 넣는다",
             ["Plan Mode 로 계획 받기", "꾸밈 없이 숫자 4개 화면", "CSS 로 카드 4장", "말로 색 · 크기 바꾸기 · 되돌리기"],
             [f"{WN['rows']} · {WN['pass']} · {WN['fail']} · {WN['yield']}%", "output/simulator.html"], files="output/wafer_test_W07.csv"),

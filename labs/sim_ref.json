@@ -97,6 +97,7 @@
    "col": "ioff_na",
    "name": "누설전류",
    "unit": "nA",
+   "side": "hi",
    "base": 10,
    "tries": {
     "5": {
@@ -366,307 +367,269 @@
    }
   }
  },
- "delivery": {
-  "file": "delivery_D07.xlsx",
+ "apple": {
+  "file": "apple_A07.xlsx",
   "rows": 600,
   "cols": 14,
   "total": 600,
-  "pass": 481,
-  "fail": 119,
-  "rate": 80.17,
+  "pass": 470,
+  "fail": 130,
+  "rate": 78.33,
   "reasons": {
-   "damaged": 4,
-   "addr_error": 8,
-   "late": 95,
-   "absent": 12
+   "bruise": 23,
+   "worm": 8,
+   "light": 63,
+   "low_sugar": 36
   },
   "reasons_sorted": [
    [
-    "지연",
-    95
+    "무게 미달",
+    63
    ],
    [
-    "부재",
-    12
+    "당도 미달",
+    36
    ],
    [
-    "주소 오류",
+    "멍",
+    23
+   ],
+   [
+    "벌레 먹음",
     8
-   ],
-   [
-    "파손",
-    4
    ]
   ],
   "zones": {
-   "도심": {
-    "total": 55,
-    "pass": 54,
-    "rate": 98.18
+   "안쪽": {
+    "total": 200,
+    "pass": 170,
+    "rate": 85.0
    },
    "중간": {
-    "total": 182,
-    "pass": 172,
-    "rate": 94.51
+    "total": 216,
+    "pass": 188,
+    "rate": 87.04
    },
-   "외곽": {
-    "total": 363,
-    "pass": 255,
-    "rate": 70.25
+   "가장자리": {
+    "total": 184,
+    "pass": 112,
+    "rate": 60.87
    }
   },
   "rejudge_mismatch": 0,
   "rejudge_match": true,
   "spec": {
-   "damaged": {
+   "bruise": {
     "on": true
    },
-   "addr_error": {
+   "worm": {
     "on": true
    },
-   "delivery_min": {
-    "lo": null,
-    "hi": 120
+   "weight_g": {
+    "lo": 250,
+    "hi": null
    },
-   "absent": {
-    "on": true
+   "sugar_brix": {
+    "lo": 11.0,
+    "hi": null
    },
-   "dist_km": {
-    "hi": 14.8
+   "dist_m": {
+    "hi": 69.3
    },
-   "weight_kg": {
-    "hi": 15.1
+   "diameter_mm": {
+    "hi": 91.0
    }
   },
   "s6_slider": {
-   "col": "delivery_min",
-   "name": "약속 시간",
-   "unit": "분",
-   "base": 120,
+   "col": "sugar_brix",
+   "name": "당도",
+   "unit": "brix",
+   "side": "lo",
+   "base": 11.0,
    "tries": {
-    "90": {
+    "10": {
      "total": 600,
-     "pass": 248,
-     "fail": 352,
-     "rate": 41.33,
-     "delta_pp": -38.84
+     "pass": 504,
+     "fail": 96,
+     "rate": 84.0,
+     "delta_pp": 5.67
     },
-    "100": {
+    "10.5": {
      "total": 600,
-     "pass": 335,
-     "fail": 265,
-     "rate": 55.83,
-     "delta_pp": -24.34
+     "pass": 492,
+     "fail": 108,
+     "rate": 82.0,
+     "delta_pp": 3.67
     },
-    "150": {
+    "11.5": {
      "total": 600,
-     "pass": 564,
-     "fail": 36,
-     "rate": 94.0,
-     "delta_pp": 13.83
+     "pass": 433,
+     "fail": 167,
+     "rate": 72.17,
+     "delta_pp": -6.16
     },
-    "180": {
+    "12": {
      "total": 600,
-     "pass": 572,
-     "fail": 28,
-     "rate": 95.33,
-     "delta_pp": 15.16
+     "pass": 376,
+     "fail": 224,
+     "rate": 62.67,
+     "delta_pp": -15.66
     }
    }
   },
   "s7_checks": [
    {
-    "op": "약속 시간 120 → 150분",
+    "op": "무게 하한 250 → 230 g",
     "total": 600,
-    "pass": 564,
-    "fail": 36,
-    "rate": 94.0,
-    "delta_pp": 13.83,
-    "hash": "#delivery_min_hi=150"
+    "pass": 514,
+    "fail": 86,
+    "rate": 85.67,
+    "delta_pp": 7.34,
+    "hash": "#weight_g_lo=230"
    },
    {
-    "op": "부재 판정 끄기",
+    "op": "벌레 판정 끄기",
     "total": 600,
-    "pass": 493,
-    "fail": 107,
-    "rate": 82.17,
-    "delta_pp": 2.0,
-    "hash": "#absent_on=0"
+    "pass": 477,
+    "fail": 123,
+    "rate": 79.5,
+    "delta_pp": 1.17,
+    "hash": "#worm_on=0"
    },
    {
-    "op": "거리 상한 14.8 → 8 km",
-    "total": 237,
-    "pass": 226,
-    "fail": 11,
-    "rate": 95.36,
-    "delta_pp": 15.19,
-    "hash": "#dist_km_hi=8"
+    "op": "중심에서 거리 상한 69.3 → 40 m",
+    "total": 316,
+    "pass": 268,
+    "fail": 48,
+    "rate": 84.81,
+    "delta_pp": 6.48,
+    "hash": "#dist_m_hi=40"
    },
    {
-    "op": "무게 상한 15.1 → 10 kg",
-    "total": 599,
-    "pass": 480,
-    "fail": 119,
-    "rate": 80.13,
-    "delta_pp": -0.04,
-    "hash": "#weight_kg_hi=10"
+    "op": "지름 상한 91 → 80 mm",
+    "total": 364,
+    "pass": 263,
+    "fail": 101,
+    "rate": 72.25,
+    "delta_pp": -6.08,
+    "hash": "#diameter_mm_hi=80"
    }
   ],
   "s8_alt": {
-   "file": "delivery_D25.xlsx",
+   "file": "apple_A25.xlsx",
    "rows": 600,
    "total": 600,
-   "pass": 448,
-   "fail": 152,
-   "rate": 74.67,
-   "orig_rate": 74.67,
+   "pass": 468,
+   "fail": 132,
+   "rate": 78.0,
+   "orig_rate": 78.0,
    "reasons": {
-    "damaged": 10,
-    "addr_error": 14,
-    "late": 113,
-    "absent": 15
+    "bruise": 30,
+    "worm": 9,
+    "light": 67,
+    "low_sugar": 26
    },
    "zones": {
-    "도심": {
-     "total": 53,
-     "pass": 49,
-     "rate": 92.45
+    "안쪽": {
+     "total": 200,
+     "pass": 170,
+     "rate": 85.0
     },
     "중간": {
-     "total": 169,
-     "pass": 156,
-     "rate": 92.31
+     "total": 216,
+     "pass": 184,
+     "rate": 85.19
     },
-    "외곽": {
-     "total": 378,
-     "pass": 243,
-     "rate": 64.29
+    "가장자리": {
+     "total": 184,
+     "pass": 114,
+     "rate": 61.96
     }
    },
    "scope_max": {
-    "dist_km": 14.8,
-    "weight_kg": 12.5
+    "dist_m": 69.3,
+    "diameter_mm": 92.1
    }
   },
   "s8_target": {
    "target": 90,
    "main": {
-    "base_rate": 80.17,
+    "base_rate": 78.33,
     "reached_at_base": false,
     "single": [
      {
-      "col": "damaged",
+      "col": "bruise",
       "flag_off": true,
       "total": 600,
-      "pass": 485,
-      "fail": 115,
-      "rate": 80.83,
-      "delta_pp": 0.66,
+      "pass": 491,
+      "fail": 109,
+      "rate": 81.83,
+      "delta_pp": 3.5,
       "reach": false
      },
      {
-      "col": "addr_error",
+      "col": "worm",
       "flag_off": true,
       "total": 600,
-      "pass": 487,
-      "fail": 113,
-      "rate": 81.17,
-      "delta_pp": 1.0,
-      "reach": false
-     },
-     {
-      "col": "delivery_min",
-      "side": "hi",
-      "value": 136,
-      "total": 600,
-      "pass": 540,
-      "fail": 60,
-      "rate": 90.0,
-      "delta_pp": 9.83
-     },
-     {
-      "col": "absent",
-      "flag_off": true,
-      "total": 600,
-      "pass": 493,
-      "fail": 107,
-      "rate": 82.17,
-      "delta_pp": 2.0,
+      "pass": 477,
+      "fail": 123,
+      "rate": 79.5,
+      "delta_pp": 1.17,
       "reach": false
      }
     ]
    },
    "alt": {
-    "base_rate": 74.67,
+    "base_rate": 78.0,
     "reached_at_base": false,
     "single": [
      {
-      "col": "damaged",
+      "col": "bruise",
       "flag_off": true,
       "total": 600,
-      "pass": 457,
-      "fail": 143,
-      "rate": 76.17,
-      "delta_pp": 1.5,
+      "pass": 493,
+      "fail": 107,
+      "rate": 82.17,
+      "delta_pp": 4.17,
       "reach": false
      },
      {
-      "col": "addr_error",
+      "col": "worm",
       "flag_off": true,
       "total": 600,
-      "pass": 459,
-      "fail": 141,
-      "rate": 76.5,
-      "delta_pp": 1.83,
-      "reach": false
-     },
-     {
-      "col": "delivery_min",
-      "side": "hi",
-      "value": 148,
-      "total": 600,
-      "pass": 541,
-      "fail": 59,
-      "rate": 90.17,
-      "delta_pp": 15.5
-     },
-     {
-      "col": "absent",
-      "flag_off": true,
-      "total": 600,
-      "pass": 463,
-      "fail": 137,
-      "rate": 77.17,
-      "delta_pp": 2.5,
+      "pass": 475,
+      "fail": 125,
+      "rate": 79.17,
+      "delta_pp": 1.17,
       "reach": false
      }
     ]
    },
    "pick": {
     "data": "main",
-    "data_file": "delivery_D07.xlsx",
+    "data_file": "apple_A07.xlsx",
     "set": [
      {
-      "col": "delivery_min",
-      "side": "hi",
-      "value": 130,
-      "label": "약속 시간 상한",
-      "display": "130"
+      "col": "weight_g",
+      "side": "lo",
+      "value": 235,
+      "label": "무게 하한",
+      "display": "235"
      },
      {
-      "col": "absent",
-      "side": "on",
-      "value": false,
-      "label": "부재 판정",
-      "display": "끄기"
+      "col": "sugar_brix",
+      "side": "lo",
+      "value": 10.0,
+      "label": "당도 하한",
+      "display": "10"
      }
     ],
     "total": 600,
     "pass": 540,
     "fail": 60,
     "rate": 90.0,
-    "delta_pp": 9.83,
-    "hash": "#delivery_min_hi=130&absent_on=0"
+    "delta_pp": 11.67,
+    "hash": "#weight_g_lo=235&sugar_brix_lo=10.0"
    }
   }
  }

@@ -1,9 +1,8 @@
 """4교시 웨이퍼 맵 · 화면 보고 고치기.
 
-도입(표와 맵) → 설명(좌표에서 사각형까지 · 택배 구역 지도 · 색과 범례 · 칩 정보 풍선 · 흐린 요청과 구체적 요청 · 화면 캡처 첨부)
-→ 적용(실습 4-1 택배 구역 지도 → 4-2 웨이퍼 맵).
+도입(표와 맵) → 설명(좌표에서 사각형까지 · 과수원 지도 · 색과 범례 · 칩 정보 풍선 · 흐린 요청과 구체적 요청 · 화면 캡처 첨부)
+→ 적용(실습 4-1 과수원 지도 → 4-2 웨이퍼 맵).
 """
-import pgen
 import pv4
 import sk
 import viz2
@@ -15,15 +14,26 @@ WN, DN = sk.WN, sk.DN
 CSS = ""
 
 
+def orchard_map():
+    """과수원 나무 30 × 20 · 칸 하나 = 사과 하나 · 상품 초록 · 불량 빨강."""
+    df = sk.D07
+    s = '<svg viewBox="0 0 612 412" style="width:100%;max-height:430px;display:block;margin:0 auto">'
+    for r in df.itertuples():
+        c = "#2BA84A" if r.grade == "상품" else "#E8344E"
+        s += (f'<rect x="{(r.tree_x - 1) * 20 + 6}" y="{(20 - r.tree_y) * 20 + 6}" width="18" height="18" rx="3" fill="{c}">'
+              f'<title>{r.apple_id} {r.grade}</title></rect>')
+    return s + "</svg>"
+
+
 def slides():
     return [
         # ── 도입
         light("표와 맵", pv4.table_vs_map(), T),
         # ── 설명
         light("좌표에서 사각형까지", pv4.coord_to_rect(), T),
-        light("택배 구역 지도", f'<div class="twocol w"><div>{pgen.city_map()}</div><div>'
-              + viz2.tiles([("칸", "구역 하나 · zone_x · zone_y"), ("색", "정시율 · 초록 90% 이상 · 노랑 75~90% · 빨강 75% 미만"),
-                            ("가운데", "물류센터")], 1) + "</div></div>", T),
+        light("과수원 지도", f'<div class="twocol w"><div>{orchard_map()}</div><div>'
+              + viz2.tiles([("칸", "나무 한 그루 · tree_x · tree_y"), ("색", f"상품 초록 {DN['pass']}칸 · 불량 빨강 {DN['fail']}칸"),
+                            ("가장자리", f"상품률 {DN['area']['가장자리']}% · 안쪽 {DN['area']['안쪽']}%")], 1) + "</div></div>", T),
         light("색과 범례", viz2.tiles([
             ("합격", f"초록 #2BA84A · {WN['pass']}칸"), ("불합격", f"빨강 #E8344E · {WN['fail']}칸"),
             ("범례", "색 · 이름 · 개수 · 맵 옆")], 3), T),
@@ -37,10 +47,10 @@ def slides():
             ("캡처", "Windows · Win + Shift + S / Mac · Cmd + Shift + 4"), ("붙여 넣기", "Claude Code 입력창에 Ctrl + V"),
             ("한 줄 덧붙임", "어디가 · 어떻게 달라야 하는지"), ("확인", "고친 뒤 새로 고침 · 다시 캡처")], 2), T),
         # ── 적용
-        lab("4-1", "택배 구역 지도", T, "delivery_sim.html 카드 아래에 구역 격자 지도를 그리고 색 · 범례 · 풍선을 넣는다",
-            ["구역 칸 그리기 요청", "정시율 색 · 범례 요청", "풍선 요청", "캡처 첨부로 고치기"],
-            [f"외곽 정시율 {DN['area']['외곽']}%", "가운데에서 먼 칸일수록 빨강"], files="output/delivery_sim.html"),
-        light("택배 구역 지도 결과", sk.one("sim/delivery_s4.webp", "택배 구역 지도"), T),
+        lab("4-1", "과수원 지도", T, "apple_sim.html 카드 아래에 나무 30 × 20 칸 지도를 그리고 색 · 범례 · 풍선을 넣는다",
+            ["나무 칸 그리기 요청", "상품 · 불량 색 · 범례 요청", "풍선 요청", "캡처 첨부로 고치기"],
+            [f"초록 {DN['pass']}칸 · 빨강 {DN['fail']}칸", f"가장자리 상품률 {DN['area']['가장자리']}%"], files="output/apple_sim.html"),
+        light("과수원 지도 결과", sk.one("sim/apple_s4.webp", "과수원 지도"), T),
         lab("4-2", "웨이퍼 맵", T, "simulator.html 카드 아래에 칩 616칸 맵을 그리고 합격 · 불합격 색 · 범례 · 풍선을 넣는다",
             ["회색 칸 616개 요청", "합격 · 불합격 색 · 범례 요청", "칩 정보 풍선 요청", "캡처 첨부로 고치기"],
             [f"초록 {WN['pass']} · 빨강 {WN['fail']}", "풍선 값 = 엑셀 그 행"], files="output/simulator.html"),

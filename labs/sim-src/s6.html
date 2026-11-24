@@ -82,6 +82,8 @@ const COLOR = { pass: '#2BA84A', fail: '#E8344E', bar: '#9AA1A8', band: '#FDE6E9
 const reasonName = Object.fromEntries(CFG.reasons);
 const NUM_COLS = [...CFG.rules.map(r => r.col), CFG.x, CFG.y];
 const RULE = CFG.rules.find(r => r.col === CFG.slider);     // 조절 바로 바꾸는 기준 하나
+const SIDE = RULE.hi != null ? 'hi' : 'lo';                  // 상한(이하 합격) 또는 하한(이상 합격)
+const over = v => SIDE === 'hi' ? v > spec[RULE.col].hi : v < spec[RULE.col].lo;
 
 function el(tag, attrs = {}, text) {
   const e = document.createElementNS(SVGNS, tag);
@@ -107,8 +109,8 @@ rows.forEach(r => { r._raw = header.map(h => r[h]); NUM_COLS.forEach(c => r[c] =
 // ③ 기준: 기준표 값 그대로, 조절 바 기준 하나만 바뀐다 (#ioff_na_hi=20 처럼 처음 값을 바꿔 열 수 있다)
 const spec = {};
 for (const r of CFG.rules) spec[r.col] = r.kind === 'flag' ? { on: true } : { lo: r.lo, hi: r.hi };
-const m = decodeURIComponent(location.hash.slice(1)).match(new RegExp(`^${RULE.col}_hi=([\\d.]+)$`));
-if (m) spec[RULE.col].hi = Number(m[1]);
+const m = decodeURIComponent(location.hash.slice(1)).match(new RegExp(`^${RULE.col}_${SIDE}=([\\d.]+)$`));
+if (m) spec[RULE.col][SIDE] = Number(m[1]);
 
 // ④ 판정: 기준표를 위에서부터 확인하고 처음 걸린 사유 하나를 돌려준다
 function judge(r) {
@@ -177,19 +179,20 @@ function hbars(svg, items, max, color, W, rowH) {
 // ⑥ 분포: 측정값을 구간으로 나눠 센 막대 + 합격선
 const vals = rows.map(r => r[RULE.col]);
 const dec = decOf(RULE.step);
-const G = { min: Math.floor(Math.min(...vals, RULE.hi)), max: Math.ceil(Math.max(...vals, RULE.hi)) };
+const G = { min: Math.floor(Math.min(...vals, RULE[SIDE])), max: Math.ceil(Math.max(...vals, RULE[SIDE])) };
 function drawDist() {
   const svg = $('dist'), W = 680, H = 150, L = 30, R = 30, B = 20, N = 60, bw = (W - L - R) / N;
   const X = v => L + (v - G.min) / (G.max - G.min) * (W - L - R);
   const bins = new Array(N).fill(0);
   vals.forEach(v => bins[Math.min(N - 1, Math.floor((v - G.min) / (G.max - G.min) * N))]++);
-  const top = Math.sqrt(Math.max(...bins)), hi = spec[RULE.col].hi;
+  const top = Math.sqrt(Math.max(...bins)), cut = spec[RULE.col][SIDE];
   svg.innerHTML = '';
-  svg.appendChild(el('rect', { x: X(hi), y: 0, width: Math.max(0, W - R - X(hi)), height: H - B, fill: COLOR.band }));
+  svg.appendChild(SIDE === 'hi' ? el('rect', { x: X(cut), y: 0, width: Math.max(0, W - R - X(cut)), height: H - B, fill: COLOR.band })
+                                 : el('rect', { x: L, y: 0, width: Math.max(0, X(cut) - L), height: H - B, fill: COLOR.band }));
   bins.forEach((n, i) => {
     if (!n) return;
     const h = Math.max(2, Math.sqrt(n) / top * (H - B - 8));
-    svg.appendChild(el('rect', { x: L + i * bw + 0.8, y: H - B - h, width: bw - 1.6, height: h, fill: G.min + (i + 0.5) / N * (G.max - G.min) > hi ? COLOR.fail : COLOR.bar }));
+    svg.appendChild(el('rect', { x: L + i * bw + 0.8, y: H - B - h, width: bw - 1.6, height: h, fill: over(G.min + (i + 0.5) / N * (G.max - G.min)) ? COLOR.fail : COLOR.bar }));
   });
   svg.appendChild(el('line', { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: '#C4C9CE' }));
   const raw = (G.max - G.min) / 5, p10 = Math.pow(10, Math.floor(Math.log10(raw)));
@@ -197,7 +200,7 @@ function drawDist() {
   for (let v = Math.ceil(G.min / tick) * tick; v <= G.max + 1e-9; v += tick) {
     svg.appendChild(el('text', { x: X(v), y: H - 5, 'text-anchor': 'middle', 'font-size': 11, fill: COLOR.muted }, +v.toFixed(2)));
   }
-  svg.appendChild(el('line', { x1: X(hi), x2: X(hi), y1: 0, y2: H - B, stroke: COLOR.fail, 'stroke-width': 2.5 }));
+  svg.appendChild(el('line', { x1: X(cut), x2: X(cut), y1: 0, y2: H - B, stroke: COLOR.fail, 'stroke-width': 2.5 }));
 }
 
 // ⑦ 다시 그리기: 조절 바를 움직이면 카드 · 지도 · 차트 · 분포가 함께 바뀐다
@@ -224,9 +227,9 @@ function update() {
   });
   hbars($('zones'), byZone, 100, COLOR.pass, 330, 120 / CFG.zones.length);
 
-  const hi = spec[RULE.col].hi;
-  $('val').textContent = `${L.pass}선 ${hi.toFixed(dec)} ${RULE.unit} 이하`;
-  $('hit').textContent = `${RULE.name} 기준에 걸림 ${vals.filter(v => v > hi).length}${CFG.count}`;
+  const cut = spec[RULE.col][SIDE];
+  $('val').textContent = `${L.pass}선 ${cut.toFixed(dec)} ${RULE.unit} ${SIDE === 'hi' ? '이하' : '이상'}`;
+  $('hit').textContent = `${RULE.name} 기준에 걸림 ${vals.filter(over).length}${CFG.count}`;
   drawDist();
 }
 
@@ -241,8 +244,8 @@ $('reasonTitle').textContent = CFG.reasonTitle;
 $('zoneTitle').textContent = CFG.zoneTitle;
 $('distTitle').textContent = `${RULE.name} 분포 (${RULE.unit})`;
 const slider = $('slider');
-Object.assign(slider, { min: G.min, max: G.max, step: RULE.step, value: spec[RULE.col].hi });
-slider.addEventListener('input', () => { spec[RULE.col].hi = Number(slider.value); update(); });
+Object.assign(slider, { min: G.min, max: G.max, step: RULE.step, value: spec[RULE.col][SIDE] });
+slider.addEventListener('input', () => { spec[RULE.col][SIDE] = Number(slider.value); update(); });
 buildMap();
 update();
 </script>

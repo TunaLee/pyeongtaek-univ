@@ -1,7 +1,7 @@
 """7교시 조절 바 전체 · Skill.
 
 도입(조절 바 설계표) → 설명(왼쪽 조절 · 오른쪽 결과 · 처음 값과 원본 대비 · 숫자 점검 · 컨텍스트 · 비우기와 요약 · Skill · Skill 폴더)
-→ 적용(실습 7-1 택배 조절 바 전체 → 7-2 웨이퍼 조절 바 8종).
+→ 적용(실습 7-1 사과 조절 바 전체 → 7-2 웨이퍼 조절 바 8종).
 """
 import psim
 import sk
@@ -15,7 +15,7 @@ T = tag("7")
 WN, DN = sk.WN, sk.DN
 CSS = ""
 
-WS, DS = sk.SIM["wafer"], sk.SIM["delivery"]
+WS, DS = sk.SIM["wafer"], sk.SIM["apple"]
 UNIT = {"rc_ohm": "Ω", "ioff_na": "nA", "vth_v": "V", "particle_cnt": "개", "idsat_ma": "mA", "ox_thk_nm": "nm", "radius_mm": "mm"}
 
 
@@ -68,10 +68,10 @@ def slides():
               + viz2.tiles([("name", "Skill 이름 · 폴더 이름과 같게"), ("description", "언제 쓰는지 · Claude 가 고르는 기준"),
                             ("본문", "단계 · 산출물 형식")], 1) + "</div></div>", T),
         # ── 적용
-        lab("7-1", "택배 조절 바 6종", T, "판정 4종(파손 · 주소 오류 · 부재 체크 · 약속 시간)과 집계 범위 2종(거리 · 무게) 조절 바를 만들고 두 칸으로 배치한다",
+        lab("7-1", "사과 조절 바 6종", T, "판정 4종(멍 · 벌레 체크 · 무게 하한 · 당도 하한)과 집계 범위 2종(중심에서 거리 · 지름) 조절 바를 만들고 두 칸으로 배치한다",
             ["조절 바 설계표 요청", "조절 바 전체 · 처음 값 버튼", "두 칸 배치", "sim-check Skill 로 숫자 점검"],
-            [f"{DS['s7_checks'][0]['op']} → {DS['s7_checks'][0]['rate']}%", f"{DS['s7_checks'][1]['op']} → {DS['s7_checks'][1]['rate']}%", "처음 값 버튼 → 원래 숫자"], files="output/delivery_sim.html"),
-        light("택배 조절 바 6종 결과", sk.one("sim/delivery_s7.webp", "택배 조절 바 6종"), T),
+            [f"{DS['s7_checks'][0]['op']} → {DS['s7_checks'][0]['rate']}%", f"{DS['s7_checks'][1]['op']} → {DS['s7_checks'][1]['rate']}%", "처음 값 버튼 → 원래 숫자"], files="output/apple_sim.html"),
+        light("사과 조절 바 6종 결과", sk.one("sim/apple_s7.webp", "사과 조절 바 6종"), T),
         lab("7-2", "조절 바 8종", T, "기준표 일곱 측정값 + 집계 범위(중심에서 거리)에 조절 바를 만들고 처음 값 · 원본 대비를 넣는다",
             ["조절 바 설계표 요청", "조절 바 8종 · 분포 · 합격선", "왼쪽 조절 · 오른쪽 결과", "처음 값 · 원본 대비", "숫자 점검 항목"],
             ["점검 네 가지 · " + " · ".join(f"{c['rate']}%" for c in chk), f"처음 값 → {WN['yield']}%"], files="output/simulator.html"),

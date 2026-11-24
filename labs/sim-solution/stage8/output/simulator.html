@@ -1194,7 +1194,7 @@ function downloadCSV() {
   lines.push([...header, 'sim_scope', 'sim_reason', 'sim_result']);
   for (const r of rows) {
     const ins = inScope(r), k = judge(r);
-    lines.push([...r._raw, ins ? 'IN' : 'OUT', k, ins ? (k === 'none' ? CFG.passValue : 'FAIL') : '']);
+    lines.push([...r._raw, ins ? 'IN' : 'OUT', k, ins ? (k === 'none' ? CFG.passValue : (CFG.failValue || 'FAIL')) : '']);
   }
   const blob = new Blob(['﻿' + lines.map(l => l.map(q).join(',')).join('\n') + '\n'], { type: 'text/csv' });
   const a = document.createElement('a');

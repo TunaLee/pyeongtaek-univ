@@ -1,7 +1,7 @@
 """5교시 불합격 차트 · 나눠서 요청하기.
 
 도입(맵과 차트) → 설명(막대 하나의 구성 · 사유별 막대 · 위치별 합격률 · 두 칸 배치 · 한 번에 요청 vs 나눠 요청 · Git 커밋 · 되돌리기)
-→ 적용(실습 5-1 택배 차트 → 5-2 웨이퍼 차트).
+→ 적용(실습 5-1 사과 차트 → 5-2 웨이퍼 차트).
 """
 import pv3
 import sk
@@ -12,6 +12,8 @@ from stats_hx import hbars, src
 
 T = tag("5")
 WN, DN = sk.WN, sk.DN
+TOP = max(DN["reason"], key=DN["reason"].get)
+TOPK = sk.D_KO[TOP]
 CSS = ""
 
 
@@ -24,11 +26,11 @@ def slides():
             "막대 차트", [("보여 주는 것", "얼마나 많나 · 크기"), ("읽는 법", "막대 길이 비교"), ("예", "사유별 칩 수")]), T),
         # ── 설명
         light("막대 하나의 구성", viz2.tiles([
-            ("이름", "사유 · 구역"), ("길이", "칩 수 · 합격률"), ("숫자", "막대 끝 값"), ("순서", "많은 순")], 4), T),
-        light("택배 사유별 막대", pv3.pareto([(sk.D_KO[k], v) for k, v in sorted(DN["reason"].items(), key=lambda x: -x[1])]), T),
+            ("이름", "사유 · 위치"), ("길이", "칩 수 · 합격률"), ("숫자", "막대 끝 값"), ("순서", "많은 순")], 4), T),
+        light("사과 사유별 막대", pv3.pareto([(sk.D_KO[k], v) for k, v in sorted(DN["reason"].items(), key=lambda x: -x[1])]), T),
         light("칩 사유별 막대", pv3.pareto([(sk.KO[k], v) for k, v in sorted(WN["reason"].items(), key=lambda x: -x[1])]), T),
         light("위치별 합격률 막대", '<div class="twocol w"><div>'
-              + hbars([(a, DN["area"][a], a == "외곽", f"{DN['area'][a]}%") for a in sk.AREA], top=100, title="택배 · 구역별 정시율")
+              + hbars([(a, DN["area"][a], a == "가장자리", f"{DN['area'][a]}%") for a in sk.AREA], top=100, title="사과 · 위치별 상품률")
               + "</div><div>"
               + hbars([(sk.ZONE_KO[z], zr[z], False, f"{zr[z]}%") for z in ("center", "mid", "edge")], top=100, title="칩 · 위치별 합격률")
               + "</div></div>", T),
@@ -47,10 +49,10 @@ def slides():
             ("Git 과 차이", "체크포인트는 이 대화 안 · Git 은 계속 남음")], 3)
               + src(("Claude Code 문서 · Checkpointing", "https://code.claude.com/docs/en/checkpointing")), T),
         # ── 적용
-        lab("5-1", "택배 차트", T, "delivery_sim.html 에 실패 사유별 막대 · 구역별 정시율 막대를 넣고 두 칸으로 배치한다",
-            ["사유별 막대 → 확인 · 커밋", "구역별 막대 → 확인 · 커밋", "두 칸 배치 → 확인 · 커밋", "읽히는 사실 세 가지"],
-            [f"지연 {DN['reason']['late']}건 1위", f"외곽 {DN['area']['외곽']}% 최저"], files="output/delivery_sim.html"),
-        light("택배 차트 결과", sk.one("sim/delivery_s5.webp", "택배 차트"), T),
+        lab("5-1", "사과 차트", T, "apple_sim.html 에 불량 사유별 막대 · 위치별 상품률 막대를 넣고 두 칸으로 배치한다",
+            ["사유별 막대 → 확인 · 커밋", "위치별 막대 → 확인 · 커밋", "두 칸 배치 → 확인 · 커밋", "읽히는 사실 세 가지"],
+            [f"{TOPK} {max(DN['reason'].values())}개 1위", f"가장자리 {DN['area']['가장자리']}% 최저"], files="output/apple_sim.html"),
+        light("사과 차트 결과", sk.one("sim/apple_s5.webp", "사과 차트"), T),
         lab("5-2", "웨이퍼 차트", T, "simulator.html 에 불합격 사유별 막대 · 위치별 합격률 막대를 넣고 맵 왼쪽 · 차트 오른쪽으로 배치한다",
             ["사유별 막대 → 확인 · 커밋", "위치별 막대 → 확인 · 커밋", "두 칸 배치 → 확인 · 커밋", "읽히는 사실 세 가지"],
             [f"깨짐 · 긁힘 {WN['reason']['crack']}개 1위", f"중심 {zr['center']}% · 가장자리 {zr['edge']}%"], files="output/simulator.html"),

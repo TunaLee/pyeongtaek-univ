@@ -1,7 +1,7 @@
 """8교시 시뮬레이터 완성 · 하네스 · 발표.
 
 도입(남은 기능) → 설명(다른 파일 불러오기 · 목표 수율 · 내려받기 · 실험 기록 · 하네스 · Hook · 이 과정의 하네스)
-→ 적용(실습 8-1 택배 완성 → 8-2 웨이퍼 완성 · 발표 · 제출물).
+→ 적용(실습 8-1 사과 완성 → 8-2 웨이퍼 완성 · 발표 · 제출물).
 """
 import psim
 import sk
@@ -13,7 +13,7 @@ from stats_hx import src
 T = tag("8")
 WN, DN = sk.WN, sk.DN
 CSS = ""
-WS, DS = sk.SIM["wafer"], sk.SIM["delivery"]
+WS, DS = sk.SIM["wafer"], sk.SIM["apple"]
 TARGET = WS["s8_target"]["target"]
 
 
@@ -30,7 +30,7 @@ def slides():
         light("다른 파일 불러오기", viz2.maprows([
             ("W07 (처음)", f"수율 {WN['yield']}%", f"합격 {WN['pass']} / {WN['rows']}"),
             ("W21 불러옴", f"수율 {w21['rate']}%", f"합격 {w21['pass']} / {w21['total']} · 가장자리 {w21['zones']['가장자리']['rate']}%"),
-            ("D07 → D25 (택배)", f"정시율 {DN['rate']}% → {d25['rate']}%", f"정시 {d25['pass']} / {d25['total']}")], "파일", "결과"), T),
+            ("A07 → A25 (사과)", f"상품률 {DN['rate']}% → {d25['rate']}%", f"상품 {d25['pass']} / {d25['total']}")], "파일", "결과"), T),
         light("목표 수율 표시", sk.duo("sim/wafer_s8_loaded.webp", "sim/wafer_s8_target.webp",
                                        f"W21 · {w21['rate']}% · 목표 {TARGET}% 미달", f"{combo(wp)} → {wp['rate']}%"), T),
         light("판정 결과 내려받기", viz2.maprows([
@@ -51,10 +51,10 @@ def slides():
         light("Hook 이 끼어드는 시점", psim.hook_gate()
               + src(("Claude Code 문서 · Hooks", "https://code.claude.com/docs/en/hooks")), T),
         # ── 적용
-        lab("8-1", "택배 시뮬레이터 완성", T, f"다른 택배 파일 불러오기 · 목표 정시율 {TARGET}% · 결과 내려받기를 넣고 실험을 기록한다",
-            ["불러오기 요청 · D25 로 확인", "목표 정시율 표시", "내려받기", "실험 세 가지 기록"],
-            [f"D25 → 정시율 {d25['rate']}%", f"D07 · {combo(dp)} → {dp['rate']}%", "docs/실험기록.md"], files="output/delivery_sim.html · data/delivery_D25.xlsx"),
-        light("택배 시뮬레이터 완성", sk.one("sim/delivery_s8.webp", "택배 시뮬레이터 완성"), T),
+        lab("8-1", "사과 시뮬레이터 완성", T, f"다른 사과 파일 불러오기 · 목표 상품률 {TARGET}% · 결과 내려받기를 넣고 실험을 기록한다",
+            ["불러오기 요청 · A25 로 확인", "목표 상품률 표시", "내려받기", "실험 세 가지 기록"],
+            [f"A25 → 상품률 {d25['rate']}%", f"A07 · {combo(dp)} → {dp['rate']}%", "docs/실험기록.md"], files="output/apple_sim.html · data/apple_A25.xlsx"),
+        light("사과 시뮬레이터 완성", sk.one("sim/apple_s8.webp", "사과 시뮬레이터 완성"), T),
         lab("8-2", "수율 시뮬레이터 완성", T, "불러오기 · 목표 수율 · 내려받기를 넣고 목표 수율을 맞춘 조합을 기록해 1분 발표한다",
             ["불러오기 · W21 로 확인", "목표 수율 · 내려받기", f"W21 에서 목표 {TARGET}% 조합 찾기 · 기록", "1분 발표", "폴더 제출"],
             [f"W21 → 수율 {w21['rate']}%", f"목표 {TARGET}% 조합 예 · {wp['rate']}%", "simulator.html · 실험기록.md · 내려받은 CSV"],
@@ -69,6 +69,6 @@ def slides():
             ("화면", "시뮬레이터 띄우기", "10초"), ("실험", "조절 바 세 가지 · 수율 변화", "30초"),
             ("결과", f"목표 {TARGET}% 를 맞춘 조합", "10초"), ("다음", "내 엑셀로 해 볼 것", "10초")], "순서", "내용"), T),
         light("제출물", viz2.tiles([
-            ("output/", "simulator.html · delivery_sim.html · 내려받은 CSV"), ("docs/", "데이터_요약.md · 실험기록.md"),
+            ("output/", "simulator.html · apple_sim.html · 내려받은 CSV"), ("docs/", "데이터_요약.md · 실험기록.md"),
             ("CLAUDE.md · .claude/", "규칙 · Skill · Hook")], 3), T),
     ]

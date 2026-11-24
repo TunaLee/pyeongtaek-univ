@@ -4,9 +4,9 @@
       옵션 --no-shots : 캡처 생략
 
 만드는 것
-  labs/sim-lab/data/            실습용 엑셀 4개 (wafer_test_W07 · W21 · delivery_D07 · D25, csv 에서 변환)
+  labs/sim-lab/data/            실습용 엑셀 4개 (wafer_test_W07 · W21 · apple_A07 · A25, csv 에서 변환)
   labs/sim-solution/stageN/     교시별 누적 완성본 (1 · 2 · 3a · 3b · 4 ~ 8) — output · docs · scripts
-  labs/sim_ref.json             덱에 쓰는 숫자 (웨이퍼 · 택배)
+  labs/sim_ref.json             덱에 쓰는 숫자 (웨이퍼 · 사과)
   docs/img/sim/*.webp           완성본 화면 캡처 (1280×720)
 
 HTML 원본은 labs/sim-src/s*.html (손으로 짠 바닐라 JS). 여기서 데이터 CSV 글자와 CFG 를 끼워 넣는다.
@@ -70,38 +70,39 @@ DOMAINS = {
             "target": 90,
         },
     },
-    "delivery": {
-        "src": DATA_IN / "practice" / "delivery_D07.csv",
-        "alt": DATA_IN / "practice" / "raw" / "delivery_D25.csv",
-        "xlsx": "delivery_D07.xlsx",
-        "alt_xlsx": "delivery_D25.xlsx",
-        "html": "delivery_sim.html",
-        "summary": "delivery_summary.xlsx",
-        "script": "delivery_summary.py",
+    "apple": {
+        "src": DATA_IN / "practice" / "apple_A07.csv",
+        "alt": DATA_IN / "practice" / "raw" / "apple_A25.csv",
+        "xlsx": "apple_A07.xlsx",
+        "alt_xlsx": "apple_A25.xlsx",
+        "html": "apple_sim.html",
+        "summary": "apple_summary.xlsx",
+        "script": "apple_summary.py",
         "cfg": {
-            "title": "택배 정시율 시뮬레이터",
-            "dataName": "delivery_D07.xlsx",
-            "item": "배송", "count": "건",
-            "labels": {"total": "전체 배송", "pass": "정시", "fail": "실패", "rate": "정시율",
-                       "scope": "집계 대상 배송", "orig": "엑셀 원본 정시율"},
-            "judgeCol": "status", "passValue": "ON_TIME", "reasonCol": "reason",
-            "x": "zone_x", "y": "zone_y", "outline": 0,
-            "mapTitle": "구역 지도", "reasonTitle": "실패 사유별 건수", "zoneTitle": "구역별 정시율",
-            "zoneCol": "area", "zones": [["도심", "도심"], ["중간", "중간"], ["외곽", "외곽"]],
-            "reasons": [["damaged", "파손"], ["addr_error", "주소 오류"], ["late", "지연"], ["absent", "부재"]],
+            "title": "사과 상품률 시뮬레이터",
+            "dataName": "apple_A07.xlsx",
+            "item": "사과", "count": "개",
+            "labels": {"total": "전체 사과", "pass": "상품", "fail": "불량", "rate": "상품률",
+                       "scope": "집계 대상 사과", "orig": "엑셀 원본 상품률"},
+            "judgeCol": "grade", "passValue": "상품", "failValue": "불량", "reasonCol": "reason",
+            "x": "tree_x", "y": "tree_y", "outline": 0,
+            "mapTitle": "과수원 지도", "reasonTitle": "불량 사유별 개수", "zoneTitle": "구역별 상품률",
+            "zoneCol": "zone", "zones": [["안쪽", "안쪽"], ["중간", "중간"], ["가장자리", "가장자리"]],
+            "reasons": [["bruise", "멍"], ["worm", "벌레 먹음"], ["light", "무게 미달"], ["low_sugar", "당도 미달"]],
             "rules": [
-                {"col": "damaged", "name": "파손", "kind": "flag", "reason": "damaged", "flagText": "파손 건 실패"},
-                {"col": "addr_error", "name": "주소 오류", "kind": "flag", "reason": "addr_error", "flagText": "주소 오류 건 실패"},
-                {"col": "delivery_min", "name": "약속 시간", "unit": "분", "hi": 120, "step": 1, "reason": "late"},
-                {"col": "absent", "name": "부재", "kind": "flag", "reason": "absent", "flagText": "부재 건 실패"},
+                {"col": "bruise", "name": "멍", "kind": "flag", "reason": "bruise", "flagText": "멍 든 사과 불량"},
+                {"col": "worm", "name": "벌레", "kind": "flag", "reason": "worm", "flagText": "벌레 먹은 사과 불량"},
+                {"col": "weight_g", "name": "무게", "unit": "g", "lo": 250, "step": 1, "reason": "light"},
+                {"col": "sugar_brix", "name": "당도", "unit": "brix", "lo": 11.0, "step": 0.1, "reason": "low_sugar"},
             ],
-            "scopes": [{"col": "dist_km", "name": "거리", "unit": "km", "step": 0.1},
-                       {"col": "weight_kg", "name": "무게", "unit": "kg", "step": 0.1}],
-            "slider": "delivery_min",
-            "target": 90,
+            "scopes": [{"col": "dist_m", "name": "중심에서 거리", "unit": "m", "step": 0.1},
+                       {"col": "diameter_mm", "name": "지름", "unit": "mm", "step": 0.1}],
+            "slider": "sugar_brix",
+            "target": None,            # 아래에서 웨이퍼 목표와 같은 값으로
         },
     },
 }
+DOMAINS["apple"]["cfg"]["target"] = DOMAINS["wafer"]["cfg"]["target"]
 
 
 # ───────────────────────── 판정 (HTML 의 judge 와 같은 규칙) ─────────────────────────
@@ -203,19 +204,20 @@ def numbers(dom):
            "spec": spec}
     sl = cfg["slider"]
     rule = next(r for r in cfg["rules"] if r["col"] == sl)
-    vals = [5, 15, 20, 30] if cfg["item"] == "칩" else [90, 100, 150, 180]
-    out["s6_slider"] = {"col": sl, "name": rule["name"], "unit": rule["unit"], "base": rule["hi"],
-                        "tries": {str(v): brief(evaluate(rows, cfg, with_change(spec, sl, hi=v))) for v in vals}}
+    side = "hi" if rule.get("hi") is not None else "lo"
+    vals = [5, 15, 20, 30] if cfg["item"] == "칩" else [10, 10.5, 11.5, 12]
+    out["s6_slider"] = {"col": sl, "name": rule["name"], "unit": rule["unit"], "side": side, "base": rule[side],
+                        "tries": {fmtnum(v): brief(evaluate(rows, cfg, with_change(spec, sl, **{side: v}))) for v in vals}}
     if cfg["item"] == "칩":
         ops = [("누설전류 상한 10 → 5 nA", with_change(spec, "ioff_na", hi=5)),
                ("문턱전압 범위 0.38~0.52 → 0.36~0.54 V", with_change(spec, "vth_v", lo=0.36, hi=0.54)),
                ("깨짐·긁힘 판정 끄기", with_change(spec, "crack", on=False)),
                (f"중심에서 거리 상한 {fmtnum(spec['radius_mm']['hi'])} → 120 mm", with_change(spec, "radius_mm", hi=120))]
     else:
-        ops = [("약속 시간 120 → 150분", with_change(spec, "delivery_min", hi=150)),
-               ("부재 판정 끄기", with_change(spec, "absent", on=False)),
-               (f"거리 상한 {fmtnum(spec['dist_km']['hi'])} → 8 km", with_change(spec, "dist_km", hi=8)),
-               (f"무게 상한 {fmtnum(spec['weight_kg']['hi'])} → 10 kg", with_change(spec, "weight_kg", hi=10))]
+        ops = [("무게 하한 250 → 230 g", with_change(spec, "weight_g", lo=230)),
+               ("벌레 판정 끄기", with_change(spec, "worm", on=False)),
+               (f"중심에서 거리 상한 {fmtnum(spec['dist_m']['hi'])} → 40 m", with_change(spec, "dist_m", hi=40)),
+               (f"지름 상한 {fmtnum(spec['diameter_mm']['hi'])} → 80 mm", with_change(spec, "diameter_mm", hi=80))]
     out["s7_checks"] = [{"op": name, **brief(evaluate(rows, cfg, s)), "hash": spec_hash(s, spec)} for name, s in ops]
     # 8교시: 둘째 파일 · 목표 수율
     alt_spec = base_spec(cfg, alt)
@@ -279,6 +281,23 @@ def pick_combo(cfg, rs, sp, steps):
             "hash": spec_hash(s, sp)}
 
 
+def find_pick(cfg, rs, sp, t):
+    """판정 조절 바 두 개(무게 하한 · 당도 하한)를 함께 낮춰 목표를 넘는 조합 중 변화가 가장 작은 것.
+    무게는 5 g, 당도는 0.5 brix 눈금. 변화 크기 = 무게 10 g 과 당도 0.5 brix 를 1 로 친 합."""
+    w0, s0 = sp["weight_g"]["lo"], sp["sugar_brix"]["lo"]
+    best = None
+    for dw in range(1, 11):
+        for ds in range(1, 5):
+            w, s = w0 - dw * 5, round(s0 - ds * 0.5, 1)
+            ev = evaluate(rs, cfg, with_change(with_change(sp, "weight_g", lo=w), "sugar_brix", lo=s))
+            if ev["rate"] < t:
+                continue
+            key = (dw / 2 + ds, ev["rate"])
+            if best is None or key < best[0]:
+                best = (key, [("weight_g", "lo", w), ("sugar_brix", "lo", s)])
+    return best and best[1]
+
+
 # ───────────────────────── 엑셀 · CSV ─────────────────────────
 def csv_to_xlsx(src, dst, sheet):
     rows = read_rows(src)
@@ -314,7 +333,7 @@ def criteria_md(key, ref):
     cfg, r = DOMAINS[key]["cfg"], ref[key]
     L = cfg["labels"]
     reason = dict(cfg["reasons"])
-    title = "합격 기준표" if key == "wafer" else "택배 기준표"
+    title = "합격 기준표" if key == "wafer" else "선별 기준표"
     lines = [f"# {title}", "",
              "위에서부터 차례로 확인하고, 먼저 걸린 줄의 사유 하나로 판정한다. 하나도 안 걸리면 "
              f"{L['pass']}(none)이다.", "",
@@ -337,28 +356,28 @@ def criteria_md(key, ref):
 
 
 def claude_md(ref):
-    w, d = ref["wafer"], ref["delivery"]
+    w, d = ref["wafer"], ref["apple"]
     return f"""# 수율 시뮬레이터 프로젝트
 
 ## 만드는 것
 엑셀 파일을 읽어, 합격 기준을 조절 바로 바꾸면 수율이 바로 바뀌는 HTML 화면을 만든다.
 - 웨이퍼: `data/wafer_test_W07.xlsx` → `output/simulator.html`
-- 택배(연습): `data/delivery_D07.xlsx` → `output/delivery_sim.html`
-교시마다 택배로 먼저 같은 기능을 만들고, 이어서 웨이퍼로 만든다.
+- 사과(연습): `data/apple_A07.xlsx` → `output/apple_sim.html`
+교시마다 사과로 먼저 같은 기능을 만들고, 이어서 웨이퍼로 만든다.
 
 ## 폴더
 - `data/` 원본 엑셀. 읽기만 하고 고치지 않는다.
 - `docs/` 데이터 요약 · 실험 기록
 - `output/` 결과물 (엑셀 · CSV · HTML)
 - `scripts/` 파이썬 스크립트
-- `templates/` 합격기준표 · 택배기준표 · HTML 예시 · 실험기록 양식
+- `templates/` 합격기준표 · 선별기준표 · HTML 예시 · 실험기록 양식
 
 ## 데이터
-- 엑셀 가로 한 줄 = 칩 한 개 (웨이퍼 맵의 네모 한 칸). 택배는 한 줄 = 배송 한 건.
+- 엑셀 가로 한 줄 = 칩 한 개 (웨이퍼 맵의 네모 한 칸). 사과는 한 줄 = 사과 한 개 (과수원 지도의 네모 한 칸).
 - 웨이퍼 위치 열: `die_x` · `die_y` (맵의 칸 번호), `radius_mm` (중심에서 거리), `zone` (center · mid · edge)
-- 택배 위치 열: `zone_x` · `zone_y` (구역 지도의 칸 번호), `dist_km`, `area` (도심 · 중간 · 외곽)
-- 판정 열: 웨이퍼 `pass_fail` · `fail_type`, 택배 `status` · `reason`
-- 합격 기준은 `templates/합격기준표.md` · `templates/택배기준표.md` 를 따른다.
+- 사과 위치 열: `tree_x` · `tree_y` (과수원 지도의 칸 번호), `dist_m` (중심에서 거리), `zone` (안쪽 · 중간 · 가장자리)
+- 판정 열: 웨이퍼 `pass_fail` · `fail_type`, 사과 `grade` · `reason`
+- 합격 기준은 `templates/합격기준표.md` · `templates/선별기준표.md` 를 따른다.
 
 ## 작업 규칙
 - 답은 한국어로, 쉬운 말로 한다. 반도체 용어를 새로 꺼내지 않는다.
@@ -373,7 +392,7 @@ def claude_md(ref):
 
 ## 정답 숫자 (교육용 합성 데이터 기준)
 - 웨이퍼 W07: 전체 {w['total']} · 합격 {w['pass']} · 불합격 {w['fail']} · 수율 {w['rate']:.2f}%
-- 택배 D07: 전체 {d['total']} · 정시 {d['pass']} · 실패 {d['fail']} · 정시율 {d['rate']:.2f}%
+- 사과 A07: 전체 {d['total']} · 상품 {d['pass']} · 불량 {d['fail']} · 상품률 {d['rate']:.2f}%
 """
 
 
@@ -406,7 +425,7 @@ def make_lab(ref):
     (LAB / "templates").mkdir()
     (LAB / "CLAUDE.md").write_text(claude_md(ref), encoding="utf-8")
     (LAB / "templates" / "합격기준표.md").write_text(criteria_md("wafer", ref), encoding="utf-8")
-    (LAB / "templates" / "택배기준표.md").write_text(criteria_md("delivery", ref), encoding="utf-8")
+    (LAB / "templates" / "선별기준표.md").write_text(criteria_md("apple", ref), encoding="utf-8")
     (LAB / "templates" / "실험기록_양식.md").write_text(EXPERIMENT_FORM, encoding="utf-8")
     for d in ("docs", "output", "scripts"):
         (LAB / d).mkdir(exist_ok=True)
@@ -457,16 +476,16 @@ def summary_doc(dom, ref):
     rows = read_rows(dom["src"])
     head = list(rows[0].keys())
     lines = [f"# {cfg['dataName']} 데이터 요약", "",
-             f"- 줄 수: {n['rows']}줄 (한 줄 = {cfg['item']} 한 {('개' if cfg['item'] == '칩' else '건')})",
+             f"- 줄 수: {n['rows']}줄 (한 줄 = {cfg['item']} 한 {cfg['count']})",
              f"- 열 수: {len(head)}개", "", "## 열 묶음", ""]
     if cfg["item"] == "칩":
         groups = [("이름표", ["lot_id", "wafer_id"]), ("위치", ["die_x", "die_y", "center_x_mm", "center_y_mm", "radius_mm", "zone"]),
                   ("측정값", ["vth_v", "idsat_ma", "ioff_na", "rc_ohm", "ox_thk_nm", "crack", "particle_cnt"]),
                   ("판정", ["bin", "fail_type", "pass_fail"])]
     else:
-        groups = [("이름표", ["date", "order_id", "truck_id"]), ("위치", ["zone_x", "zone_y", "dist_km", "area"]),
-                  ("측정값", ["weight_kg", "delivery_min", "damaged", "addr_error", "absent"]),
-                  ("판정", ["reason", "status"])]
+        groups = [("이름표", ["date", "apple_id", "variety"]), ("위치", ["tree_x", "tree_y", "dist_m", "zone"]),
+                  ("측정값", ["weight_g", "diameter_mm", "sugar_brix", "bruise", "worm"]),
+                  ("판정", ["reason", "grade"])]
     lines += ["| 묶음 | 열 |", "|---|---|"] + [f"| {g} | {', '.join(c)} |" for g, c in groups]
     lines += ["", "## 판정 숫자", "", f"| 항목 | 값 |", "|---|---|",
               f"| {L['total']} | {n['total']} |", f"| {L['pass']} | {n['pass']} |", f"| {L['fail']} | {n['fail']} |",
@@ -502,7 +521,7 @@ def result_csv(dom, rows_raw, spec, name):
     for raw, r in zip(rows_raw, rows):
         ins = in_scope(r, cfg, spec)
         k = judge(r, cfg, spec)
-        w.writerow([raw[h] for h in head] + ["IN" if ins else "OUT", k, (cfg["passValue"] if k == "none" else "FAIL") if ins else ""])
+        w.writerow([raw[h] for h in head] + ["IN" if ins else "OUT", k, (cfg["passValue"] if k == "none" else cfg.get("failValue", "FAIL")) if ins else ""])
     return "﻿" + out.getvalue()
 
 
@@ -533,7 +552,7 @@ def make_solution(ref):
         n = int(st[0])
         for key, dom in DOMAINS.items():
             r = ref[key]
-            name = "데이터_요약.md" if key == "wafer" else "택배_요약.md"
+            name = "데이터_요약.md" if key == "wafer" else "사과_요약.md"
             (d / "docs" / name).write_text(summary_doc(dom, r), encoding="utf-8")
             if n >= 2:
                 shutil.copy(SRC / "scripts" / dom["script"], d / "scripts" / dom["script"])
@@ -566,7 +585,7 @@ def make_solution(ref):
 
 def experiment_doc(ref):
     out = []
-    for key, title in (("wafer", "웨이퍼"), ("delivery", "택배")):
+    for key, title in (("wafer", "웨이퍼"), ("apple", "사과")):
         r, cfg = ref[key], DOMAINS[key]["cfg"]
         L = cfg["labels"]
         out += [f"# {title} 실험 기록", "", f"데이터: {r['file']} · 처음 {L['rate']}: {r['rate']:.2f}%", "",
@@ -611,8 +630,8 @@ def make_shots(ref):
             shot(SOL / f"stage{st}" / "output" / dom["html"], IMG / f"{key}_s{st}.webp")
         r = ref[key]
         sl = r["s6_slider"]
-        v = "5" if key == "wafer" else "150"
-        shot(SOL / "stage6" / "output" / dom["html"], IMG / f"{key}_s6_moved.webp", f"#{sl['col']}_hi={v}")
+        v = "5" if key == "wafer" else "12"
+        shot(SOL / "stage6" / "output" / dom["html"], IMG / f"{key}_s6_moved.webp", f"#{sl['col']}_{sl['side']}={v}")
         shot(SOL / "stage7" / "output" / dom["html"], IMG / f"{key}_s7_moved.webp", r["s7_checks"][0]["hash"])
         p = r["s8_target"]["pick"]
         with tempfile.TemporaryDirectory() as td:
@@ -653,18 +672,22 @@ def main():
     ref = {"note": "labs/make_sim.py 가 계산 · 합성 데이터 기준 · rate 는 % (소수 둘째 자리)"}
     for key, dom in DOMAINS.items():
         ref[key] = numbers(dom)
-    # 8교시 목표 조합 (조절 바 하나만으로 목표를 넘는 가장 작은 변화 중 하나를 고른다)
-    w, dl = ref["wafer"], ref["delivery"]
-    wcfg, dcfg = DOMAINS["wafer"]["cfg"], DOMAINS["delivery"]["cfg"]
+    # 8교시 목표 조합 (웨이퍼는 손으로 고른 값 · 사과는 find_pick 이 찾은 값)
+    w = ref["wafer"]
+    wcfg = DOMAINS["wafer"]["cfg"]
     walt = to_num(read_rows(DOMAINS["wafer"]["alt"]), wcfg)
     wsp = base_spec(wcfg, walt)
     w["s8_target"]["pick"] = {"data": "alt", "data_file": DOMAINS["wafer"]["alt_xlsx"],
                               **pick_combo(wcfg, walt, wsp, [("ioff_na", "hi", 30), ("vth_v", "hi", 0.55)])}
-    drows = to_num(read_rows(DOMAINS["delivery"]["src"]), dcfg)
-    dsp = base_spec(dcfg, drows)
-    dl["s8_target"]["pick"] = {"data": "main", "data_file": dcfg["dataName"],
-                               **pick_combo(dcfg, drows, dsp, [("delivery_min", "hi", 130), ("absent", "on", False)])}
-    for key in ("wafer", "delivery"):
+    ap, acfg = ref["apple"], DOMAINS["apple"]["cfg"]
+    for data, src, fname in (("main", "src", acfg["dataName"]), ("alt", "alt", DOMAINS["apple"]["alt_xlsx"])):
+        arows = to_num(read_rows(DOMAINS["apple"][src]), acfg)
+        asp = base_spec(acfg, arows)
+        steps = find_pick(acfg, arows, asp, acfg["target"])
+        if steps:   # A07 에서 되면 A07, 안 되면 A25
+            ap["s8_target"]["pick"] = {"data": data, "data_file": fname, **pick_combo(acfg, arows, asp, steps)}
+            break
+    for key in ("wafer", "apple"):
         cfg = DOMAINS[key]["cfg"]
         names = {r["col"]: r["name"] for r in cfg["rules"]} | {s["col"]: s["name"] for s in cfg["scopes"]}
         for c in ref[key]["s8_target"]["pick"]["set"]:
@@ -675,7 +698,7 @@ def main():
     make_solution(ref)
     if "--no-shots" not in sys.argv and Path(CHROME).exists():
         make_shots(ref)
-    for key in ("wafer", "delivery"):
+    for key in ("wafer", "apple"):
         r = ref[key]
         print(key, r["total"], r["pass"], r["fail"], r["rate"], "재판정 일치" if r["rejudge_match"] else f"불일치 {r['rejudge_mismatch']}")
 

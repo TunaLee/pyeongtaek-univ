@@ -1,7 +1,7 @@
 """2교시 엑셀 집계 자동화 · CLAUDE.md.
 
-도입(손 집계와 요청) → 설명(수율 계산 · 택배 집계 · 칩 집계 · 엑셀 시트 세 장 · CSV 저장 · CLAUDE.md · 확인할 수 있는 문장 · 숫자 대조)
-→ 적용(실습 2-1 택배 집계 → 2-2 웨이퍼 yield_summary.xlsx).
+도입(손 집계와 요청) → 설명(수율 계산 · 사과 집계 · 칩 집계 · 엑셀 시트 세 장 · CSV 저장 · CLAUDE.md · 확인할 수 있는 문장 · 숫자 대조)
+→ 적용(실습 2-1 사과 집계 → 2-2 웨이퍼 yield_summary.xlsx).
 """
 import pv3
 import sk
@@ -13,6 +13,8 @@ from stats_hx import hbars
 
 T = tag("2")
 WN, DN = sk.WN, sk.DN
+TOP = max(DN["reason"], key=DN["reason"].get)
+TOPK = sk.D_KO[TOP]
 CSS = """
   .p2eq{font-size:40px; font-weight:800; color:#16233A; text-align:center; margin:30px 0 26px;}
   .p2eq em{font-style:normal; color:#F28C28;}
@@ -36,11 +38,11 @@ def slides():
             "Claude Code 요청", [("수율", "「합격 수와 수율」"), ("사유별", "「사유별 칩 수 · 많은 순」"), ("다음 파일", "같은 요청 · 파일 이름만 바꿈")]), T),
         # ── 설명
         light("수율 계산", f'<div class="p2eq">수율 = <em>합격 {WN["pass"]}</em> ÷ 전체 {WN["rows"]} = <em>{WN["yield"]}%</em></div>'
-              + viz2.tiles([("택배 정시율", f"정시 {DN['pass']} ÷ 전체 {DN['rows']} = {DN['rate']}%"),
+              + viz2.tiles([("사과 상품률", f"상품 {DN['pass']} ÷ 전체 {DN['rows']} = {DN['rate']}%"),
                             ("같은 계산", "조건에 맞는 행 수 ÷ 전체 행 수")], 2), T),
-        light("택배 집계 표", '<div class="twocol w"><div>' + hbars(
-            [(f"{sk.D_KO[k]}", v, k == "late", f"{v}건") for k, v in sorted(DN["reason"].items(), key=lambda x: -x[1])], title="실패 사유별")
-              + "</div><div>" + hbars([(a, DN["area"][a], a == "외곽", f"{DN['area'][a]}%") for a in sk.AREA], top=100, title="구역별 정시율")
+        light("사과 집계 표", '<div class="twocol w"><div>' + hbars(
+            [(f"{sk.D_KO[k]}", v, k == TOP, f"{v}개") for k, v in sorted(DN["reason"].items(), key=lambda x: -x[1])], title="불량 사유별")
+              + "</div><div>" + hbars([(a, DN["area"][a], a == "가장자리", f"{DN['area'][a]}%") for a in sk.AREA], top=100, title="위치별 상품률")
               + "</div></div>", T),
         light("칩 사유별 개수", pv3.pareto([(sk.KO[k], v) for k, v in sorted(WN["reason"].items(), key=lambda x: -x[1])]), T),
         light("위치별 합격률", hbars([(f"{sk.ZONE_KO[z]} · {z}", zr[z], False, f"{zr[z]}%") for z in ("center", "mid", "edge")], top=100), T),
@@ -62,10 +64,10 @@ def slides():
             ("Claude 보고", f"합격 {WN['pass']}", "요청 결과"), ("엑셀 필터", f"pass_fail = PASS · {WN['pass']}행", "사람이 직접"),
             ("다르면", "어느 쪽이 맞는지 행 단위로 확인 요청", "그대로 넘어가지 않음")], "확인", "W07"), T),
         # ── 적용
-        lab("2-1", "택배 집계 엑셀", T, "택배 엑셀을 실패 사유별 · 구역별로 집계해 엑셀 시트 세 장과 CSV 로 저장한다",
-            ["CLAUDE.md 에 택배 정답 숫자 추가", "집계 요청 (요약 · 사유별 · 구역별)", "CSV 저장 요청", "엑셀 필터로 대조"],
-            [f"정시 {DN['pass']} · {DN['rate']}%", f"지연 {DN['reason']['late']}건 1위 · 외곽 {DN['area']['외곽']}%",
-             "output/delivery_summary.xlsx · delivery_D07.csv"], files="data/delivery_D07.xlsx"),
+        lab("2-1", "사과 집계 엑셀", T, "사과 엑셀을 불량 사유별 · 위치별로 집계해 엑셀 시트 세 장과 CSV 로 저장한다",
+            ["CLAUDE.md 에 사과 정답 숫자 추가", "집계 요청 (요약 · 사유별 · 위치별)", "CSV 저장 요청", "엑셀 필터로 대조"],
+            [f"상품 {DN['pass']} · {DN['rate']}%", f"{TOPK} {max(DN['reason'].values())}개 1위 · 가장자리 {DN['area']['가장자리']}%",
+             "output/apple_summary.xlsx · apple_A07.csv"], files="data/apple_A07.xlsx"),
         lab("2-2", "수율 집계 엑셀", T, "W07 을 사유별 · 위치별로 집계해 yield_summary.xlsx 와 화면용 CSV 를 만든다",
             ["CLAUDE.md 정답 숫자 확인", "집계 요청 (요약 · 사유별 · 위치별)", "CSV 저장 요청", "엑셀 필터로 대조"],
             [f"수율 {WN['yield']}% · 깨짐 · 긁힘 {WN['reason']['crack']}개 1위", "output/yield_summary.xlsx (시트 3장)",

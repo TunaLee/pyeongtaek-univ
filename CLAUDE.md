@@ -21,13 +21,13 @@ bash ~/.claude/skills/lecture-deck/scripts/capture_anim.sh $PWD/docs/index.html 
 
 ## 구조
 - `src/build.py` 표지 · 과정 지도 → 개요(`p0.py` · 데이터 · 저장 형식 · AI 이전/이후 · 바이브코딩 · 행과 열 · 변수) → 교시마다 [간지 + `p{u}.slides()`] → 마지막 장
-- **실습은 택배 먼저 → 웨이퍼.** 교시마다 `[실습 N-1]` 택배(delivery_sim.html) → `[실습 N-2]` 웨이퍼(simulator.html). 각 교시 모듈 안에 순서대로 둔다. 판정 · 조건 같은 설명도 택배 예 → 반도체 순서. 「기법별 반도체 적용」 같은 대놓고 비교하는 장은 더 만들지 않는다.
+- **실습은 사과 선별 먼저 → 웨이퍼.** 교시마다 `[실습 N-1]` 사과(apple_sim.html · 상품률) → `[실습 N-2]` 웨이퍼(simulator.html · 수율). 각 교시 모듈 안에 순서대로 둔다. 판정 · 조건 같은 설명도 사과 예 → 반도체 순서. 사과 데이터는 웨이퍼와 같은 구조(사과 1개 = 1행 = 과수원 지도 한 칸 · 여러 기준 판정). 「기법별 반도체 적용」 같은 대놓고 비교하는 장은 더 만들지 않는다.
 - **모든 교시는 도입 → 설명 → 적용 순서.** `build.py` 의 `PHASES` 에 도입 · 설명 장 제목을 적고 나머지는 적용. 장을 더하거나 제목을 바꾸면 `PHASES` 도 고친다(없는 제목은 빌드가 멈춘다).
 - `docs/index.html` 은 빌드 결과물이다. 직접 고치지 말고 `src/` 를 고친 뒤 빌드한다.
-- `src/pkit.py` 교시 목록 UNITS / `src/sk.py` 데이터 · 판정 · 기준 숫자(W07 · D07 · 조절 바 실험) · 화면 도구 / `src/p1~p8.py` 교시 본문 / `src/psim.py · pviz.py · pv3 · pv4` 애니메이션(anim._D, 접두어 고유)
+- `src/pkit.py` 교시 목록 UNITS / `src/sk.py` 데이터 · 판정 · 기준 숫자(W07 · 사과 A07 · 조절 바 실험) · 화면 도구 / `src/p1~p8.py` 교시 본문 / `src/psim.py · pviz.py · pv3 · pv4` 애니메이션(anim._D, 접두어 고유)
 - `labs/sim-lab/` 수강생 실습 폴더 · `labs/sim-solution/stage*` 교시별 완성본 · `labs/make_sim.py` 재생성 · `docs/img/sim/` 완성본 캡처
 - 공통 모듈(deck · hx · viz2 · v1kit · v3kit · anim …)은 vibe-coding 저장소에서 복사한 것.
-- `labs/make_data.py` 웨이퍼 25장 합성(시드 2611 · ETCH_03 가장자리 · W05 중복 · W11 mV · W19 결측 · W26 은 data/new) · `labs/make_general.py` 택배 25일치 · `labs/make_secom.py` UCI SECOM(CC BY 4.0)
+- `labs/make_data.py` 웨이퍼 25장 합성(시드 2611 · ETCH_03 가장자리 · W05 중복 · W11 mV · W19 결측 · W26 은 data/new) · `labs/make_apple.py` 사과 선별 25일치(A01~A25 · 시드 1007 · 판정 멍 → 벌레 → 무게 250g → 당도 11) · `labs/make_secom.py` UCI SECOM(CC BY 4.0)
 - `labs/wafer-lab/data` 원본 합성 데이터(sk.py · make_sim.py 가 읽음) · `labs/solution/` 은 이전 분석 과정 완성본(덱에서 안 씀)
 - **화면 숫자는 손으로 적지 않는다** — ref.json · 완성본 출력 · CSV 에서 코드로 계산해 넣는다.
 

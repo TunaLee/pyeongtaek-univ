@@ -105,8 +105,8 @@ def row_to_cell():
 
 
 # ── 조절 바 · 합격선이 움직이면 ─────────────────────────────
-def slider(vals, stages, lo, hi, bins, unit, name, label, rate_word, prefix):
-    """한쪽 상한 합격선 · stages=[(선 값, 합격 수, 비율)] 를 차례로. 선 오른쪽 칸은 빨강. 장면마다 3초 이상. 길이 = 4 + 4×장면 초."""
+def slider(vals, stages, lo, hi, bins, unit, name, label, rate_word, prefix, low=False, ticks=5):
+    """한쪽 합격선(low=True 면 하한 · 선 왼쪽이 불합격) · stages=[(선 값, 합격 수, 비율)] 를 차례로. 상한이면 선 오른쪽 칸, 하한이면 왼쪽 칸이 빨강. 장면마다 3초 이상. 길이 = 4 + 4×장면 초."""
     dur = 4 + 4 * len(stages)
     d = _D(prefix, dur)
     X0, X1, Y0, H = 70, 1090, 330, 240
@@ -122,8 +122,8 @@ def slider(vals, stages, lo, hi, bins, unit, name, label, rate_word, prefix):
     mx = max(cnt) * 1.08
     sx = lambda v: X0 + (X1 - X0) * (v - lo) / (hi - lo)  # noqa: E731
     s = f'<line x1="{X0}" y1="{Y0}" x2="{X1}" y2="{Y0}" stroke="{N}" stroke-width="2"/>'
-    for k in range(0, 6):
-        v = lo + (hi - lo) * k / 5
+    for k in range(0, ticks + 1):
+        v = lo + (hi - lo) * k / ticks
         s += _t(sx(v), Y0 + 22, f"{v:g}", "ts")
     s += _t(X1 + 10, Y0 + 22, unit, "ts", "start")
     s += _t(X0, 24, f"{name} · {len(vals)}개", "tn", "start")
@@ -136,7 +136,7 @@ def slider(vals, stages, lo, hi, bins, unit, name, label, rate_word, prefix):
         x, w = sx(a) + 1, sx(b) - sx(a) - 2
         s += f'<rect x="{x:.1f}" y="{Y0 - h:.1f}" width="{w:.1f}" height="{h:.1f}" fill="{K}"/>'
         for k, (thr, *_r) in enumerate(stages):
-            if a >= thr:
+            if (b <= thr + 1e-9) if low else (a >= thr):
                 s += f'<rect x="{x:.1f}" y="{Y0 - h:.1f}" width="{w:.1f}" height="{h:.1f}" fill="{R}" {d.show(seg[k] + 2, seg[k + 1] if k + 1 < len(stages) else None)}/>'
     if over:
         s += _t(sx(hi) - 4, Y0 - H * cnt[-1] / mx - 14, f"{hi:g} 이상 {over}개 포함", "ts", "end", 'style="font-size:13px"')
@@ -161,10 +161,10 @@ def wafer_slider():
     return slider(v, st, 0, 25, 25, " nA", "누설전류 ioff_na", "합격선", "수율", "sms")
 
 
-def delivery_slider():
-    v = list(sk.D07.delivery_min)
-    st = [(t, *sk.d_rate(sk.D07, t)) for t in (120, 100, 150)]
-    return slider(v, st, 40, 170, 26, "분", "배송 시간 delivery_min", "약속", "정시율", "smd")
+def apple_slider():
+    v = list(sk.D07.sugar_brix)
+    st = [(t, *sk.d_rate(sk.D07, sugar=t)) for t in (sk.MIN_SUGAR, 10.0, 12.0)]
+    return slider(v, st, 9, 17, 16, " brix", "당도 sugar_brix", "하한", "상품률", "smd", low=True, ticks=8)
 
 
 # ── 조절 바 한 번 → 네 곳이 함께 ──────────────────────────
