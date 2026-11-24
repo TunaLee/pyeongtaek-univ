@@ -151,6 +151,60 @@ def harness_photo():
     return f'<div class="pbgHs">{pics}</div><div class="pbgHr">{rows}</div>'
 
 
+# ── 과수원과 사과 데이터 · 위치 열(안쪽 · 중간 · 가장자리)의 뜻 ─────────────
+ZCOL = {"안쪽": "#2F6DB5", "중간": "#2BA38F", "가장자리": "#E07A12"}
+
+
+def orchard_zones():
+    """과수원 30 × 20 칸(나무 한 그루 = 사과 한 개) → 가장자리 · 중간 · 안쪽이 2초 간격으로 칠해짐 → 엑셀 한 행 ↔ 지도 한 칸. 14초 · 한 번.
+    줄 수 · 그루 수는 데이터에서 계산 (바깥에서 몇 번째 줄인지)."""
+    df = sk.D07
+    d = _D("pbo", 14)
+    pc = lambda t: t / 14 * 100  # noqa: E731
+    nx, ny = int(df["가로칸"].max()), int(df["세로칸"].max())
+    ring = df.apply(lambda r: min(r["가로칸"] - 1, nx - r["가로칸"], r["세로칸"] - 1, ny - r["세로칸"]) + 1, axis=1)
+    C, X0, Y0 = 15, 20, 52
+    cx = lambda x: X0 + (x - 1) * C  # noqa: E731
+    cy = lambda y: Y0 + (ny - y) * C  # noqa: E731
+    s = f'<g {d.show(0)}>' + _t(X0, 26, f"과수원 · 나무 {nx} × {ny} 그루 · 칸 하나 = 사과 하나", "tn", "start", 'style="font-size:16px"') + "</g>"
+    s += f'<g {d.show(0)}>' + "".join(f'<rect x="{cx(r["가로칸"])}" y="{cy(r["세로칸"])}" width="{C - 2}" height="{C - 2}" rx="2" fill="#E1E5EB"/>'
+                                    for _, r in df.iterrows()) + "</g>"
+    cards = ""
+    for k, (z, t) in enumerate([("가장자리", 2), ("중간", 4), ("안쪽", 6)]):
+        m = df["위치"] == z
+        lo, hi = int(ring[m].min()), int(ring[m].max())
+        where = f"바깥에서 {lo}~{hi}번째 줄" if k < 2 else f"바깥에서 {lo}번째 줄부터"
+        s += f'<g {d.show(pc(t))}>' + "".join(
+            f'<rect x="{cx(r["가로칸"])}" y="{cy(r["세로칸"])}" width="{C - 2}" height="{C - 2}" rx="2" fill="{ZCOL[z]}" fill-opacity=".85"/>'
+            for _, r in df[m].iterrows()) + "</g>"
+        y = 60 + k * 74
+        cards += (f'<g {d.show(pc(t))}><rect x="520" y="{y}" width="300" height="62" rx="12" fill="{W}" stroke="{ZCOL[z]}" stroke-width="2.5"/>'
+                  f'<rect x="520" y="{y}" width="8" height="62" rx="3" fill="{ZCOL[z]}"/>'
+                  + _t(544, y + 22, z, "tt", "start", f'style="fill:{ZCOL[z]}"') + _t(544, y + 46, f"{where} · {int(m.sum())}그루", "ts", "start")
+                  + "</g>")
+    s += cards
+    # 엑셀 한 행 ↔ 지도 한 칸 (8초)
+    r0 = df.iloc[0]
+    hx, hy = cx(r0["가로칸"]), cy(r0["세로칸"])
+    cols = ["사과번호", "가로칸", "세로칸", "위치", "무게", "당도", "등급"]
+    ws = [96, 62, 62, 82, 60, 60, 60]
+    tx, ty = 520, 322
+    head = body = ""
+    x = tx
+    for c, w in zip(cols, ws):
+        hl = c in ("가로칸", "세로칸", "위치")
+        head += f'<rect x="{x}" y="{ty}" width="{w}" height="30" fill="#E8F0E9" stroke="#DADCE0"/>' + _t(x + w / 2, ty + 15, c, "tn", extra='style="font-size:13px"')
+        body += (f'<rect x="{x}" y="{ty + 30}" width="{w}" height="34" fill="{"#FFF3E6" if hl else W}" stroke="#DADCE0"/>'
+                 + _t(x + w / 2, ty + 47, r0[c], "tn", extra=f'style="font-size:14px{";fill:#C25E00" if hl else ""}"'))
+        x += w
+    s += (f'<g {d.show(pc(8.5))}><rect x="{tx}" y="{ty - 26}" width="{x - tx}" height="22" fill="#1D6F42"/>'
+          + _t(tx + 8, ty - 15, "apple_A07.xlsx · 한 행", "tw", "start", 'style="font-size:12px"') + head + body + "</g>")
+    s += (f'<g {d.show(pc(8.5))}><rect x="{hx - 3}" y="{hy - 3}" width="{C + 4}" height="{C + 4}" rx="4" fill="none" stroke="{N}" stroke-width="3"/>'
+          f'<path d="M{hx + C + 2} {hy + 2} C 300 {hy + 40}, 420 {ty + 80}, {tx - 6} {ty + 47}" fill="none" stroke="{N}" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#{d.id("k")})"/></g>')
+    s += f'<g {d.show(pc(10.5))}>' + _t(tx, ty + 92, "엑셀 한 행 = 사과 한 개 = 지도 한 칸(나무 한 그루)", "to", "start", 'style="font-size:16px"') + "</g>"
+    return d.svg(1160, 430, s)
+
+
 CSS = """
   @keyframes pbgIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
   .pbgA{font-style:normal; align-self:center; text-align:center; font-size:28px; font-weight:800; color:#F28C28; opacity:0; animation:pbgIn .5s var(--d) forwards;}

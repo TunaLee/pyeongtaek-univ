@@ -264,6 +264,7 @@ def data_change():
             ("편의점 결제", "시각 · 품목 · 금액", "영수증 한 장 = 한 줄"), ("출석", "날짜 · 이름 · 출결", "출석부 한 칸"),
             ("사과 선별", "무게 · 당도 · 흠", "사과 1개 = 한 줄"), ("반도체 검사", "칩 위치 · 측정값 · 합격 · 불합격", "칩 1개 = 한 줄")],
             "기록 대상", "남는 값"), TAG),
+        light("사과 선별 데이터", pbg.orchard_zones(), TAG),
         light("데이터 저장 형식의 변화", formats(), TAG),
         light("테이블의 행과 열", table_terms(df), TAG),
     ]
@@ -424,7 +425,7 @@ def cat_anim(df):
     L = W_ + 60
     bx = {n: L + 80 + i * 200 for i, n in enumerate(names)}
     base, H = 360, 230
-    s = sh + f'<g {d.show(6)}>' + _t(L, 20, "위치 · 나무가 있는 구역 · 범주형", "to", "start", 'style="font-size:17px"') + "</g>"
+    s = sh + f'<g {d.show(6)}>' + _t(L, 20, "위치 · 과수원 구역 · 범주형", "to", "start", 'style="font-size:17px"') + "</g>"
     s += f'<line x1="{L}" y1="{base}" x2="1150" y2="{base}" stroke="{N}" stroke-width="2.5" {d.show(14)}/>'
     for n in names:
         s += f'<g {d.show(14)}>' + _t(bx[n], base + 26, n, "tt", extra=f'style="font-size:19px;fill:{_ACOL[n]}"') + "</g>"
