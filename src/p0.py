@@ -286,73 +286,142 @@ def _chips(d, vals, y=46):
     return s, xs
 
 
+_SCOL = [("order_id", 96, False), ("area", 62, False), ("truck_id", 88, False), ("dist_km", 74, True),
+         ("delivery_min", 104, True), ("status", 84, False)]
+_ACOL = {"도심": "#2F6DB5", "중간": "#2BA38F", "외곽": "#E07A12"}
+_ATINT = {"도심": "#E6EEF8", "중간": "#E3F4F0", "외곽": "#FFF1E3"}
+_RH, _SY = 30, 70                                   # 시트 행 높이 · 첫 데이터 행 y
+
+
+def _rows8(df):
+    """시트에 보일 실제 기록 8건 — 세 구역이 모두 섞이게 (원래 순서 유지)."""
+    pick = sorted(sum((df.index[df.area == a][:k].tolist() for a, k in (("도심", 2), ("중간", 3), ("외곽", 3))), []))
+    return df.loc[pick]
+
+
+def _sheet(d, rows, n, hi, hi_t):
+    """SVG 엑셀 시트 · 열 hi 를 hi_t% 에 강조. 칸 좌표 {(행, 열): (x, y, w)} 를 돌려준다."""
+    x0, rn = 0, 30
+    xs, x = {}, x0 + rn
+    for c, w, _ in _SCOL:
+        xs[c] = (x, w)
+        x += w
+    W_ = x - x0
+    s = (f'<rect x="{x0}" y="0" width="{W_}" height="24" fill="#1D6F42"/>'
+         + _t(x0 + 10, 12, "delivery_D07.xlsx", "ts", "start", 'style="font-size:12px;fill:#fff;font-weight:700"'))
+    y = 24
+    s += f'<rect x="{x0}" y="{y}" width="{W_}" height="20" fill="#F1F3F4" stroke="#DADCE0"/>'
+    for i, (c, w, _) in enumerate(_SCOL):
+        cx = xs[c][0]
+        s += f'<line x1="{cx}" y1="{y}" x2="{cx}" y2="{y + 20}" stroke="#DADCE0"/>' + _t(cx + w / 2, y + 10, "ABCDEF"[i], "ts", extra='style="font-size:11px"')
+    y = 44
+    hx_, hw = xs[hi]
+    cells = {}
+    allrows = [("hdr", None)] + [(r, row) for r, (_, row) in enumerate(rows.iterrows())]
+    for k, (r, row) in enumerate(allrows):
+        yy = y + k * _RH if k == 0 else y + 26 + (k - 1) * _RH
+        h = 26 if k == 0 else _RH
+        fill = "#E8F0E9" if k == 0 else "#fff"
+        s += f'<rect x="{x0}" y="{yy}" width="{W_}" height="{h}" fill="{fill}" stroke="#E3E5E8"/>'
+        s += f'<rect x="{x0}" y="{yy}" width="{rn}" height="{h}" fill="#F1F3F4" stroke="#DADCE0"/>' + _t(x0 + rn / 2, yy + h / 2, k + 1, "ts", extra='style="font-size:11px"')
+        for c, w, num in _SCOL:
+            cx = xs[c][0]
+            s += f'<line x1="{cx}" y1="{yy}" x2="{cx}" y2="{yy + h}" stroke="#E3E5E8"/>'
+            v = c if k == 0 else row[c]
+            st = 'style="font-size:13px;font-weight:700;fill:#202124"' if k == 0 else 'style="font-size:14px;fill:#202124"'
+            if num and k:
+                s += _t(cx + w - 8, yy + h / 2, v, "ts", "end", st)
+            else:
+                s += _t(cx + 8, yy + h / 2, v, "ts", "start", st)
+            if k:
+                cells[(r, c)] = (cx, yy, w)
+    ye = y + 26 + 8 * _RH
+    s += f'<rect x="{x0}" y="{ye}" width="{W_}" height="26" fill="#F8F9FA" stroke="#E3E5E8"/>' + _t(x0 + W_ / 2, ye + 13, f"… {n}행", "ts", extra='style="font-size:13px"')
+    # 열 강조 (나타남)
+    s += f'<rect x="{hx_}" y="44" width="{hw}" height="{ye - 44}" fill="none" stroke="{O}" stroke-width="3" {d.show(hi_t)}/>'
+    return s, cells, W_
+
+
 def num_anim(df):
-    """수치형 — 값 8개가 수직선 위에 점으로 → 600건 전체 → 평균 · 표준편차. 16초 · 한 번."""
-    d = _D("vn", 16)
-    v8 = df.delivery_min.head(8).tolist()
+    """수치형 — 엑셀 시트의 delivery_min 열 → 8칸이 수직선 위 점으로 → 600건 → 평균 · 표준편차. 18초 · 한 번."""
+    d = _D("vn", 18)
+    rows = _rows8(df)
+    sh, cells, W_ = _sheet(d, rows, len(df), "delivery_min", 6)
     m, sd = df.delivery_min.mean(), df.delivery_min.std()
-    c, xs = _chips(d, v8)
-    s = c + f'<g {d.show(0)}>' + _t(150 - 54, 4, "delivery_min · 첫 8행", "to", "start") + "</g>"
-    # 수직선
-    s += f'<g {d.show(14)}><line x1="{_X0}" y1="250" x2="{_X1}" y2="250" stroke="{N}" stroke-width="2.5"/>'
+    X0, X1, V0, V1 = W_ + 70, 1150, 40, 170
+    vx = lambda v: X0 + (v - V0) / (V1 - V0) * (X1 - X0)  # noqa: E731
+    ay = 210
+    s = sh + f'<g {d.show(6)}>' + _t(X0, 20, "delivery_min · 걸린 시간(분) · 수치형", "to", "start", 'style="font-size:17px"') + "</g>"
+    s += f'<g {d.show(14)}><line x1="{X0}" y1="{ay}" x2="{X1}" y2="{ay}" stroke="{N}" stroke-width="2.5"/>'
     for t in range(40, 171, 10):
-        s += f'<line x1="{_vx(t):.1f}" y1="250" x2="{_vx(t):.1f}" y2="{258 if t % 50 else 264}" stroke="{N}" stroke-width="1.5"/>'
+        s += f'<line x1="{vx(t):.1f}" y1="{ay}" x2="{vx(t):.1f}" y2="{ay + (6 if t % 50 else 12)}" stroke="{N}" stroke-width="1.5"/>'
         if t % 20 == 0:
-            s += _t(_vx(t), 280, t, "ts", extra='style="font-size:13px"')
-    s += _t(_X1 + 8, 280, "분", "ts", "start") + "</g>"
-    # 8개 점이 수직선 위 제자리에 차례로 (움직이지 않고 나타남)
-    for i, v in enumerate(v8):
-        s += f'<circle cx="{_vx(v):.1f}" cy="236" r="9" fill="{O}" {d.show(22 + i * 2.5)}/>'
-    # 600건 전체 · 점 띠
+            s += _t(vx(t), ay + 28, t, "ts", extra='style="font-size:13px"')
+    s += _t(X1, ay + 48, "분", "ts", "end") + "</g>"
+    lv, last = {}, []
+    for i in sorted(range(len(rows)), key=lambda j: rows.delivery_min.iloc[j]):
+        x = vx(rows.delivery_min.iloc[i])
+        k = next((k for k, lx in enumerate(last) if x - lx > 60), len(last))
+        last[k:k + 1] = [x]
+        lv[i] = k
+    for i, (_, row) in enumerate(rows.iterrows()):
+        t = 20 + i * 3.2
+        cx, cy, w = cells[(i, "delivery_min")]
+        v = row.delivery_min
+        s += f'<rect x="{cx}" y="{cy}" width="{w}" height="{_RH}" fill="{O}" fill-opacity=".22" {d.show(t)}/>'
+        s += f'<g {d.show(t)}><circle cx="{vx(v):.1f}" cy="{ay - 14 - lv[i] * 24}" r="9" fill="{O}"/>' \
+             f'{_t(vx(v) + 13, ay - 14 - lv[i] * 24, v, "ts", "start", "style=font-size:13px")}</g>'
     rng = __import__("random").Random(7)
-    dots = "".join(f'<circle cx="{_vx(v):.1f}" cy="{316 + rng.random() * 50:.1f}" r="3" fill="{K}" fill-opacity=".35"/>' for v in df.delivery_min)
-    s += f'<g {d.show(48)}>{dots}' + _t(_X0 - 10, 341, f"{len(df)}건", "tn", "end") + "</g>"
-    # 평균 · 표준편차
-    s += (f'<g {d.show(64)}><line x1="{_vx(m):.1f}" y1="206" x2="{_vx(m):.1f}" y2="380" stroke="{O}" stroke-width="3" stroke-dasharray="7 5"/>'
-          + _t(_vx(m), 192, f"평균 {m:.1f}분", "to", extra='style="font-size:17px"') + "</g>")
-    a, b = _vx(m - sd), _vx(m + sd)
-    s += (f'<g {d.show(80)}><path d="M{a:.1f} 392 V404 H{b:.1f} V392" fill="none" stroke="{K}" stroke-width="2.5"/>'
-          + _t((a + b) / 2, 426, f"표준편차 {sd:.1f}분 · 평균 ± 1σ", "tn", extra='style="font-size:16px"')
-          + _t(_vx(df.delivery_min.min()), 426, f"최솟값 {df.delivery_min.min()}", "ts")
-          + _t(_vx(df.delivery_min.max()), 426, f"최댓값 {df.delivery_min.max()}", "ts") + "</g>")
-    return d.svg(1160, 440, s)
+    dots = "".join(f'<circle cx="{vx(v):.1f}" cy="{ay + 66 + rng.random() * 56:.1f}" r="3" fill="{K}" fill-opacity=".35"/>' for v in df.delivery_min)
+    s += f'<g {d.show(52)}>{dots}' + _t(X0 - 8, ay + 94, f"{len(df)}건", "tn", "end") + "</g>"
+    s += (f'<g {d.show(66)}><line x1="{vx(m):.1f}" y1="{ay - 104}" x2="{vx(m):.1f}" y2="{ay + 130}" stroke="{O}" stroke-width="3" stroke-dasharray="7 5"/>'
+          + _t(vx(m), ay - 120, f"평균 {m:.1f}분", "to", extra='style="font-size:17px"') + "</g>")
+    a_, b_ = vx(m - sd), vx(m + sd)
+    s += (f'<g {d.show(80)}><path d="M{a_:.1f} {ay + 140} V{ay + 152} H{b_:.1f} V{ay + 140}" fill="none" stroke="{K}" stroke-width="2.5"/>'
+          + _t((a_ + b_) / 2, ay + 174, f"표준편차 {sd:.1f}분 · 평균 ± 1σ", "tn", extra='style="font-size:16px"')
+          + _t(vx(df.delivery_min.min()), ay + 200, f"최솟값 {df.delivery_min.min()}", "ts")
+          + _t(vx(df.delivery_min.max()), ay + 200, f"최댓값 {df.delivery_min.max()}", "ts") + "</g>")
+    return d.svg(1160, 420, s)
 
 
 def cat_anim(df):
-    """범주형 — 첫 8행 구역 칩(색 = 범주) → 구역별 건수 막대 → 정시 비율. 16초 · 한 번."""
-    d = _D("vc", 16)
+    """범주형 — 엑셀 시트의 area 열 → 8칸이 구역 색으로 칠해지며 구역별로 한 칸씩 쌓임 → 600건 막대 → 정시 비율. 18초 · 한 번."""
+    d = _D("vc", 18)
+    rows = _rows8(df)
+    sh, cells, W_ = _sheet(d, rows, len(df), "area", 6)
     names = sk.AREA
-    col = {"도심": "#2F6DB5", "중간": "#2BA38F", "외곽": "#E07A12"}
-    tint = {"도심": "#E6EEF8", "중간": "#E3F4F0", "외곽": "#FFF1E3"}
-    pick = sorted(sum((df.index[df.area == a][:k].tolist() for a, k in (("도심", 2), ("중간", 3), ("외곽", 3))), []))
-    v8 = df.area.loc[pick].tolist()
     cnt = df.area.value_counts()
     on = df[df.status == "ON_TIME"].area.value_counts()
-    bx = {n: 250 + i * 330 for i, n in enumerate(names)}
-    base, H = 388, 200
-    s = f'<g {d.show(0)}>' + _t(150 - 54, 4, "area · 기록 8건", "to", "start") + "</g>"
-    for i, v in enumerate(v8):
-        x = 150 + i * 123
-        s += (f'<g {d.show(1 + i * 1.5)}><rect x="{x - 54}" y="26" width="108" height="40" rx="8" fill="{tint[v]}" stroke="{col[v]}" stroke-width="2"/>'
-              + _t(x, 47, v, "tm", extra=f'style="font-size:16px;fill:{col[v]};font-weight:700"') + "</g>")
-    s += f'<line x1="70" y1="{base}" x2="1090" y2="{base}" stroke="{N}" stroke-width="2.5" {d.show(14)}/>'
+    L = W_ + 60
+    bx = {n: L + 80 + i * 200 for i, n in enumerate(names)}
+    base, H = 360, 230
+    s = sh + f'<g {d.show(6)}>' + _t(L, 20, "area · 배송 구역 · 범주형", "to", "start", 'style="font-size:17px"') + "</g>"
+    s += f'<line x1="{L}" y1="{base}" x2="1150" y2="{base}" stroke="{N}" stroke-width="2.5" {d.show(14)}/>'
     for n in names:
-        s += f'<g {d.show(14)}>' + _t(bx[n], base + 28, n, "tt", extra=f'style="font-size:19px;fill:{col[n]}"') + "</g>"
-    c8 = pd.Series(v8).value_counts()
-    for i, n in enumerate(names):
-        s += f'<g {d.show(22 + i * 8, 46)}>' + _t(bx[n], base - 40, f"8건 중 {c8.get(n, 0)}건", "to", extra='style="font-size:18px"') + "</g>"
+        s += f'<g {d.show(14)}>' + _t(bx[n], base + 26, n, "tt", extra=f'style="font-size:19px;fill:{_ACOL[n]}"') + "</g>"
+    seen = {n: 0 for n in names}
+    for i, (_, row) in enumerate(rows.iterrows()):
+        t = 20 + i * 3.2
+        a = row.area
+        cx, cy, w = cells[(i, "area")]
+        s += f'<rect x="{cx}" y="{cy}" width="{w}" height="{_RH}" fill="{_ACOL[a]}" fill-opacity=".3" {d.show(t)}/>'
+        k = seen[a]
+        seen[a] += 1
+        s += f'<rect x="{bx[a] - 22}" y="{base - 34 - k * 36}" width="44" height="30" rx="5" fill="{_ATINT[a]}" stroke="{_ACOL[a]}" stroke-width="2" {d.show(t, 50)}/>'
+    for n in names:
+        s += f'<g {d.show(47, 50)}>' + _t(bx[n], base - 34 - seen[n] * 36 - 4, f"{seen[n]}건", "to", extra='style="font-size:17px"') + "</g>"
     mx = cnt.max()
     for n in names:
         h = cnt[n] / mx * H
         ho = on.get(n, 0) / mx * H
         grow = "transform-box:fill-box;transform-origin:50% 100%"
-        st = [(0, "transform:scaleY(0)"), (50, "transform:scaleY(0)"), (60, "transform:scaleY(1)"), (100, "transform:scaleY(1)")]
-        s += f'<rect x="{bx[n] - 60}" y="{base - h:.1f}" width="120" height="{h:.1f}" fill="{tint[n]}" stroke="{col[n]}" stroke-width="2" {d.a(st, "ease-out", grow)}/>'
-        s += f'<g {d.show(60)}>' + _t(bx[n], base - h - 18, f"{cnt[n]}건", "tt", extra='style="font-size:18px"') + "</g>"
-        s += f'<rect x="{bx[n] - 60}" y="{base - ho:.1f}" width="120" height="{ho:.1f}" fill="{col[n]}" {d.show(76)}/>'
-        s += (f'<g {d.show(80)}>' + _t(bx[n] + 72, base - ho / 2, f"정시 {on.get(n, 0) / cnt[n] * 100:.2f}%", "to", "start",
-                                         'style="font-size:16px"') + "</g>")
-    return d.svg(1160, 440, s)
+        st = [(0, "transform:scaleY(0)"), (54, "transform:scaleY(0)"), (64, "transform:scaleY(1)"), (100, "transform:scaleY(1)")]
+        s += f'<rect x="{bx[n] - 55}" y="{base - h:.1f}" width="110" height="{h:.1f}" fill="{_ATINT[n]}" stroke="{_ACOL[n]}" stroke-width="2" {d.a(st, "ease-out", grow)}/>'
+        s += f'<g {d.show(64)}>' + _t(bx[n], base - h - 16, f"{cnt[n]}건", "tt", extra='style="font-size:18px"') + "</g>"
+        s += f'<rect x="{bx[n] - 55}" y="{base - ho:.1f}" width="110" height="{ho:.1f}" fill="{_ACOL[n]}" {d.show(78)}/>'
+        s += (f'<g {d.show(82)}>' + _t(bx[n], base + 54, f"정시 {on.get(n, 0) / cnt[n] * 100:.2f}%", "to",
+                                         extra=f'style="font-size:16px;fill:{_ACOL[n]}"') + "</g>")
+    return d.svg(1160, 420, s)
 
 
 # ── 판정 조건 쌓기 · 택배(1교시 앞) · 웨이퍼(판정 순서 뒤) 공통 ─────────
