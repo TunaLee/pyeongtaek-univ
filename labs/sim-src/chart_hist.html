@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+  :root { --ink:#17181A; --muted:#6B7075; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; color: var(--ink);
+         font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+  .app { width: 1280px; height: 720px; padding: 18px 28px 10px; display: flex; flex-direction: column; gap: 8px; }
+  header { display: flex; align-items: baseline; gap: 16px; }
+  h1 { font-size: 26px; margin: 0; }
+  .meta { color: var(--muted); font-size: 15px; }
+  .stats { display: flex; gap: 28px; font-size: 16px; color: var(--muted); }
+  .stats b { color: var(--ink); margin-left: 6px; font-variant-numeric: tabular-nums; }
+  #chart { flex: 1; width: 100%; min-height: 0; display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1 id="title"></h1><span class="meta" id="meta"></span></header>
+  <div class="stats" id="stats"></div>
+  <svg id="chart" role="img"></svg>
+</div>
+
+<script>
+// ① 데이터: 엑셀을 CSV 글자로 저장해 그대로 붙여 넣었다 (한 줄 = 하나)
+const CSV_TEXT = `__CSV__`;
+
+// ② 설정: 그릴 열 · 구간 폭 · 화면 이름
+const CFG = /*__CFG__*/{};
+
+const $ = id => document.getElementById(id);
+const SVGNS = 'http://www.w3.org/2000/svg';
+const COLOR = { bar: '#9AA1A8', grid: '#E4E6E8', axis: '#9AA1A8', ink: '#17181A', muted: '#6B7075' };
+
+function el(tag, attrs = {}, text) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function parseCSV(text) {
+  const lines = text.replace(/^﻿/, '').trim().split(/\r?\n/);
+  const head = lines[0].split(',').map(s => s.trim());
+  return lines.slice(1).filter(l => l.trim()).map(l => {
+    const c = l.split(','), o = {};
+    head.forEach((h, i) => o[h] = (c[i] ?? '').trim());
+    return o;
+  });
+}
+const rows = parseCSV(CSV_TEXT);
+const fmt = v => String(+v.toFixed(6));          // 0.30000000000004 같은 꼬리 없이
+
+// ③ 숫자: 평균 · 표준편차 · 최소 · 최대
+const vals = rows.map(r => Number(r[CFG.col]));
+const n = vals.length;
+const mean = vals.reduce((a, v) => a + v, 0) / n;
+const sd = Math.sqrt(vals.reduce((a, v) => a + (v - mean) ** 2, 0) / (n - 1));
+const min = Math.min(...vals), max = Math.max(...vals);
+
+// ④ 구간: 구간 폭 CFG.bin 으로 나눠 센다 (시작 이상 · 끝 미만)
+const start = Math.floor(min / CFG.bin) * CFG.bin;
+const bins = new Array(Math.floor((max - start) / CFG.bin) + 1).fill(0);
+vals.forEach(v => bins[Math.floor((v - start) / CFG.bin)]++);
+const end = start + bins.length * CFG.bin;
+
+// 눈금 간격: 1 · 2 · 5 단위
+function niceStep(maxV, count) {
+  const raw = maxV / count, p = Math.pow(10, Math.floor(Math.log10(raw)));
+  return [1, 2, 5, 10].map(k => k * p).find(k => k >= raw);
+}
+
+// ⑤ 그리기: 구간별 개수 막대 + 평균선
+function draw() {
+  const svg = $('chart'), box = svg.getBoundingClientRect(), W = box.width, H = box.height;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const L = 64, R = 16, T = 40, B = 62, PW = W - L - R, PH = H - T - B;
+  const peak = Math.max(...bins), step = niceStep(peak * 1.1, 6), top = Math.ceil(peak * 1.1 / step) * step;
+  const bw = PW / bins.length;
+  const X = v => L + (v - start) / (end - start) * PW;
+  const Y = c => T + PH - c / top * PH;
+  const hOf = c => Math.max(2, c / top * PH);
+
+  for (let c = 0; c <= top; c += step) {            // 가로 눈금선 · 세로축 숫자
+    svg.appendChild(el('line', { x1: L, x2: L + PW, y1: Y(c), y2: Y(c), stroke: c ? COLOR.grid : COLOR.axis }));
+    svg.appendChild(el('text', { x: L - 10, y: Y(c) + 5, 'text-anchor': 'end', 'font-size': 14, fill: COLOR.muted }, c));
+  }
+  bins.forEach((c, i) => {                          // 막대
+    if (!c) return;
+    const bar = el('rect', { x: L + i * bw + 1, y: T + PH - hOf(c), width: bw - 2, height: hOf(c), fill: COLOR.bar });
+    bar.appendChild(el('title', {}, `${fmt(start + i * CFG.bin)} ~ ${fmt(start + (i + 1) * CFG.bin)} ${CFG.unit}: ${c}${CFG.count}`));
+    svg.appendChild(bar);
+  });
+  const every = [1, 2, 5, 10, 20, 50].find(k => k * bw >= 48);   // 가로축 숫자는 48px 이상 띄워서
+  for (let i = 0; i <= bins.length; i += every) {
+    svg.appendChild(el('text', { x: L + i * bw, y: T + PH + 22, 'text-anchor': 'middle', 'font-size': 14, fill: COLOR.muted }, fmt(start + i * CFG.bin)));
+  }
+
+  const mx = X(mean);                               // 평균선
+  svg.appendChild(el('line', { x1: mx, x2: mx, y1: T - 6, y2: T + PH, stroke: COLOR.ink, 'stroke-width': 2, 'stroke-dasharray': '7 5' }));
+  svg.appendChild(el('text', { x: mx + 8, y: T - 12, 'font-size': 16, 'font-weight': 700, fill: COLOR.ink }, `평균 ${mean.toFixed(CFG.dec)} ${CFG.unit}`));
+
+  bins.forEach((c, i) => {                          // 막대 위 개수 (평균선과 겹쳐도 읽히게 흰 테두리)
+    if (!c) return;
+    svg.appendChild(el('text', { x: L + (i + 0.5) * bw, y: T + PH - hOf(c) - 7, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700,
+                                 fill: COLOR.ink, stroke: '#fff', 'stroke-width': 4, 'paint-order': 'stroke' }, c));
+  });
+
+  svg.appendChild(el('text', { x: L + PW / 2, y: H - 10, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 600, fill: COLOR.ink },
+                     `${CFG.axis} (${CFG.unit})`));
+  svg.appendChild(el('text', { x: 0, y: T - 12, 'font-size': 16, 'font-weight': 600, fill: COLOR.ink }, `${CFG.yAxis} (${CFG.count})`));
+}
+
+// 화면 글자
+document.title = CFG.title;
+$('title').textContent = CFG.title;
+$('meta').textContent = `${CFG.dataName} · ${CFG.col} 열 · ${CFG.item} ${n}${CFG.count}`;
+const stats = [['평균', `${mean.toFixed(CFG.dec)} ${CFG.unit}`]];
+if (CFG.sd) stats.push(['표준편차', `${sd.toFixed(CFG.dec)} ${CFG.unit}`]);
+stats.push(['최소', `${min} ${CFG.unit}`], ['최대', `${max} ${CFG.unit}`], ['구간 폭', `${CFG.bin} ${CFG.unit}`]);
+$('stats').innerHTML = stats.map(([k, v]) => `<span>${k}<b>${v}</b></span>`).join('');
+draw();
+</script>
+</body>
+</html>

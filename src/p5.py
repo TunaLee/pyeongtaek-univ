@@ -31,8 +31,6 @@ def slides():
             ("이름", "사유 · 위치"), ("길이", "칩 수 · 합격률"), ("숫자", "막대 끝 값"), ("순서", "많은 순")], 4), T),
         light("사과 사유별 막대", pv3.pareto([(sk.D_KO[k], v) for k, v in sorted(DN["reason"].items(), key=lambda x: -x[1])], "사과 수"), T),
         light("칩 사유별 막대", pv3.pareto([(sk.KO[k], v) for k, v in sorted(WN["reason"].items(), key=lambda x: -x[1])], "칩 수"), T),
-        light("위치별 합격률 막대", hbars([(a, DN["area"][a], a == "가장자리", f"{DN['area'][a]:.2f}%") for a in sk.AREA], top=100, title="사과 · 위치별 상품률")
-              + hbars([(sk.ZONE_KO[z], zr[z], False, f"{zr[z]:.2f}%") for z in ("center", "mid", "edge")], top=100, title="칩 · 위치별 합격률"), T),
         light("두 칸 배치", viz2.maprows([
             ("위", "숫자 카드 4개", "한 줄"), ("왼쪽", "웨이퍼 맵", "넓게"), ("오른쪽 위", "사유별 막대", "많은 순"),
             ("오른쪽 아래", "위치별 합격률", "3개")], "화면 위치", "내용"), T),

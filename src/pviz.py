@@ -117,25 +117,29 @@ def sieve():
 
 # ── Claude Code 의 데이터 작업 고리 ─────────────────────
 def data_loop():
-    """요청 → CSV 읽기 → 파이썬 작성 → 실행 → 결과 확인 → (틀리면 고침) → 보고. 단계가 차례로 나타남 · 움직이는 점 없음. 14초.
+    """요청(사과 · 가장자리 상품률) → CSV 읽기 → 파이썬 작성 → 실행 → 결과 확인 → (틀리면 고침) → 보고. 숫자는 sk 에서 계산. 14초.
     참고: Claude Code 문서 「How Claude Code works」 — 맥락 모으기 → 행동 → 결과 확인 반복."""
+    import sk
+    e = sk.D07[sk.D07["위치"] == "가장자리"]
+    n, k = len(e), int((e["등급"] == "상품").sum())
+    rate = round(k / n * 100, 2)
     d = _D("dl", 14)
     s = ""
-    s += f'<g {d.show(1)}><rect x="10" y="150" width="170" height="64" rx="32" fill="{N}"/>' + _t(95, 182, "「W07 수율 알려 줘」", "tw", extra='style="font-size:15px"') + "</g>"
-    st = [("CSV 읽기", "Read · 앞 5줄 · 열 이름"), ("파이썬 작성", "Write · yield.py"), ("실행", "Bash · python yield.py"), ("결과 확인", "616 · 557 · 90.42%")]
+    s += f'<g {d.show(1)}><rect x="4" y="150" width="204" height="64" rx="32" fill="{N}"/>' + _t(106, 182, "「가장자리 상품률 알려 줘」", "tw", extra='style="font-size:14px"') + "</g>"
+    st = [("CSV 읽기", "Read · 앞 5줄 · 열 이름"), ("파이썬 작성", "Write · edge_rate.py"), ("실행", "Bash · python edge_rate.py"), ("결과 확인", f"{n} · {k} · {rate}%")]
     xy = [(230, 60), (500, 60), (500, 250), (230, 250)]
     for i, ((h, sub), (x, y)) in enumerate(zip(st, xy)):
         s += f'<g {d.show(4 + i * 6)}>' + _box(x, y, 220, 96, h, sub, fill=MO if i == 3 else W, stroke=O if i == 3 else K) + "</g>"
-    s += f'<g {d.show(3)}><path d="M184 182 C 205 182, 205 108, 226 108" fill="none" stroke="{N}" stroke-width="3" marker-end="url(#{d.id("k")})"/></g>'
+    s += f'<g {d.show(3)}><path d="M210 182 C 220 182, 218 108, 226 108" fill="none" stroke="{N}" stroke-width="3" marker-end="url(#{d.id("k")})"/></g>'
     s += f'<g {d.show(9)}><path d="M454 108 H496" stroke="{K}" stroke-width="3" marker-end="url(#{d.id("k")})"/></g>'
     s += f'<g {d.show(15)}><path d="M610 160 V246" stroke="{K}" stroke-width="3" marker-end="url(#{d.id("k")})"/></g>'
     s += f'<g {d.show(21)}><path d="M496 298 H454" stroke="{K}" stroke-width="3" marker-end="url(#{d.id("k")})"/></g>'
     # 고침 (오류 → 다시 작성)
     s += (f'<g {d.show(40, 62)}><rect x="760" y="250" width="380" height="96" rx="14" fill="#FDECEA" stroke="{R}" stroke-width="2.5"/>'
-          + _t(950, 284, "오류 · KeyError \'passfail\'", "tm", extra=f'style="fill:{R};font-size:15px"') + _t(950, 314, "열 이름 확인 → 코드 고침 → 다시 실행", "ts") + "</g>")
+          + _t(950, 284, "오류 · KeyError \'grade\'", "tm", extra=f'style="fill:{R};font-size:15px"') + _t(950, 314, "열 이름 확인 → 코드 고침 → 다시 실행", "ts") + "</g>")
     s += f'<g {d.show(42, 62)}><path d="M340 246 C 340 200, 560 200, 560 164" fill="none" stroke="{R}" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#{d.id("r")})"/></g>'
     # 보고
-    s += f'<g {d.show(70)}><path d="M340 350 V380 H760" fill="none" stroke="{OK}" stroke-width="3" marker-end="url(#{d.id("g")})"/></g>'
-    s += (f'<g {d.show(74)}><rect x="766" y="350" width="374" height="64" rx="14" fill="#E8F5E9" stroke="{OK}" stroke-width="3"/>'
-          + _t(953, 382, "보고 · 수율 90.42% (557 / 616)", "tt", extra=f'style="fill:{OK};font-size:18px"') + "</g>")
+    s += f'<g {d.show(70)}><path d="M340 350 V380 H730" fill="none" stroke="{OK}" stroke-width="3" marker-end="url(#{d.id("g")})"/></g>'
+    s += (f'<g {d.show(74)}><rect x="736" y="350" width="404" height="64" rx="14" fill="#E8F5E9" stroke="{OK}" stroke-width="3"/>'
+          + _t(938, 382, f"보고 · 가장자리 상품률 {rate}% ({k} / {n})", "tt", extra=f'style="fill:{OK};font-size:17px"') + "</g>")
     return d.svg(1160, 430, s)

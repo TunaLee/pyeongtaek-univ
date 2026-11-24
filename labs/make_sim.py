@@ -6,11 +6,13 @@
 만드는 것
   labs/sim-lab/data/            실습용 엑셀 4개 (wafer_test_W07 · W21 · apple_A07 · A25, csv 에서 변환)
   labs/sim-solution/stageN/     교시별 누적 완성본 (1 · 2 · 3a · 3b · 4 ~ 8) — output · docs · scripts
-  labs/sim_ref.json             덱에 쓰는 숫자 (웨이퍼 · 사과)
-  docs/img/sim/*.webp           완성본 화면 캡처 (1280×720)
+                                1교시 사과 요약 · 차트 3장 → 2교시 웨이퍼 요약 · 차트 3장 · 집계 엑셀 · CSV → 3교시부터 시뮬레이터
+  labs/sim_ref.json             덱에 쓰는 숫자 (웨이퍼 · 사과 · 차트)
+  docs/img/sim/*.webp           완성본 화면 캡처 (1280×720) · 차트는 chart_*.webp
 
-HTML 원본은 labs/sim-src/s*.html (손으로 짠 바닐라 JS). 여기서 데이터 CSV 글자와 CFG 를 끼워 넣는다.
+HTML 원본은 labs/sim-src/s*.html · chart_*.html (손으로 짠 바닐라 JS). 여기서 데이터 CSV 글자와 CFG 를 끼워 넣는다.
 판정 규칙은 아래 DOMAINS 한 곳에만 있고, 파이썬 판정(숫자 계산)과 HTML 의 CFG 가 같은 값을 쓴다.
+차트(output/charts/)는 아래 CHARTS 에 있고, chart_numbers 가 HTML 의 JS 와 같은 계산으로 화면 숫자를 낸다.
 """
 import csv
 import io
@@ -104,6 +106,36 @@ DOMAINS = {
     },
 }
 DOMAINS["apple"]["cfg"]["target"] = DOMAINS["wafer"]["cfg"]["target"]
+
+# 1 · 2교시 차트 (output/charts/). 사과는 1교시(실습 1-2), 웨이퍼는 2교시(실습 2-1) — 요약 문서도 이 교시에 처음 생긴다
+FIRST_STAGE = {"apple": 1, "wafer": 2}
+CHART_DIR = "charts"
+CHARTS = {
+    "apple": [
+        {"kind": "hist", "file": "무게_분포.html", "shot": "chart_apple_hist.webp",
+         "cfg": {"title": "사과 무게 분포", "col": "무게", "axis": "무게", "unit": "g", "bin": 10, "dec": 1, "sd": True,
+                 "yAxis": "사과 수"}},
+        {"kind": "zone", "file": "위치별_상품률.html", "shot": "chart_apple_zone.webp",
+         "cfg": {"title": "위치별 상품률", "zoneAxis": "위치"}},
+        {"kind": "map", "file": "과수원_지도.html", "shot": "chart_apple_map.webp",
+         "cfg": {"title": "과수원 지도", "outline": False}},
+    ],
+    "wafer": [
+        {"kind": "hist", "file": "누설전류_분포.html", "shot": "chart_wafer_hist.webp",
+         "cfg": {"title": "누설전류 분포", "col": "ioff_na", "axis": "누설전류 ioff_na", "unit": "nA", "bin": 1, "dec": 2, "sd": False,
+                 "yAxis": "칩 수"}},
+        {"kind": "reason", "file": "사유별_불합격.html", "shot": "chart_wafer_reason.webp",
+         "cfg": {"title": "불합격 사유별 칩 수", "reasonAxis": "불합격 사유"}},
+        {"kind": "map", "file": "웨이퍼_맵.html", "shot": "chart_wafer_map.webp",
+         "cfg": {"title": "웨이퍼 맵", "outline": True}},
+    ],
+}
+CHART_KEYS = {   # 차트 종류마다 DOMAINS cfg 에서 가져가는 값 (사유 화면 이름 · 위치 이름 · 판정 열)
+    "hist": ["dataName", "item", "count"],
+    "zone": ["dataName", "item", "count", "labels", "judgeCol", "passValue", "zoneCol", "zones"],
+    "reason": ["dataName", "item", "count", "labels", "judgeCol", "passValue", "reasonCol", "reasons"],
+    "map": ["dataName", "item", "count", "labels", "judgeCol", "passValue", "x", "y"],
+}
 
 
 # ───────────────────────── 판정 (HTML 의 judge 와 같은 규칙) ─────────────────────────
@@ -383,6 +415,7 @@ def claude_md(ref):
 - `data/` 원본 엑셀. 읽기만 하고 고치지 않는다.
 - `docs/` 데이터 요약 · 실험 기록
 - `output/` 결과물 (엑셀 · CSV · HTML)
+- `output/{CHART_DIR}/` 차트 HTML
 - `scripts/` 파이썬 스크립트
 - `templates/` 합격기준표 · 선별기준표 · HTML 예시 · 실험기록 양식
 
@@ -485,30 +518,146 @@ def run_scripts(stage_dir):
         link.unlink()
 
 
-def summary_doc(dom, ref):
-    cfg, n = dom["cfg"], ref
+WAFER_MEASURE = ["vth_v", "idsat_ma", "ioff_na", "rc_ohm", "ox_thk_nm", "crack", "particle_cnt"]   # 뜻은 몰라도 됨 · 한 줄로
+
+
+def col_notes(key, rows):
+    """열마다 뜻 한 줄 — [(열 이름들, 뜻)]. 괄호 안 값 · 범위는 데이터에서. 웨이퍼 측정값 열은 한 줄."""
+    cfg = DOMAINS[key]["cfg"]
+    unit = {r["col"]: r["unit"] for r in cfg["rules"] if "unit" in r} | {s["col"]: s["unit"] for s in cfg["scopes"]}
+    kinds = lambda c: " · ".join(dict.fromkeys(r[c] for r in rows))     # 나온 순서대로 값 종류
+
+    def span(c, rs=rows):
+        lo, hi = min(float(r[c]) for r in rs), max(float(r[c]) for r in rs)
+        return fmtnum(lo) if lo == hi else f"{fmtnum(lo)}~{fmtnum(hi)}"
+    zones = " · ".join(k for k, _ in cfg["zones"])
+    if key == "apple":
+        return [(["날짜"], f"수확한 날 ({kinds('날짜')})"),
+                (["사과번호"], f"사과마다 붙은 번호 ({rows[0]['사과번호']} ~ {rows[-1]['사과번호']})"),
+                ([cfg["x"]], f"과수원 지도의 가로 칸 번호 ({span(cfg['x'])})"),
+                ([cfg["y"]], f"과수원 지도의 세로 칸 번호 ({span(cfg['y'])})"),
+                (["중심거리"], f"과수원 중심에서 거리 ({unit['중심거리']})"),
+                ([cfg["zoneCol"]], zones),
+                (["품종"], kinds("품종")),
+                (["무게"], f"사과 무게 ({unit['무게']})"),
+                (["지름"], f"사과 지름 ({unit['지름']})"),
+                (["당도"], f"단맛 정도 ({unit['당도']})"),
+                (["멍"], "멍 있음 1 · 없음 0"),
+                (["벌레"], "벌레 먹음 1 · 아님 0"),
+                ([cfg["reasonCol"]], f"불량 이유 · {cfg['passValue']}이면 {cfg['noneValue']}"),
+                ([cfg["judgeCol"]], f"{cfg['passValue']} · {cfg['failValue']}")]
+    ok = [r for r in rows if r[cfg["judgeCol"]] == cfg["passValue"]]
+    ng = [r for r in rows if r[cfg["judgeCol"]] != cfg["passValue"]]
+    return [(["lot_id"], f"생산 묶음 번호 ({kinds('lot_id')})"),
+            (["wafer_id"], f"웨이퍼 번호 ({kinds('wafer_id')})"),
+            ([cfg["x"]], f"맵의 가로 칸 번호 ({span(cfg['x'])})"),
+            ([cfg["y"]], f"맵의 세로 칸 번호 ({span(cfg['y'])})"),
+            (["center_x_mm"], "칩 가운데의 가로 위치 (mm)"),
+            (["center_y_mm"], "칩 가운데의 세로 위치 (mm)"),
+            (["radius_mm"], f"웨이퍼 중심에서 거리 ({unit['radius_mm']})"),
+            ([cfg["zoneCol"]], f"위치 구역 ({zones})"),
+            (WAFER_MEASURE, "검사 측정값 · 뜻은 몰라도 됨"),
+            (["bin"], f"판정 번호 (합격 {span('bin', ok)} · 불합격 {span('bin', ng)})"),
+            ([cfg["reasonCol"]], f"불합격 사유 · 합격이면 {cfg.get('noneValue', 'none')}"),
+            ([cfg["judgeCol"]], "판정 (" + " · ".join(sorted({r[cfg["judgeCol"]] for r in rows}, key=lambda v: v != cfg["passValue"])) + ")")]
+
+
+def is_number_col(rows, c):
+    try:
+        for r in rows:
+            float(r[c])
+        return True
+    except ValueError:
+        return False
+
+
+def summary_doc(key, ref):
+    """실습 1-1 · 2-1 요약 — 행 · 열 수, 열마다 뜻 한 줄과 숫자/글자, 판정 숫자."""
+    cfg, n = DOMAINS[key]["cfg"], ref
     L = cfg["labels"]
-    rows = read_rows(dom["src"])
+    rows = read_rows(DOMAINS[key]["src"])
     head = list(rows[0].keys())
+    notes = col_notes(key, rows)
+    listed = [c for cs, _ in notes for c in cs]
+    assert listed == head, f"열 설명이 머리 행과 다르다: {listed} / {head}"
+    num = {c: is_number_col(rows, c) for c in head}
+    kind = lambda cs: "숫자" if all(num[c] for c in cs) else ("글자" if not any(num[c] for c in cs) else "숫자 · 글자")
     lines = [f"# {cfg['dataName']} 데이터 요약", "",
-             f"- 줄 수: {n['rows']}줄 (한 줄 = {cfg['item']} 한 {cfg['count']})",
-             f"- 열 수: {len(head)}개", "", "## 열 묶음", ""]
-    if cfg["item"] == "칩":
-        groups = [("이름표", ["lot_id", "wafer_id"]), ("위치", ["die_x", "die_y", "center_x_mm", "center_y_mm", "radius_mm", "zone"]),
-                  ("측정값", ["vth_v", "idsat_ma", "ioff_na", "rc_ohm", "ox_thk_nm", "crack", "particle_cnt"]),
-                  ("판정", ["bin", "fail_type", "pass_fail"])]
-    else:
-        groups = [("이름표", ["날짜", "사과번호", "품종"]), ("위치", ["가로칸", "세로칸", "중심거리", "위치"]),
-                  ("측정값", ["무게", "지름", "당도", "멍", "벌레"]),
-                  ("판정", ["불량사유", "등급"])]
-    grouped = [c for _, cs in groups for c in cs]
-    assert sorted(grouped) == sorted(head), f"열 묶음이 머리 행과 다르다: {sorted(set(grouped) ^ set(head))}"
-    lines += ["| 묶음 | 열 |", "|---|---|"] + [f"| {g} | {', '.join(c)} |" for g, c in groups]
-    lines += ["", "## 판정 숫자", "", f"| 항목 | 값 |", "|---|---|",
+             f"- 행: {n['rows']}행 (한 행 = {cfg['item']} 한 {cfg['count']})",
+             f"- 열: {len(head)}열 (숫자 열 {sum(num.values())} · 글자 열 {len(head) - sum(num.values())})", "",
+             "## 열", "", "| 열 이름 | 뜻 | 종류 |", "|---|---|---|"]
+    lines += [f"| {' · '.join(cs)} | {text} | {kind(cs)} |" for cs, text in notes]
+    lines += ["", "## 판정 숫자", "", "| 항목 | 값 |", "|---|---|",
               f"| {L['total']} | {n['total']} |", f"| {L['pass']} | {n['pass']} |", f"| {L['fail']} | {n['fail']} |",
-              f"| {L['rate']} | {n['rate']:.2f}% |", "", "## 사유별", "", "| 사유 | 개수 |", "|---|---|"]
-    lines += [f"| {name} | {v} |" for name, v in n["reasons_sorted"]]
+              f"| {L['rate']} | {n['rate']:.2f}% |"]
     return "\n".join(lines) + "\n"
+
+
+# ───────────────────────── 차트 (1 · 2교시) ─────────────────────────
+def chart_cfg(key, ch):
+    base = DOMAINS[key]["cfg"]
+    return {**{k: base[k] for k in CHART_KEYS[ch["kind"]]}, **ch["cfg"]}
+
+
+def xlsx_csv(p):
+    """엑셀을 CSV 글자로 — 2교시 스크립트의 df.to_csv 와 같은 모양 (차트 HTML 에 그대로 넣는다)."""
+    import pandas as pd
+    return pd.read_excel(p).to_csv(index=False)
+
+
+def num(v):
+    v = round(float(v), 6)
+    return int(v) if v.is_integer() else v
+
+
+def chart_numbers(key, csv_text):
+    """차트 화면에 보이는 숫자 — HTML 의 JS 와 같은 계산 (평균 · 표준편차(n-1) · 구간 · 비율 · 칸 수)."""
+    rows = list(csv.DictReader(io.StringIO(csv_text)))
+    out = {}
+    for ch in CHARTS[key]:
+        c = chart_cfg(key, ch)
+        o = {"file": f"output/{CHART_DIR}/{ch['file']}", "img": f"sim/{ch['shot']}", "title": c["title"]}
+        if ch["kind"] == "hist":
+            vals = [float(r[c["col"]]) for r in rows]
+            n = len(vals)
+            mean = sum(vals) / n
+            sd = math.sqrt(sum((v - mean) ** 2 for v in vals) / (n - 1))
+            bw = c["bin"]
+            start = math.floor(min(vals) / bw) * bw
+            counts = [0] * (math.floor((max(vals) - start) / bw) + 1)
+            for v in vals:
+                counts[math.floor((v - start) / bw)] += 1
+            top = counts.index(max(counts))
+            o.update({"col": c["col"], "unit": c["unit"], "n": n, "mean": round(mean, c["dec"]),
+                      **({"std": round(sd, c["dec"])} if c["sd"] else {}),
+                      "min": num(min(vals)), "max": num(max(vals)), "bin": bw,
+                      "range": [num(start), num(start + len(counts) * bw)],
+                      "peak": {"from": num(start + top * bw), "to": num(start + (top + 1) * bw), "count": counts[top]},
+                      "bins": [[num(start + i * bw), k] for i, k in enumerate(counts) if k]})
+        elif ch["kind"] == "zone":
+            o["zones"] = {}
+            for zk, name in c["zones"]:
+                z = [r for r in rows if r[c["zoneCol"]] == zk]
+                p = sum(r[c["judgeCol"]] == c["passValue"] for r in z)
+                o["zones"][name] = {"total": len(z), "pass": p, "rate": round(p / len(z) * 100, 2)}
+        elif ch["kind"] == "reason":
+            fails = [r for r in rows if r[c["judgeCol"]] != c["passValue"]]
+            o["fail"] = len(fails)
+            o["sorted"] = sorted(([name, sum(r[c["reasonCol"]] == k for r in fails)] for k, name in c["reasons"]),
+                                 key=lambda x: -x[1])
+        else:
+            xs, ys = [int(float(r[c["x"]])) for r in rows], [int(float(r[c["y"]])) for r in rows]
+            p = sum(r[c["judgeCol"]] == c["passValue"] for r in rows)
+            o.update({"nx": max(xs) - min(xs) + 1, "ny": max(ys) - min(ys) + 1, "cells": len(rows), "pass": p, "fail": len(rows) - p})
+        out[ch["kind"]] = o
+    return out
+
+
+def write_charts(stage_dir, key, csv_text):
+    d = stage_dir / "output" / CHART_DIR
+    d.mkdir(parents=True, exist_ok=True)
+    for ch in CHARTS[key]:
+        (d / ch["file"]).write_text(render(f"chart_{ch['kind']}.html", chart_cfg(key, ch), csv_text, None), encoding="utf-8")
 
 
 def result_csv(dom, rows_raw, spec, name):
@@ -561,7 +710,7 @@ def fmtnum(v):
     return str(int(v)) if float(v).is_integer() else str(v)
 
 
-def make_solution(ref):
+def make_solution(ref, chart_csv):
     if SOL.exists():
         shutil.rmtree(SOL)
     for st in STAGES:
@@ -570,9 +719,10 @@ def make_solution(ref):
             (d / sub).mkdir(parents=True)
         n = int(st[0])
         for key, dom in DOMAINS.items():
-            r = ref[key]
-            name = "데이터_요약.md" if key == "wafer" else "사과_요약.md"
-            (d / "docs" / name).write_text(summary_doc(dom, r), encoding="utf-8")
+            if n >= FIRST_STAGE[key]:     # 사과는 1교시 · 웨이퍼는 2교시부터 요약 · 차트
+                name = "데이터_요약.md" if key == "wafer" else "사과_요약.md"
+                (d / "docs" / name).write_text(summary_doc(key, ref[key]), encoding="utf-8")
+                write_charts(d, key, chart_csv[key])
             if n >= 2:
                 shutil.copy(SRC / "scripts" / dom["script"], d / "scripts" / dom["script"])
         if n >= 2:
@@ -642,8 +792,16 @@ def alt_copy(html, dom, td):
     return p
 
 
+def chart_shots():
+    """1 · 2교시 차트 — 처음 만든 교시의 완성본에서."""
+    for key in DOMAINS:
+        for ch in CHARTS[key]:
+            shot(SOL / f"stage{FIRST_STAGE[key]}" / "output" / CHART_DIR / ch["file"], IMG / ch["shot"])
+
+
 def make_shots(ref):
     IMG.mkdir(parents=True, exist_ok=True)
+    chart_shots()
     for key, dom in DOMAINS.items():
         for st in HTML_TPL:
             shot(SOL / f"stage{st}" / "output" / dom["html"], IMG / f"{key}_s{st}.webp")
@@ -712,14 +870,34 @@ def main():
         for c in ref[key]["s8_target"]["pick"]["set"]:
             c["label"] = names[c["col"]] + {"lo": " 하한", "hi": " 상한", "on": " 판정"}[c["side"]]
             c["display"] = ("켜기" if c["value"] else "끄기") if c["side"] == "on" else fmtnum(c["value"])
-    (ROOT / "sim_ref.json").write_text(json.dumps(ref, ensure_ascii=False, indent=1), encoding="utf-8")
     make_lab(ref)
-    make_solution(ref)
+    # 차트: 실습 엑셀을 CSV 글자로 바꿔 HTML 에 넣고, 같은 글자로 화면 숫자를 계산한다
+    chart_csv = {key: xlsx_csv(LAB / "data" / dom["xlsx"]) for key, dom in DOMAINS.items()}
+    ref["charts"] = {key: chart_numbers(key, chart_csv[key]) for key in ("apple", "wafer")}
+    check_charts(ref)
+    (ROOT / "sim_ref.json").write_text(json.dumps(ref, ensure_ascii=False, indent=1), encoding="utf-8")
+    make_solution(ref, chart_csv)
     if "--no-shots" not in sys.argv and Path(CHROME).exists():
         make_shots(ref)
     for key in ("wafer", "apple"):
         r = ref[key]
         print(key, r["total"], r["pass"], r["fail"], r["rate"], "재판정 일치" if r["rejudge_match"] else f"불일치 {r['rejudge_mismatch']}")
+    a, w = ref["charts"]["apple"], ref["charts"]["wafer"]
+    print("차트 사과", f"무게 평균 {a['hist']['mean']} · 표준편차 {a['hist']['std']} · {a['hist']['min']}~{a['hist']['max']} · 구간 {a['hist']['bin']}",
+          " · ".join(f"{k} {v['rate']:.2f}%" for k, v in a["zone"]["zones"].items()), f"지도 {a['map']['pass']}/{a['map']['fail']}")
+    print("차트 웨이퍼", f"ioff_na 평균 {w['hist']['mean']} · {w['hist']['min']}~{w['hist']['max']} · 구간 {w['hist']['bin']}",
+          " · ".join(f"{k} {v}" for k, v in w["reason"]["sorted"]), f"맵 {w['map']['pass']}/{w['map']['fail']}")
+
+
+def check_charts(ref):
+    """차트 숫자가 판정 숫자와 같은지 (지도 칸 수 · 위치별 · 사유별)."""
+    a, w = ref["charts"]["apple"], ref["charts"]["wafer"]
+    for key, c in (("apple", a), ("wafer", w)):
+        assert (c["map"]["pass"], c["map"]["fail"]) == (ref[key]["pass"], ref[key]["fail"]), key
+        assert c["hist"]["n"] == ref[key]["rows"] == c["map"]["cells"], key
+    assert a["zone"]["zones"] == ref["apple"]["zones"], a["zone"]["zones"]
+    assert w["reason"]["sorted"] == ref["wafer"]["reasons_sorted"], w["reason"]["sorted"]
+    assert w["reason"]["fail"] == ref["wafer"]["fail"]
 
 
 if __name__ == "__main__":

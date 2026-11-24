@@ -205,6 +205,28 @@ def orchard_zones():
     return d.svg(1160, 430, s)
 
 
+# ── 데이터 종류와 차트 · 실제 사과 데이터로 그린 작은 그림 세 장 ─────────────
+def chart_types():
+    """숫자 열 → 분포 · 글자 열 → 막대 · 위치 열 → 지도. 카드 셋이 2초 간격."""
+    df = sk.D07
+    w = df["무게"]
+    cnt = [int(((w >= lo) & (w < lo + 10)).sum()) for lo in range(200, 380, 10)]
+    hist = '<div class="pbgTh">' + "".join(f'<i style="height:{c / max(cnt) * 100:.0f}%"></i>' for c in cnt) + "</div>"
+    zr = sk.DN["area"]
+    bars = '<div class="pbgTb">' + "".join(
+        f'<div><span>{z}</span><b style="width:{zr[z]:.0f}%;background:{ZCOL[z]}"></b><em>{zr[z]:.2f}%</em></div>' for z in sk.AREA) + "</div>"
+    nx = int(df["가로칸"].max())
+    cells = sorted(((int(r["세로칸"]), int(r["가로칸"]), r["등급"]) for _, r in df.iterrows()), key=lambda t: (-t[0], t[1]))
+    grid = (f'<div class="pbgTg" style="grid-template-columns:repeat({nx},1fr)">'
+            + "".join(f'<i style="background:{"#2BA84A" if g == "상품" else "#E8344E"}"></i>' for *_, g in cells) + "</div>")
+    cards = [("숫자 열", "무게 · 당도 · 지름", hist, "분포 · 평균 · 퍼짐"),
+             ("글자 열", "위치 · 품종 · 등급", bars, "막대 · 개수 · 비율"),
+             ("위치 열", "가로칸 · 세로칸", grid, "지도 · 몰린 곳")]
+    c = "".join(f'<div class="pbgTc" style="--d:{.3 + i * 2:.1f}s"><b>{h}</b><span>{cols}</span><div class="m">{mock}</div>'
+                f'<div class="u"><i>→</i>{use}</div></div>' for i, (h, cols, mock, use) in enumerate(cards))
+    return f'<div class="pbgTs">{c}</div>'
+
+
 CSS = """
   @keyframes pbgIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
   .pbgA{font-style:normal; align-self:center; text-align:center; font-size:28px; font-weight:800; color:#F28C28; opacity:0; animation:pbgIn .5s var(--d) forwards;}
@@ -278,6 +300,19 @@ CSS = """
   .pbgHm{display:grid; grid-template-columns:auto auto 1fr; gap:6px 10px; align-items:baseline; border:1.5px solid #E1E5EB; border-left:5px solid #F28C28; border-radius:10px; background:#fff; padding:10px 14px; opacity:0; animation:pbgIn .45s var(--d) forwards;}
   .pbgHm b{font-size:19px; color:#16233A;} .pbgHm i{font-style:normal; color:#F28C28; font-weight:800;} .pbgHm span{font-size:19px; font-weight:800; color:#C25E00;}
   .pbgHm small{grid-column:1 / -1; font-size:14.5px; color:#4A5563;}
-  @media print{.pbgA,.pbgL,.pbgLine,.pbgE,.pbgR,.pbgF,.pbgP,.pbgPh,.pbgHm{animation:none; opacity:1}
+  /* 데이터 종류와 차트 */
+  .pbgTs{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; margin-top:6px;}
+  .pbgTc{border:2px solid #D9DDE3; border-radius:16px; background:#fff; padding:18px 20px; display:flex; flex-direction:column; gap:6px; opacity:0; animation:pbgIn .6s var(--d) forwards;}
+  .pbgTc > b{font-size:24px; color:#16233A;} .pbgTc > span{font-size:15px; color:#6B7785;}
+  .pbgTc .m{height:170px; border:1.5px solid #E1E5EB; border-radius:12px; padding:14px; margin:8px 0; display:flex; align-items:center; justify-content:center;}
+  .pbgTc .u{font-size:19px; font-weight:800; color:#C25E00;} .pbgTc .u i{font-style:normal; margin-right:8px;}
+  .pbgTh{width:100%; height:100%; display:flex; align-items:flex-end; gap:2px; border-bottom:2px solid #9AA5B1;}
+  .pbgTh i{flex:1; background:#1F3A5F; opacity:.85; border-radius:2px 2px 0 0;}
+  .pbgTb{width:100%; display:flex; flex-direction:column; gap:12px;}
+  .pbgTb div{display:grid; grid-template-columns:64px 1fr 62px; gap:8px; align-items:center; font-size:13.5px; font-weight:700; color:#16233A;}
+  .pbgTb b{display:block; height:18px; border-radius:4px;} .pbgTb em{font-style:normal; font-size:13px; color:#3A4657; text-align:right;}
+  .pbgTg{display:grid; gap:1px; width:213px; height:142px;}
+  .pbgTg i{display:block; border-radius:1px;}
+  @media print{.pbgA,.pbgL,.pbgLine,.pbgE,.pbgR,.pbgF,.pbgP,.pbgPh,.pbgHm,.pbgTc{animation:none; opacity:1}
     .pbgM.sim .num .a{animation:none; opacity:0} .pbgM.sim .num .b{animation:none; opacity:1} .pbgM.sim .sl b{animation:none; left:32%}}
 """

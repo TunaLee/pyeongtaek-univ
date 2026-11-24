@@ -95,6 +95,10 @@ CSS = """
   .skduo figure{margin:0; opacity:0; animation:skIn .5s var(--d) forwards;}
   .skduo figure b{display:block; font-size:18px; color:#16233A; margin-bottom:8px;}
   .skduo img{width:100%; border:1.5px solid #D9DDE3; border-radius:12px; box-shadow:0 8px 22px rgba(15,27,45,.10); background:#fff;}
+  .sktrio{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; align-items:start;}
+  .sktrio figure{margin:0; opacity:0; animation:skIn .5s var(--d) forwards;}
+  .sktrio figure b{display:block; font-size:17px; color:#16233A; margin-bottom:8px;}
+  .sktrio img{width:100%; border:1.5px solid #D9DDE3; border-radius:12px; box-shadow:0 8px 22px rgba(15,27,45,.10); background:#fff;}
   .skone img{width:100%; max-height:450px; object-fit:contain; object-position:top; border:1.5px solid #D9DDE3; border-radius:12px; box-shadow:0 8px 22px rgba(15,27,45,.10); background:#fff;}
   .skgrp{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:8px;}
   .skg{border-radius:14px; padding:16px 16px 14px; border:2px solid #C9D6E6; background:#fff; opacity:0; animation:skIn .45s var(--d) forwards;}
@@ -109,8 +113,9 @@ CSS = """
   .skhcj > div > b{font-size:20px; color:#16233A;} .skhcj > div > b small{font-size:14px; color:#6B7785; font-weight:600; margin-left:6px;}
   .skhcj .code{margin:0;} .skhcj .code pre, .skhcj .code code{font-size:12.5px !important; white-space:pre;}
   .skhcj .pv{border:1.5px solid #D9DDE3; border-radius:10px; background:#fff; padding:12px; min-height:118px; font-family:var(--sans);}
+  .v2tile span, .v2pc span{word-break:keep-all; overflow-wrap:anywhere;}
   @keyframes skIn{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
-  @media print{.skduo figure,.skg,.skhcj > div{animation:none; opacity:1}}
+  @media print{.skduo figure,.sktrio figure,.skg,.skhcj > div{animation:none; opacity:1}}
 """
 
 
@@ -118,6 +123,12 @@ def duo(a, b, la, lb):
     """두 화면 나란히 · docs/img/ 아래 경로."""
     return (f'<div class="skduo"><figure style="--d:.2s"><b>{la}</b><img src="img/{a}" alt="{la}"/></figure>'
             f'<figure style="--d:1.2s"><b>{lb}</b><img src="img/{b}" alt="{lb}"/></figure></div>')
+
+
+def trio(items):
+    """결과 화면 셋 나란히 · items=[(img, 이름)] · 2초 간격."""
+    return '<div class="sktrio">' + "".join(
+        f'<figure style="--d:{.2 + i * 2:.1f}s"><b>{lb}</b><img src="img/{im}" alt="{lb}"/></figure>' for i, (im, lb) in enumerate(items)) + "</div>"
 
 
 def one(img, alt):

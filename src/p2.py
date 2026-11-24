@@ -1,19 +1,26 @@
-"""2교시 엑셀 집계 자동화 · CLAUDE.md.
+"""2교시 웨이퍼 데이터 · 집계 자동화 · CLAUDE.md.
 
-도입(손 집계와 요청) → 설명(수율 계산 · 사과 집계 표 · 칩 집계 표(시트 세 장) · 엑셀과 CSV · 새 대화의 시작 · CLAUDE.md · 확인할 수 있는 문장 · 숫자 대조)
-→ 적용(실습 2-1 사과 집계 → 2-2 웨이퍼 yield_summary.xlsx).
+도입(웨이퍼와 칩 · 엑셀 행과 맵 칸) → 설명(같은 질문 세 가지 도구 · 수율 계산 · 사과 집계 표 · 칩 집계 표(시트 세 장)
+· 엑셀과 CSV · 새 대화의 시작 · CLAUDE.md · 확인할 수 있는 문장 · 숫자 대조)
+→ 적용(실습 2-1 웨이퍼 데이터 읽기 · 차트(1교시 순서 그대로) → 2-2 집계 엑셀 · CSV(사과 · 웨이퍼)).
+웨이퍼 열 목록(18개 묶음)은 보여 주지 않는다 — 측정값 이름은 몰라도 됨.
 """
 import p0
+import psim
 import sk
 import viz2
 from deck import lab, light
-from hx import code, esc
+from hx import code, esc, photo
 from pkit import LAB, brief, chat, tag
 
 T = tag("2")
 WN, DN = sk.WN, sk.DN
 TOP = max(DN["reason"], key=DN["reason"].get)
 TOPK = sk.D_KO[TOP]
+WTOP = max(WN["reason"], key=WN["reason"].get)
+IO_LIM = sk.SIM["wafer"]["spec"]["ioff_na"]["hi"]                    # 누설전류 합격선(기준표)
+IO_LOW = (sk.W07["ioff_na"] < 5).mean() * 100
+IO_OVER = int((sk.W07["ioff_na"] > IO_LIM).sum())
 CSS = """
   .p2eq{font-size:40px; font-weight:800; color:#16233A; text-align:center; margin:30px 0 26px;}
   .p2eq em{font-style:normal; color:#F28C28;}
@@ -61,11 +68,13 @@ def _claude_md():
 
 def slides():
     return [
-        # ── 도입
-        light("손 집계와 요청", viz2.pair(
-            "엑셀 손 작업", [("수율", "필터 · 개수 세기 · 나누기"), ("사유별", "피벗 테이블 · 정렬"), ("다음 파일", "처음부터 다시")],
-            "Claude Code 요청", [("수율", "「합격 수와 수율」"), ("사유별", "「사유별 칩 수 · 많은 순」"), ("다음 파일", "같은 요청 · 파일 이름만 바꿈")]), T),
-        # ── 설명
+        # ── 도입 · 웨이퍼 데이터
+        light("웨이퍼와 칩", f'<div class="phmap v3ph">{photo("wafer_photo.webp", "웨이퍼")}' + viz2.maprows([
+            ("칩", "웨이퍼 위 네모 한 칸", f"한 장에 {WN['rows']}개"), ("합격 · 불합격", "칩마다 검사 결과", "PASS · FAIL"),
+            ("수율", "합격 칩 ÷ 전체 칩", f"W07 · {WN['yield']}%")], "용어", "뜻") + "</div>", T),
+        light("엑셀 행과 맵 칸", psim.row_to_cell(), T),
+        # ── 설명 · 집계
+        light("같은 질문, 세 가지 도구", p0.three_tools(), T),
         light("수율 계산", f'<div class="p2eq">수율 = <em>합격 {WN["pass"]}</em> ÷ 전체 {WN["rows"]} = <em>{WN["yield"]}%</em></div>'
               + viz2.tiles([("사과 상품률", f"상품 {DN['pass']} ÷ 전체 {DN['rows']} = {DN['rate']}%"),
                             ("같은 계산", "조건에 맞는 행 수 ÷ 전체 행 수")], 2), T),
@@ -96,19 +105,25 @@ def slides():
             ("Claude 보고", f"합격 {WN['pass']}", "요청 결과"), ("엑셀 필터", f"pass_fail = PASS · {WN['pass']}행", "사람이 직접"),
             ("다르면", "어느 쪽이 맞는지 행 단위로 확인 요청", "그대로 넘어가지 않음")], "확인", "W07"), T),
         # ── 적용
-        lab("2-1", "사과 집계 엑셀", T, "사과 엑셀을 불량 사유별 · 위치별로 집계해 엑셀 시트 세 장과 CSV 로 저장한다",
-            ["CLAUDE.md 에 사과 정답 숫자 추가", "집계 요청 (요약 · 사유별 · 위치별)", "CSV 저장 요청", "엑셀 필터로 대조"],
-            [f"상품 {DN['pass']} · {DN['rate']}%", f"{TOPK} {max(DN['reason'].values())}개 1위 · 가장자리 {DN['area']['가장자리']:.2f}%",
-             "output/apple_summary.xlsx · apple_A07.csv"], files="data/apple_A07.xlsx"),
-        lab("2-2", "수율 집계 엑셀", T, "W07 을 사유별 · 위치별로 집계해 yield_summary.xlsx 로 저장하고 CSV 로도 저장한다",
-            ["CLAUDE.md 정답 숫자 확인", "집계 요청 (요약 · 사유별 · 위치별)", "CSV 저장 요청", "엑셀 필터로 대조"],
-            [f"수율 {WN['yield']}% · 깨짐 · 긁힘 {WN['reason']['crack']}개 1위", "output/yield_summary.xlsx (시트 3장)",
-             "output/wafer_test_W07.csv"], files="data/wafer_test_W07.xlsx"),
+        lab("2-1", "웨이퍼 데이터 읽기 · 차트", T, "1교시 순서 그대로 W07 을 요약하고 누설전류 분포 · 사유별 불합격 막대 · 웨이퍼 맵을 그린다",
+            ["W07 요약 요청", "누설전류 분포 요청", "사유별 불합격 막대 요청", "웨이퍼 맵 요청"],
+            [f"{WN['rows']}행 · 합격 {WN['pass']} · 불합격 {WN['fail']} · 수율 {WN['yield']}%", f"불합격 1위 {sk.KO[WTOP]} {WN['reason'][WTOP]}개",
+             "output/charts/ HTML 세 장"], files="data/wafer_test_W07.xlsx"),
+        light("웨이퍼 차트 결과", sk.trio([("sim/chart_wafer_hist.webp", "누설전류 분포"), ("sim/chart_wafer_reason.webp", "사유별 불합격"),
+                                        ("sim/chart_wafer_map.webp", "웨이퍼 맵")]), T),
+        light("웨이퍼 차트에서 읽은 사실", viz2.tiles([
+            ("누설전류 분포", f"{IO_LOW:.0f}% 가 5 nA 아래에 몰림 · {IO_LIM} nA 넘는 칩 {IO_OVER}개가 멀리 떨어짐"),
+            ("사유별 불합격", f"{sk.KO[WTOP]} {WN['reason'][WTOP]}개 · 불합격 {WN['fail']}개의 {WN['reason'][WTOP] / WN['fail'] * 100:.0f}%"),
+            ("웨이퍼 맵", f"{sk.KO[WTOP]} 칸이 대각선 한 줄로 이어짐")], 3), T),
+        lab("2-2", "집계 엑셀 · CSV", T, "사과 · 웨이퍼를 사유별 · 위치별로 집계해 엑셀 시트 세 장과 CSV 로 저장한다",
+            ["CLAUDE.md 정답 숫자 확인", "사과 집계 · CSV 요청", "웨이퍼 집계 · CSV 요청", "엑셀 필터로 대조"],
+            [f"사과 상품률 {DN['rate']}% · 웨이퍼 수율 {WN['yield']}%", "apple_summary.xlsx · yield_summary.xlsx (시트 3장)",
+             "apple_A07.csv · wafer_test_W07.csv"], files="data/apple_A07.xlsx · data/wafer_test_W07.xlsx"),
         brief("2-2", T,
-              ["CLAUDE.md 정답 숫자 확인", "집계 요청", "CSV 저장 요청", "엑셀 필터로 대조"],
-              [("목표", "수율 · 사유별 · 위치별 집계"), ("입력", "wafer_test_W07.xlsx"),
-               ("산출물", "yield_summary.xlsx 시트 3장 · CSV"), ("하지 말 것", "data/ 원본 수정")],
-              [], [f"합격 {WN['pass']} · 수율 {WN['yield']}%", "사유 6가지 합 = 불합격 수"], ""),
+              ["CLAUDE.md 정답 숫자 확인", "사과 집계 · CSV", "웨이퍼 집계 · CSV", "엑셀 필터로 대조"],
+              [("목표", "요약 · 사유별 · 위치별 집계"), ("입력", "apple_A07.xlsx · wafer_test_W07.xlsx"),
+               ("산출물", "집계 엑셀 2개(시트 3장) · CSV 2개"), ("하지 말 것", "data/ 원본 수정")],
+              [], [f"상품 {DN['pass']} · 합격 {WN['pass']}", "사유별 합 = 불량 · 불합격 수"], ""),
         light("실습 2-2 확인", chat([
             ("me", "yield_summary.xlsx 의 사유별 시트 합계가 불합격 수와 같은지 확인해 줘."),
             ("ai", f"사유별 합계 {sum(WN['reason'].values())} · 불합격 {WN['fail']} · 같음\n"

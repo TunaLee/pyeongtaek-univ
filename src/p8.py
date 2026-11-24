@@ -75,6 +75,6 @@ def slides():
             ("화면", "시뮬레이터 띄우기", "10초"), ("실험", "조절 바 세 가지 · 수율 변화", "30초"),
             ("결과", f"목표 {TARGET}% 를 맞춘 조합", "10초"), ("다음", "내 엑셀로 해 볼 실험", "10초")], "순서", "내용"), T),
         light("제출물", viz2.tiles([
-            ("output/", "simulator.html · apple_sim.html · 내려받은 CSV"), ("docs/", "데이터_요약.md · 실험기록.md"),
+            ("output/", "charts/ 차트 · apple_sim.html · simulator.html · 내려받은 CSV"), ("docs/", "사과_요약.md · 데이터_요약.md · 실험기록.md"),
             ("CLAUDE.md · .claude/", "규칙 · Skill · Hook")], 3), T),
     ]

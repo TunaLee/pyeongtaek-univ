@@ -3,6 +3,7 @@
 도입(사과 당도 조절 바) → 설명(누설전류 합격선 · 조절 바 동작 네 단계 · 함께 바뀌는 네 곳 · 완료처럼 보이는 결과 · 증거 요청 · 다시 지시하는 법)
 → 적용(실습 6-1 사과 당도 조절 바 → 6-2 웨이퍼 누설전류 조절 바).
 """
+import p0
 import psim
 import sk
 import viz2
@@ -21,6 +22,7 @@ def slides():
         # ── 도입
         light("당도 조절 바", psim.apple_slider(), T),
         # ── 설명
+        light("사과 판정 조건", p0.judge_apple(), T),
         light("누설전류 합격선", psim.wafer_slider(), T),
         light("조절 바 동작 네 단계", viz2.maprows([
             ("1 움직임", "조절 바 값이 바뀜", "input 이벤트"), ("2 기준 바꿈", "누설전류 상한 = 조절 바 값", "변수 하나"),

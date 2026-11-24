@@ -8,7 +8,6 @@
 import pandas as pd
 
 import pbg
-import pgen
 import sk
 import viz2
 from deck import divider, light
@@ -16,7 +15,6 @@ from hx import code, esc
 from pkit import chat
 from stats_hx import quote, src
 
-P = pgen.P
 TAG = "개요"
 
 CSS = """
@@ -111,28 +109,29 @@ def _d07():
     return sk.apple()
 
 
+SALES = [("R-0001", "삼각김밥", 1500), ("R-0002", "우유", 1800), ("R-0003", "삼각김밥", 1500)]  # 저장 형식 설명용 예
+
+
 def formats():
-    """종이 장부 → 엑셀 → CSV → 데이터베이스. 같은 사과 선별 기록을 형식마다."""
-    df = _d07()
-    h = df.head(3)[["날짜", "위치", "무게", "등급"]]
-    rows = "".join(f'<tr><th>{i + 2}</th><td>{r["날짜"][5:]}</td><td>{r["위치"]}</td><td{" class=sel" if i == 0 else ""}>{r["무게"]}</td><td>{r["등급"]}</td></tr>'
+    """종이 장부 → 엑셀 → CSV → 데이터베이스. 같은 편의점 결제 기록 세 줄을 형식마다 (개요 · 사과 데이터는 1교시에)."""
+    h = pd.DataFrame(SALES, columns=["영수증", "품목", "금액"])
+    rows = "".join(f'<tr><th>{i + 2}</th><td>{r["영수증"]}</td><td>{r["품목"]}</td><td{" class=sel" if i == 0 else ""}>{r["금액"]:,}</td></tr>'
                    for i, (_, r) in enumerate(h.iterrows()))
-    lt = "".join(f"<th>{x}</th>" for x in _letters(list(h.columns), df.columns))
-    xl = (f'<div class="p0v p0xl"><div class="bar">apple_A07.xlsx</div><table><tr><th></th>{lt}</tr>'
-          f'<tr><th>1</th><td>날짜</td><td>위치</td><td>무게</td><td>등급</td></tr>{rows}</table></div>')
+    xl = (f'<div class="p0v p0xl"><div class="bar">결제_10월7일.xlsx</div><table><tr><th></th><th>A</th><th>B</th><th>C</th></tr>'
+          f'<tr><th>1</th><td>영수증</td><td>품목</td><td>금액</td></tr>{rows}</table></div>')
     csv = '<div class="p0v p0csv"><pre>' + esc(h.to_csv(index=False).strip()) + "</pre></div>"
-    cnt = df["위치"].value_counts()
-    tb = "".join(f"<tr><td>{a}</td><td>{cnt[a]}</td></tr>" for a in sk.AREA)
-    db = (f'<div class="p0v p0db"><div class="q">SELECT 위치, count(*) AS 개수<br/>FROM 사과<br/>GROUP BY 위치</div>'
-          f'<table><tr><th>위치</th><th>개수</th></tr>{tb}</table></div>')
+    tot = h.groupby("품목", sort=False)["금액"].sum()
+    tb = "".join(f"<tr><td>{k}</td><td>{v:,}</td></tr>" for k, v in tot.items())
+    db = (f'<div class="p0v p0db"><div class="q">SELECT 품목, sum(금액) AS 합계<br/>FROM 결제<br/>GROUP BY 품목</div>'
+          f'<table><tr><th>품목</th><th>합계</th></tr>{tb}</table></div>')
     ledger = '<div class="p0v"><img src="img/p0_ledger.webp" alt="1906년 회계 장부"/></div>'
     cells = [(ledger, "종이 장부", "손으로 적고 손으로 더함"), (xl, "엑셀", "칸 · 수식 · 서식"),
              (csv, "CSV", "쉼표로 나눈 글자"), (db, "데이터베이스", "표 여러 개 · SQL 질의")]
     out = []
-    for i, (v, b, s) in enumerate(cells):
+    for i, (v, b, s_) in enumerate(cells):
         if i:
             out.append("<i>→</i>")
-        out.append(f'<div class="p0f" style="--d:{i * .5:.1f}s">{v}<b>{b}</b><span>{s}</span></div>')
+        out.append(f'<div class="p0f" style="--d:{i * .5:.1f}s">{v}<b>{b}</b><span>{s_}</span></div>')
     from stats_hx import src
     return f'<div class="p0fm">{"".join(out)}</div>' + src(
         ("장부 사진 · Camp Chesterfield general account ledger (1906) · 퍼블릭 도메인",
@@ -148,7 +147,7 @@ def three_tools():
     py = ('import pandas as pd\ndf = pd.read_csv("apple_A07.csv")\nedge = df[df["위치"] == "가장자리"]\n'
           'rate = (edge["등급"] == "상품").mean() * 100\nprint(round(rate, 2))')
     xl = ('<ol><li>파일 열기 · 열 필터</li><li><code>=COUNTIFS(F:F,"가장자리",N:N,"상품")</code></li>'
-          '<li><code>=COUNTIF(F:F,"가장자리")</code> 로 나누기</li></ol>')
+          '<li><code>=COUNTIF(F:F,"가장자리")</code> 로 나누기</li><li>파일 25개면 25번 반복</li></ol>')
     cc = chat([("me", "apple_A07.csv 에서 가장자리 상품률 알려 줘"), ("ai", f"가장자리 {n}개 중 상품 {k}개 · {rate}%")], "Claude Code")
     cols = [("엑셀", xl, "사람이 수식 입력", False), ("파이썬", code("edge_rate.py", esc(py)), "분석가가 코드 작성", False),
             ("Claude Code", cc, "요청 한 문장 · 코드는 Claude 가 작성", True)]
@@ -176,8 +175,7 @@ def table_terms(df):
     lg = [("테이블", "table", f"시트 한 장 · 사과 선별 기록 {len(df)}행", ""),
           ("행", "row · 레코드", f"사과 1개 · {v['사과번호']}", "#FFF3E6"),
           ("열", "column · 필드", "같은 종류의 값 · 무게", "#E6EEF8"),
-          ("값", "cell", f"행과 열이 만나는 칸 · {v['무게']}", "#F28C28"),
-          ("기본 키", "primary key", "행마다 겹치지 않는 열 · 사과번호", "")]
+          ("값", "cell", f"행과 열이 만나는 칸 · {v['무게']}", "#F28C28")]
     leg = "".join(f'<div style="--d:{0.6 + i * 1.0:.1f}s"><b>{"<i style=background:%s></i>" % c if c else ""}{a}<small>{e}</small></b><span>{x}</span></div>'
                   for i, (a, e, x, c) in enumerate(lg))
     return (f'<div class="p0tb"><div class="t"><div class="nm">apple_A07.xlsx</div><table><tr>{th}</tr>{trs}</table></div>'
@@ -257,37 +255,27 @@ def history():
 
 
 def data_change():
-    """개요 2 · 데이터 분석과 엔지니어링 — 데이터 · 형식 · 사과 시트 → 변수 · 처리 방법 · 분석 흐름 · 요청 경로 · 엔지니어링의 변화 → 결과물의 변화(→ 1교시 완성 시뮬레이터)."""
-    df = _d07()
+    """개요 2 · 데이터 분석과 엔지니어링 — 데이터 · 저장 형식 → 처리 방법 · 요청 경로 · 분석과 엔지니어링 · 엔지니어링의 변화 → 결과물의 변화.
+    일반 예(편의점 결제)만 쓴다. 사과 · 웨이퍼 데이터와 데이터 보는 법은 1 · 2교시 실습 단계에서."""
     dd = [
         light("데이터의 정의", viz2.maprows([
             ("편의점 결제", "시각 · 품목 · 금액", "영수증 한 장 = 한 줄"), ("출석", "날짜 · 이름 · 출결", "출석부 한 칸"),
             ("사과 선별", "무게 · 당도 · 흠", "사과 1개 = 한 줄"), ("반도체 검사", "칩 위치 · 측정값 · 합격 · 불합격", "칩 1개 = 한 줄")],
             "기록 대상", "남는 값"), TAG),
-        light("사과 선별 데이터", pbg.orchard_zones(), TAG),
         light("데이터 저장 형식의 변화", formats(), TAG),
-        light("테이블의 행과 열", table_terms(df), TAG),
     ]
     ex = [
-        light("변수 종류", viz2.maprows([
-            ("수치형 변수", "무게 · 당도 · 지름 · 중심거리", "평균 · 합계 · 분포"), ("범주형 변수", "위치 · 품종 · 등급", "개수 · 비율 · 묶어 세기"),
-            ("판정 열 · 등급", "상품 · 불량", f"멍 · 벌레 없음 · 무게 {sk.MIN_W}g 이상 · 당도 {sk.MIN_SUGAR:g} brix 이상"),
-            ("파일 규모", f"{len(df)}행 × {df.shape[1]}열", "하루 한 파일 · 25일치")], "변수", "apple_A07.csv"), TAG),
-        light("수치형 변수", num_anim(df), TAG),
-        light("범주형 변수", cat_anim(df), TAG),
         light("데이터 처리 방법의 변화", _steps([
             ("손 계산", "<span>장부 · 계산기 · 그래프 용지</span><span>담당자가 한 줄씩 더함</span>"),
             ("스프레드시트", "<span>엑셀 수식 · 필터 · 피벗 · 차트</span><span>실무자가 파일마다 반복</span>"),
             ("코드", "<span>SQL · 파이썬 · 통계 도구</span><span>분석가 · 개발자가 작성</span>"),
             ("AI 에이전트", "<span>요청 한 문장 · Claude Code</span><span>담당자가 요청 · 결과 확인</span>")], 4), TAG),
-        light("같은 질문, 세 가지 도구", three_tools(), TAG),
-        light("데이터 분석의 흐름", pbg.analysis_flow(), TAG),
         light("분석 요청 경로", viz2.pair(
             "AI 이전", [("질문", "현업 담당자"), ("요청", "분석가에게 전달 · 순서 대기"), ("작업", "분석가가 SQL · 파이썬 작성"), ("결과", "보고서 · 엑셀 파일")],
             "Claude Code", [("질문", "현업 담당자"), ("요청", "요청 한 문장 · 바로 실행"), ("작업", "Claude 가 코드 작성 · 실행 · 오류 수정"), ("결과", "파일 + 사람이 숫자 확인")]), TAG),
         light("분석과 엔지니어링", viz2.pair(
-            "데이터 분석", [("질문", "「가장자리 사과는 왜 불량이 많나」"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
-            "데이터 엔지니어링", [("질문", "「매일 수확 파일을 같은 기준으로 집계」"), ("결과", "읽기 · 정제 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), TAG),
+            "데이터 분석", [("질문", "「어느 품목이 많이 팔리나」"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
+            "데이터 엔지니어링", [("질문", "「매일 결제 파일을 같은 기준으로 집계」"), ("결과", "읽기 · 정제 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), TAG),
         light("엔지니어링 작업의 변화", viz2.pair(
             "AI 이전", [("작성", "엔지니어가 스크립트 코드 작성"), ("오류", "로그를 읽고 사람이 수정"), ("반복", "같은 코드를 정해진 시각에 실행"),
                        ("규칙", "문서 · 담당자 기억")],
@@ -328,11 +316,12 @@ def _rows8(df):
     return df.loc[pick]
 
 
-def _sheet(d, rows, n, hi, hi_t):
-    """SVG 엑셀 시트 · 열 hi 를 hi_t% 에 강조. 칸 좌표 {(행, 열): (x, y, w)} 를 돌려준다."""
+def _sheet(d, rows, n, hi, hi_t, scol=None):
+    """SVG 엑셀 시트 · 열 hi 를 hi_t% 에 강조. 칸 좌표 {(행, 열): (x, y, w)} 를 돌려준다. scol 로 보여 줄 열을 바꿈."""
+    scol = scol or _SCOL
     x0, rn = 0, 30
     xs, x = {}, x0 + rn
-    for c, w, _ in _SCOL:
+    for c, w, _ in scol:
         xs[c] = (x, w)
         x += w
     W_ = x - x0
@@ -340,8 +329,8 @@ def _sheet(d, rows, n, hi, hi_t):
          + _t(x0 + 10, 12, "apple_A07.xlsx", "ts", "start", 'style="font-size:12px;fill:#fff;font-weight:700"'))
     y = 24
     s += f'<rect x="{x0}" y="{y}" width="{W_}" height="20" fill="#F1F3F4" stroke="#DADCE0"/>'
-    lts = _letters([c for c, *_ in _SCOL], rows.columns)            # 원본 파일의 열 글자 (숨긴 열은 건너뜀)
-    for i, (c, w, _) in enumerate(_SCOL):
+    lts = _letters([c for c, *_ in scol], rows.columns)            # 원본 파일의 열 글자 (숨긴 열은 건너뜀)
+    for i, (c, w, _) in enumerate(scol):
         cx = xs[c][0]
         s += f'<line x1="{cx}" y1="{y}" x2="{cx}" y2="{y + 20}" stroke="#DADCE0"/>' + _t(cx + w / 2, y + 10, lts[i], "ts", extra='style="font-size:11px"')
     y = 44
@@ -354,7 +343,7 @@ def _sheet(d, rows, n, hi, hi_t):
         fill = "#E8F0E9" if k == 0 else "#fff"
         s += f'<rect x="{x0}" y="{yy}" width="{W_}" height="{h}" fill="{fill}" stroke="#E3E5E8"/>'
         s += f'<rect x="{x0}" y="{yy}" width="{rn}" height="{h}" fill="#F1F3F4" stroke="#DADCE0"/>' + _t(x0 + rn / 2, yy + h / 2, k + 1, "ts", extra='style="font-size:11px"')
-        for c, w, num in _SCOL:
+        for c, w, num in scol:
             cx = xs[c][0]
             s += f'<line x1="{cx}" y1="{yy}" x2="{cx}" y2="{yy + h}" stroke="#E3E5E8"/>'
             v = c if k == 0 else row[c]
@@ -373,21 +362,23 @@ def _sheet(d, rows, n, hi, hi_t):
 
 
 def num_anim(df):
-    """수치형 — 엑셀 시트의 무게 열 → 8칸이 수직선 위 점으로 → 600건 → 평균 · 표준편차. 18초 · 한 번."""
-    d = _D("vn", 18)
+    """수치형 — 엑셀 시트의 무게 열 → 8칸이 수직선 위 점으로 → 600개를 10g 구간별 개수 막대(히스토그램)로 → 평균 · 퍼짐. 20초 · 한 번."""
+    d = _D("vn", 20)
     rows = _rows8(df)
     sh, cells, W_ = _sheet(d, rows, len(df), "무게", 6)
-    m, sd = df["무게"].mean(), df["무게"].std()
-    X0, X1, V0, V1 = W_ + 70, 1150, 200, 380
+    v_all = df["무게"]
+    m, sd = v_all.mean(), v_all.std()
+    X0, X1, V0, V1, STEP = W_ + 70, 1150, 200, 380, 10
     vx = lambda v: X0 + (v - V0) / (V1 - V0) * (X1 - X0)  # noqa: E731
-    ay = 210
+    ay, H = 300, 200
     s = sh + f'<g {d.show(6)}>' + _t(X0, 20, "무게 · 단위 g · 수치형", "to", "start", 'style="font-size:17px"') + "</g>"
     s += f'<g {d.show(14)}><line x1="{X0}" y1="{ay}" x2="{X1}" y2="{ay}" stroke="{N}" stroke-width="2.5"/>'
-    for t in range(200, 381, 10):
+    for t in range(V0, V1 + 1, STEP):
         s += f'<line x1="{vx(t):.1f}" y1="{ay}" x2="{vx(t):.1f}" y2="{ay + (6 if t % 40 else 12)}" stroke="{N}" stroke-width="1.5"/>'
         if t % 40 == 0:
-            s += _t(vx(t), ay + 28, t, "ts", extra='style="font-size:13px"')
-    s += _t(X1, ay + 48, "g", "ts", "end") + "</g>"
+            s += _t(vx(t), ay + 26, t, "ts", extra='style="font-size:13px"')
+    s += _t(X1, ay + 26, "g", "ts", "start", 'style="font-size:13px"') + "</g>"
+    # 1) 첫 8칸 → 점 (구간 막대가 나오면 사라짐)
     lv, last = {}, []
     for i in sorted(range(len(rows)), key=lambda j: rows["무게"].iloc[j]):
         x = vx(rows["무게"].iloc[i])
@@ -399,18 +390,28 @@ def num_anim(df):
         cx, cy, w = cells[(i, "무게")]
         v = row["무게"]
         s += f'<rect x="{cx}" y="{cy}" width="{w}" height="{_RH}" fill="{O}" fill-opacity=".22" {d.show(t)}/>'
-        s += f'<g {d.show(t)}><circle cx="{vx(v):.1f}" cy="{ay - 14 - lv[i] * 24}" r="9" fill="{O}"/>' \
+        s += f'<g {d.show(t, 49)}><circle cx="{vx(v):.1f}" cy="{ay - 14 - lv[i] * 24}" r="9" fill="{O}"/>' \
              f'{_t(vx(v) + 13, ay - 14 - lv[i] * 24, v, "ts", "start", "style=font-size:13px")}</g>'
-    rng = __import__("random").Random(7)
-    dots = "".join(f'<circle cx="{vx(v):.1f}" cy="{ay + 66 + rng.random() * 56:.1f}" r="3" fill="{K}" fill-opacity=".35"/>' for v in df["무게"])
-    s += f'<g {d.show(52)}>{dots}' + _t(X0 - 8, ay + 94, f"{len(df)}개", "tn", "end") + "</g>"
-    s += (f'<g {d.show(66)}><line x1="{vx(m):.1f}" y1="{ay - 104}" x2="{vx(m):.1f}" y2="{ay + 130}" stroke="{O}" stroke-width="3" stroke-dasharray="7 5"/>'
-          + _t(vx(m), ay - 120, f"평균 {m:.1f}g", "to", extra='style="font-size:17px"') + "</g>")
+    # 2) 600개 → 10g 구간별 개수 막대
+    edges = list(range(V0, V1 + STEP, STEP))
+    cnt = [int(((v_all >= lo) & (v_all < lo + STEP)).sum()) for lo in edges[:-1]]
+    mx = max(cnt)
+    grow = "transform-box:fill-box;transform-origin:50% 100%"
+    st = [(0, "transform:scaleY(0)"), (52, "transform:scaleY(0)"), (60, "transform:scaleY(1)"), (100, "transform:scaleY(1)")]
+    for lo, c in zip(edges[:-1], cnt):
+        if not c:
+            continue
+        h = H * c / mx
+        s += f'<rect x="{vx(lo) + 1:.1f}" y="{ay - h:.1f}" width="{vx(lo + STEP) - vx(lo) - 2:.1f}" height="{h:.1f}" fill="{K}" fill-opacity=".8" {d.a(st, "ease-out", grow)}/>'
+    s += (f'<g {d.show(56)}>' + _t(X0, ay - H - 18, f"{len(df)}개 · {STEP}g 구간마다 개수", "tn", "start", 'style="font-size:15px"') + "</g>")
+    # 3) 평균 · 퍼짐
+    s += (f'<g {d.show(66)}><line x1="{vx(m):.1f}" y1="{ay - H - 8}" x2="{vx(m):.1f}" y2="{ay + 4}" stroke="{O}" stroke-width="3" stroke-dasharray="7 5"/>'
+          + _t(vx(m) + 8, ay - H - 18, f"평균 {m:.1f}g", "to", "start", 'style="font-size:17px"') + "</g>")
     a_, b_ = vx(m - sd), vx(m + sd)
-    s += (f'<g {d.show(80)}><path d="M{a_:.1f} {ay + 140} V{ay + 152} H{b_:.1f} V{ay + 140}" fill="none" stroke="{K}" stroke-width="2.5"/>'
-          + _t((a_ + b_) / 2, ay + 174, f"표준편차 {sd:.1f}g · 평균 ± 1σ", "tn", extra='style="font-size:16px"')
-          + _t(vx(df["무게"].min()), ay + 200, f"최솟값 {df['무게'].min()}", "ts")
-          + _t(vx(df["무게"].max()), ay + 200, f"최댓값 {df['무게'].max()}", "ts") + "</g>")
+    s += (f'<g {d.show(80)}><path d="M{a_:.1f} {ay + 44} V{ay + 56} H{b_:.1f} V{ay + 44}" fill="none" stroke="{K}" stroke-width="2.5"/>'
+          + _t((a_ + b_) / 2, ay + 78, f"퍼짐 · 표준편차 {sd:.1f}g", "tn", extra='style="font-size:16px"')
+          + _t(vx(v_all.min()), ay + 104, f"최솟값 {v_all.min()}", "ts")
+          + _t(vx(v_all.max()), ay + 104, f"최댓값 {v_all.max()}", "ts") + "</g>")
     return d.svg(1160, 420, s)
 
 
@@ -452,6 +453,45 @@ def cat_anim(df):
         s += (f'<g {d.show(82)}>' + _t(bx[n], base + 54, f"상품 {on.get(n, 0) / cnt[n] * 100:.2f}%", "to",
                                          extra=f'style="font-size:16px;fill:{_ACOL[n]}"') + "</g>")
     return d.svg(1160, 420, s)
+
+
+def map_anim(df):
+    """위치 데이터 — 엑셀 시트의 가로칸 · 세로칸 → 지도의 칸 (8칸이 차례로) → 600칸 전체를 등급 색으로 → 가장자리 띠에 불량이 몰림. 20초 · 한 번."""
+    d = _D("vm", 20)
+    rows = _rows8(df)
+    scol = [("사과번호", 100, False), ("가로칸", 72, True), ("세로칸", 72, True), ("위치", 84, False), ("등급", 66, False)]
+    sh, cells, W_ = _sheet(d, rows, len(df), "가로칸", 6, scol)
+    x2, _, w2 = cells[(0, "세로칸")]
+    sh += f'<rect x="{x2}" y="44" width="{w2}" height="{26 + 8 * _RH}" fill="none" stroke="{O}" stroke-width="3" {d.show(6)}/>'
+    nx, ny = int(df["가로칸"].max()), int(df["세로칸"].max())
+    C, X0, Y0 = 14, W_ + 90, 52
+    gx = lambda x: X0 + (x - 1) * C  # noqa: E731
+    gy = lambda y: Y0 + (ny - y) * C  # noqa: E731
+    col = lambda g: "#2BA84A" if g == "상품" else "#E8344E"  # noqa: E731
+    s = sh + f'<g {d.show(6)}>' + _t(X0, 20, "가로칸 · 세로칸 → 지도의 칸 · 색 = 등급", "to", "start", 'style="font-size:17px"') + "</g>"
+    s += f'<g {d.show(14)}>' + "".join(f'<rect x="{gx(r["가로칸"])}" y="{gy(r["세로칸"])}" width="{C - 2}" height="{C - 2}" rx="2" fill="#E1E5EB"/>'
+                                     for _, r in df.iterrows()) + "</g>"
+    for i, (_, r) in enumerate(rows.iterrows()):
+        t = 20 + i * 3.5
+        for c_ in ("가로칸", "세로칸"):
+            cx, cy, w = cells[(i, c_)]
+            s += f'<rect x="{cx}" y="{cy}" width="{w}" height="{_RH}" fill="{O}" fill-opacity=".22" {d.show(t)}/>'
+        s += (f'<rect x="{gx(r["가로칸"]) - 2}" y="{gy(r["세로칸"]) - 2}" width="{C + 2}" height="{C + 2}" rx="3" fill="{col(r["등급"])}" '
+              f'stroke="{N}" stroke-width="2" {d.show(t)}/>')
+    s += f'<g {d.show(56)}>' + "".join(f'<rect x="{gx(r["가로칸"])}" y="{gy(r["세로칸"])}" width="{C - 2}" height="{C - 2}" rx="2" fill="{col(r["등급"])}"/>'
+                                     for _, r in df.iterrows()) + "</g>"
+    # 가장자리 띠 (바깥 두 줄) · 불량 몰림
+    ring = df.apply(lambda r: min(r["가로칸"] - 1, nx - r["가로칸"], r["세로칸"] - 1, ny - r["세로칸"]) + 1, axis=1)
+    k = int(df[df["위치"] == "가장자리"]["등급"].ne("상품").sum())
+    n = int((df["위치"] == "가장자리").sum())
+    k2 = int(df[df["위치"] != "가장자리"]["등급"].ne("상품").sum())
+    band = int(ring[df["위치"] == "가장자리"].max())
+    w_, h_ = nx * C, ny * C
+    s += (f'<g {d.show(74)}><rect x="{X0 - 4}" y="{Y0 - 4}" width="{w_ + 6}" height="{h_ + 6}" fill="none" stroke="{N}" stroke-width="2.5" stroke-dasharray="7 5"/>'
+          f'<rect x="{X0 + band * C - 3}" y="{Y0 + band * C - 3}" width="{w_ - 2 * band * C + 4}" height="{h_ - 2 * band * C + 4}" fill="none" stroke="{N}" stroke-width="2.5" stroke-dasharray="7 5"/>'
+          + _t(X0, Y0 + h_ + 30, f"가장자리 띠(바깥 {band}줄) · 불량 {k} / {n}", "to", "start", 'style="font-size:16px"')
+          + _t(X0, Y0 + h_ + 56, f"나머지 안쪽 · 불량 {k2} / {len(df) - n}", "tn", "start", 'style="font-size:15px"') + "</g>")
+    return d.svg(1160, 430, s)
 
 
 # ── 판정 조건 쌓기 · 사과(1교시 앞) · 웨이퍼(판정 순서 뒤) 공통 ─────────
@@ -523,35 +563,3 @@ def judge_apple():
         pick.append(df[df["불량사유"] == rs].sort_values("n", ascending=False).iloc[0])
     pick = pd.DataFrame(pick).sort_values("사과번호")
     return judge_build(pick, ("사과번호", lambda r: r["사과번호"]), cols, steps, ("남은 행", "상품", "", "상품"))
-
-
-def judge_wafer():
-    """W07 · spec.csv 조건을 판정 순서대로. 유형마다 다이 하나 + 양품 둘 (크랙 다이는 다른 조건에도 걸리는 것)."""
-    dd = P.parent
-    df = pd.read_csv(dd / "raw" / "wafer_test_W07.csv")
-    spec = pd.read_csv(dd / "spec.csv")
-    import sk
-    ko = {k: sk.KO[k] for k in sk.ORDER}
-
-    def bad(r, p):
-        s = spec[spec.param == p].iloc[0]
-        return bool((pd.notna(s.lsl) and r[p] < s.lsl) or (pd.notna(s.usl) and r[p] > s.usl))
-
-    def txt(p):
-        s = spec[spec.param == p].iloc[0]
-        if pd.notna(s.lsl) and pd.notna(s.usl):
-            return f"{p} {s.lsl:g}~{s.usl:g} 밖"
-        return f"{p} &gt; {s.usl:g}" if pd.notna(s.usl) else f"{p} &lt; {s.lsl:g}"
-
-    par = {ft: list(spec[spec.fail_type == ft].param) for ft in ko}
-    binno = df.groupby("fail_type").bin.first()
-    steps = [(ko[ft], " · ".join(txt(p) for p in par[ft]), f"bin {binno[ft]}",
-              (lambda ps: lambda r: [p for p in ps if bad(r, p)])(par[ft])) for ft in ko]
-    df = df.assign(n=df.apply(lambda r: sum(any(bad(r, p) for p in par[ft]) for ft in ko), axis=1))
-    pick = [df[df.fail_type == "none"].iloc[i] for i in (0, 1)]
-    for ft in ko:
-        pick.append(df[df.fail_type == ft].sort_values("n", ascending=False).iloc[0])
-    pick = pd.DataFrame(pick).sort_values(["die_y", "die_x"])
-    cols = ["crack", "rc_ohm", "ioff_na", "vth_v", "particle_cnt", "idsat_ma", "ox_thk_nm"]
-    return judge_build(pick, ("die", lambda r: f"({int(r.die_x)}, {int(r.die_y)})"), cols, steps,
-                       ("남은 행", "PASS", f"bin {binno['none']}", "합격"))

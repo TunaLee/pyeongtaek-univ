@@ -20,8 +20,8 @@ FOLDER = "wafer-lab"
 
 # (교시, 제목, 남는 것)
 UNITS = [
-    ("1", "엑셀 데이터 구조 · Claude Code 시작", "데이터 요약 문서"),
-    ("2", "엑셀 집계 자동화 · CLAUDE.md", "yield_summary.xlsx · CSV"),
+    ("1", "데이터 분석 첫걸음 · Claude Code 시작", "사과 요약 · 차트 세 장"),
+    ("2", "웨이퍼 데이터 · 집계 자동화 · CLAUDE.md", "웨이퍼 차트 · 집계 엑셀 · CSV"),
     ("3", "HTML 첫 화면 · Plan Mode", "simulator.html · 숫자 카드"),
     ("4", "웨이퍼 맵 · 화면 보고 고치기", "simulator.html · 웨이퍼 맵"),
     ("5", "불합격 차트 · 나눠서 요청하기", "simulator.html · 차트 2종"),
@@ -72,7 +72,7 @@ def nextup(u):
         c, t, nout = UNITS[i + 1]
         nxt = f'<a class="v1next" href="{file_of(c)}"><span>{c}교시</span><b>{t}</b><small>→ {nout}</small></a>'
     else:
-        nxt = '<div class="v1next"><span>과정 이후</span><b>내 엑셀로 같은 순서</b><small>→ 요약 · 집계 · 화면 · 조절 바</small></div>'
+        nxt = '<div class="v1next"><span>과정 이후</span><b>내 엑셀로 같은 순서</b><small>→ 요약 · 차트 · 집계 · 화면 · 조절 바</small></div>'
     return f'''<section class="slide dk" data-title="다음 교시">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="v1end"><div class="v1got"><span>{u}교시 산출물</span><b>{out}</b></div>{nxt}</div>

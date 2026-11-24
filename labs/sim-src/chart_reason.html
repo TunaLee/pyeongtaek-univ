@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+  :root { --ink:#17181A; --muted:#6B7075; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; color: var(--ink);
+         font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+  .app { width: 1280px; height: 720px; padding: 18px 28px 10px; display: flex; flex-direction: column; gap: 8px; }
+  header { display: flex; align-items: baseline; gap: 16px; }
+  h1 { font-size: 26px; margin: 0; }
+  .meta { color: var(--muted); font-size: 15px; }
+  #chart { flex: 1; width: 100%; min-height: 0; display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1 id="title"></h1><span class="meta" id="meta"></span></header>
+  <svg id="chart" role="img"></svg>
+</div>
+
+<script>
+// ① 데이터: 엑셀을 CSV 글자로 저장해 그대로 붙여 넣었다 (한 줄 = 하나)
+const CSV_TEXT = `__CSV__`;
+
+// ② 설정: 판정 열 · 사유 열 · 사유 화면 이름
+const CFG = /*__CFG__*/{};
+
+const $ = id => document.getElementById(id);
+const SVGNS = 'http://www.w3.org/2000/svg';
+const COLOR = { fail: '#E8344E', grid: '#E4E6E8', axis: '#9AA1A8', ink: '#17181A', muted: '#6B7075' };
+
+function el(tag, attrs = {}, text) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function parseCSV(text) {
+  const lines = text.replace(/^﻿/, '').trim().split(/\r?\n/);
+  const head = lines[0].split(',').map(s => s.trim());
+  return lines.slice(1).filter(l => l.trim()).map(l => {
+    const c = l.split(','), o = {};
+    head.forEach((h, i) => o[h] = (c[i] ?? '').trim());
+    return o;
+  });
+}
+const rows = parseCSV(CSV_TEXT);
+
+// ③ 사유별 개수: 불합격 줄만 세고 많은 순으로
+const fails = rows.filter(r => r[CFG.judgeCol] !== CFG.passValue);
+const items = CFG.reasons.map(([key, name]) => ({ key, name, n: fails.filter(r => r[CFG.reasonCol] === key).length }))
+  .sort((a, b) => b.n - a.n);
+
+// 눈금 간격: 1 · 2 · 5 단위
+function niceStep(maxV, count) {
+  const raw = maxV / count, p = Math.pow(10, Math.floor(Math.log10(raw)));
+  return [1, 2, 5, 10].map(k => k * p).find(k => k >= raw);
+}
+
+// ④ 그리기: 사유별 가로 막대 (위에서부터 많은 순)
+function draw() {
+  const svg = $('chart'), box = svg.getBoundingClientRect(), W = box.width, H = box.height;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const L = 200, R = 70, T = 40, B = 64, PW = W - L - R, PH = H - T - B;
+  const most = Math.max(1, ...items.map(it => it.n)), step = niceStep(most, 5), top = Math.ceil(most / step) * step;
+  const X = v => L + v / top * PW;
+  for (let v = 0; v <= top; v += step) {            // 세로 눈금선 · 가로축 숫자
+    svg.appendChild(el('line', { x1: X(v), x2: X(v), y1: T, y2: T + PH, stroke: v ? COLOR.grid : COLOR.axis }));
+    svg.appendChild(el('text', { x: X(v), y: T + PH + 24, 'text-anchor': 'middle', 'font-size': 14, fill: COLOR.muted }, v));
+  }
+  const rowH = PH / items.length, bh = Math.min(50, rowH * 0.62);
+  items.forEach((it, i) => {
+    const cy = T + rowH * (i + 0.5);
+    const bar = el('rect', { x: L, y: cy - bh / 2, width: Math.max(0, X(it.n) - L), height: bh, fill: COLOR.fail });
+    bar.appendChild(el('title', {}, `${it.name} (${it.key}): ${it.n}${CFG.count}`));
+    svg.appendChild(bar);
+    svg.appendChild(el('text', { x: L - 14, y: cy + 6, 'text-anchor': 'end', 'font-size': 18, fill: COLOR.ink }, it.name));
+    svg.appendChild(el('text', { x: X(it.n) + 10, y: cy + 7, 'font-size': 20, 'font-weight': 700, fill: COLOR.ink }, it.n));
+  });
+  svg.appendChild(el('text', { x: L + PW / 2, y: H - 10, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 600, fill: COLOR.ink },
+                     `${CFG.item} 수 (${CFG.count})`));
+  svg.appendChild(el('text', { x: L - 14, y: T - 14, 'text-anchor': 'end', 'font-size': 16, 'font-weight': 600, fill: COLOR.ink }, CFG.reasonAxis));
+}
+
+// 화면 글자
+document.title = CFG.title;
+$('title').textContent = CFG.title;
+$('meta').textContent = `${CFG.dataName} · ${CFG.reasonCol} 열 · ${CFG.labels.fail} ${CFG.item} ${fails.length}${CFG.count} · 많은 순`;
+draw();
+</script>
+</body>
+</html>

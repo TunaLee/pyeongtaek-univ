@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+  :root { --ink:#17181A; --muted:#6B7075; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; color: var(--ink);
+         font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+  .app { width: 1280px; height: 720px; padding: 18px 28px 10px; display: flex; flex-direction: column; gap: 8px; }
+  header { display: flex; align-items: baseline; gap: 16px; }
+  h1 { font-size: 26px; margin: 0; }
+  .meta { color: var(--muted); font-size: 15px; }
+  #chart { flex: 1; width: 100%; min-height: 0; display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1 id="title"></h1><span class="meta" id="meta"></span></header>
+  <svg id="chart" role="img"></svg>
+</div>
+
+<script>
+// ① 데이터: 엑셀을 CSV 글자로 저장해 그대로 붙여 넣었다 (한 줄 = 하나)
+const CSV_TEXT = `__CSV__`;
+
+// ② 설정: 위치 열 · 판정 열 · 화면 이름
+const CFG = /*__CFG__*/{};
+
+const $ = id => document.getElementById(id);
+const SVGNS = 'http://www.w3.org/2000/svg';
+const COLOR = { pass: '#2BA84A', grid: '#E4E6E8', axis: '#9AA1A8', ink: '#17181A', muted: '#6B7075' };
+
+function el(tag, attrs = {}, text) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function parseCSV(text) {
+  const lines = text.replace(/^﻿/, '').trim().split(/\r?\n/);
+  const head = lines[0].split(',').map(s => s.trim());
+  return lines.slice(1).filter(l => l.trim()).map(l => {
+    const c = l.split(','), o = {};
+    head.forEach((h, i) => o[h] = (c[i] ?? '').trim());
+    return o;
+  });
+}
+const rows = parseCSV(CSV_TEXT);
+
+// ③ 위치마다: 전체 개수 · 합격 개수 · 비율
+const zones = CFG.zones.map(([key, name]) => {
+  const z = rows.filter(r => r[CFG.zoneCol] === key);
+  const pass = z.filter(r => r[CFG.judgeCol] === CFG.passValue).length;
+  return { name, total: z.length, pass, rate: z.length ? pass / z.length * 100 : 0 };
+});
+
+// ④ 그리기: 위치별 비율 막대 (0 ~ 100%)
+function draw() {
+  const svg = $('chart'), box = svg.getBoundingClientRect(), W = box.width, H = box.height;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const L = 64, R = 16, T = 44, B = 96, PW = W - L - R, PH = H - T - B;
+  const Y = v => T + PH - v / 100 * PH;
+  for (let v = 0; v <= 100; v += 20) {              // 가로 눈금선 · 세로축 숫자
+    svg.appendChild(el('line', { x1: L, x2: L + PW, y1: Y(v), y2: Y(v), stroke: v ? COLOR.grid : COLOR.axis }));
+    svg.appendChild(el('text', { x: L - 10, y: Y(v) + 5, 'text-anchor': 'end', 'font-size': 14, fill: COLOR.muted }, v));
+  }
+  const slot = PW / zones.length, bw = Math.min(220, slot * 0.5);
+  zones.forEach((z, i) => {
+    const cx = L + slot * (i + 0.5);
+    const bar = el('rect', { x: cx - bw / 2, y: Y(z.rate), width: bw, height: z.rate / 100 * PH, fill: COLOR.pass });
+    bar.appendChild(el('title', {}, `${z.name}: ${CFG.labels.pass} ${z.pass} / ${z.total}${CFG.count}`));
+    svg.appendChild(bar);
+    svg.appendChild(el('text', { x: cx, y: Y(z.rate) - 12, 'text-anchor': 'middle', 'font-size': 24, 'font-weight': 700, fill: COLOR.ink },
+                       `${z.rate.toFixed(2)}%`));
+    svg.appendChild(el('text', { x: cx, y: T + PH + 28, 'text-anchor': 'middle', 'font-size': 19, 'font-weight': 700, fill: COLOR.ink }, z.name));
+    svg.appendChild(el('text', { x: cx, y: T + PH + 52, 'text-anchor': 'middle', 'font-size': 15, fill: COLOR.muted },
+                       `${CFG.labels.pass} ${z.pass} / ${z.total}${CFG.count}`));
+  });
+  svg.appendChild(el('text', { x: L + PW / 2, y: H - 8, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 600, fill: COLOR.ink }, CFG.zoneAxis));
+  svg.appendChild(el('text', { x: 0, y: T - 16, 'font-size': 16, 'font-weight': 600, fill: COLOR.ink }, `${CFG.labels.rate} (%)`));
+}
+
+// 화면 글자
+document.title = CFG.title;
+$('title').textContent = CFG.title;
+$('meta').textContent = `${CFG.dataName} · ${CFG.zoneCol} 열 · ${CFG.item} ${rows.length}${CFG.count}`;
+draw();
+</script>
+</body>
+</html>

@@ -10,6 +10,7 @@
 - `data/` 원본 엑셀. 읽기만 하고 고치지 않는다.
 - `docs/` 데이터 요약 · 실험 기록
 - `output/` 결과물 (엑셀 · CSV · HTML)
+- `output/charts/` 차트 HTML
 - `scripts/` 파이썬 스크립트
 - `templates/` 합격기준표 · 선별기준표 · HTML 예시 · 실험기록 양식
 
