@@ -15,6 +15,7 @@ import explain
 import hx
 import intro
 import p0
+import pbg
 import sk
 import pgen
 import pkit
@@ -23,7 +24,7 @@ import v1kit
 import v3kit
 
 ROOT = pkit.ROOT
-BASE_CSS = (p0.CSS + sk.CSS + intro.CSS + explain.CSS + deck.CSS + deck_gas.CSS + hx.CSS + stats_hx.CSS + hx.mcp_fig.CSS + hx.viz2.CSS
+BASE_CSS = (p0.CSS + pbg.CSS + sk.CSS + intro.CSS + explain.CSS + deck.CSS + deck_gas.CSS + hx.CSS + stats_hx.CSS + hx.mcp_fig.CSS + hx.viz2.CSS
             + v3kit.CSS + v1kit.CSS)
 
 
@@ -48,20 +49,22 @@ def roadmap():
 # 교시마다 도입 → 설명 → 적용. 도입 · 설명은 장 제목을 순서대로 적고, 나머지는 적용(원래 순서 · 「반도체 적용」 먼저).
 PHASES = {
     "1": (["완성 시뮬레이터", "웨이퍼와 칩", "엑셀 행과 맵 칸"],
-          ["열 18개 네 묶음", "사과 판정 조건", "칩 판정 조건", "수율", "채팅과 에이전트", "에이전트 루프",
-           "Claude Code 의 데이터 작업 고리", "요청 한 문장의 구성"]),
+          ["열 18개 네 묶음", "사과 판정 조건", "칩 판정 조건", "채팅과 에이전트", "에이전트 루프",
+           "Claude Code 의 데이터 작업 고리", "요청 구성"]),
     "2": (["손 집계와 요청"],
-          ["수율 계산", "사과 집계 표", "칩 사유별 개수", "위치별 합격률", "엑셀 시트 세 장", "화면용 CSV",
+          ["수율 계산", "사과 집계 표", "칩 집계 표", "화면용 CSV", "새 대화의 시작",
            "CLAUDE.md", "확인할 수 있는 문장", "숫자 대조"]),
-    "3": (["웹 화면의 세 부분"], ["한 파일 안의 위치", "예시 파일 고쳐 보기", "요청 구성", "Plan Mode", "권한 모드"]),
-    "4": (["표와 맵"], ["좌표에서 사각형까지", "과수원 지도", "색과 범례", "칩 정보 풍선", "흐린 요청과 구체적 요청", "화면 캡처 첨부"]),
+    "3": (["엑셀 화면과 웹 화면", "웹 화면의 세 부분"], ["한 파일 안의 위치", "예시 파일 고쳐 보기", "바로 실행과 계획 먼저",
+                                                 "Plan Mode", "권한 모드"]),
+    "4": (["표와 맵"], ["좌표에서 사각형까지", "과수원 지도", "색과 범례", "칩 정보 풍선", "글 설명과 화면 캡처", "화면 캡처 첨부"]),
     "5": (["맵과 차트"], ["막대 하나의 구성", "사과 사유별 막대", "칩 사유별 막대", "위치별 합격률 막대", "두 칸 배치",
-                        "한 번에 요청과 나눠 요청", "Git 커밋", "체크포인트"]),
+                        "한 번에 요청과 나눠 요청", "파일 이름 버전 관리", "Git 커밋", "체크포인트"]),
     "6": (["당도 조절 바"], ["누설전류 합격선", "조절 바 동작 네 단계", "함께 바뀌는 화면", "완료처럼 보이는 결과",
                               "다시 지시하는 법", "검증 루프"]),
     "7": (["조절 바 설계표"], ["왼쪽 조절 · 오른쪽 결과", "처음 값과 원본 대비", "숫자 점검 항목", "컨텍스트", "비우기와 요약",
                           "매번 같은 설명", "Skill 이 열리는 단계", "SKILL.md"]),
-    "8": (["남은 기능"], ["다른 파일 불러오기", "목표 수율 표시", "판정 결과 내려받기", "실험 기록", "하네스", "부탁과 Hook",
+    "8": (["남은 기능"], ["다른 파일 불러오기", "목표 수율 표시", "판정 결과 내려받기", "실험 기록", "프롬프트 · 컨텍스트 · 하네스", "마구와 하네스",
+                             "교시별 하네스 부품", "부탁과 Hook",
                              "Hook 이 끼어드는 시점"]),
 }
 STEPS = ("도입", "설명", "적용")
@@ -93,15 +96,15 @@ def phased(u, slides):
 
 
 def main():
-    """한 파일 docs/index.html — 표지 · 과정 지도 · 개요 · 교시마다 [간지 + 도입 · 설명 · 적용] · 마지막 장."""
+    """한 파일 docs/index.html — 표지 · 과정 지도 · 개요 두 부분 · 교시마다 [간지 + 도입 · 설명 · 적용] · 마지막 장."""
     mods = [(u, t, o, importlib.import_module(f"p{u}")) for u, t, o in pkit.UNITS]
     css = (BASE_CSS + "".join(getattr(m, "CSS", "") for *_, m in mods)
            + ".v1shot figcaption,.ph figcaption,.v3ph figcaption{display:none}")  # 그림 밑 설명 줄은 내지 않는다
     parts = [art.DEFS, cover(), roadmap()]
-    div0, ph0 = p0.slides()
-    parts.append(div0)
-    for k in STEPS:
-        parts += [_mark(x, k) for x in ph0[k]]
+    for div0, ph0 in p0.slides():          # 개요 두 부분 · 바이브코딩까지 → 데이터 분석과 엔지니어링
+        parts.append(div0)
+        for k in STEPS:
+            parts += [_mark(x, k) for x in ph0[k]]
     for u, t, o, m in mods:
         parts.append(deck.divider(u, t, "").replace(f'<div class="kick">{u}</div>', f'<div class="kick">{u}교시</div>'))
         parts += phased(u, m.slides())

@@ -1,6 +1,6 @@
 """1교시 엑셀 데이터 구조 · Claude Code 시작.
 
-도입(완성 시뮬레이터 · 웨이퍼와 칩 · 엑셀 행과 맵 칸) → 설명(열 네 묶음 · 판정 조건(사과 → 칩) · 수율 · 채팅과 에이전트 · 에이전트 루프 · 작업 고리 · 요청 구성)
+도입(완성 시뮬레이터 · 웨이퍼와 칩 · 엑셀 행과 맵 칸) → 설명(열 네 묶음 · 판정 조건(사과 → 칩) · 채팅과 에이전트 · 에이전트 루프 · 작업 고리 · 요청 구성)
 → 적용(실습 폴더 · 환경 · 실습 1-1 사과 엑셀 요약 → 1-2 웨이퍼 엑셀 요약).
 반도체 용어는 칩 · 합격/불합격 · 수율 세 개만. 측정값 이름은 「몰라도 됨」.
 """
@@ -12,7 +12,7 @@ import viz2
 from deck import lab, light
 from hx import photo
 from pkit import brief, chat, tag
-from stats_hx import big, src
+from stats_hx import src
 
 T = tag("1")
 WN, DN = sk.WN, sk.DN
@@ -35,17 +35,15 @@ def slides():
             ("판정", ["bin", "fail_type", "pass_fail"], "합격 · 불합격 · 사유", "k")]), T),
         light("사과 판정 조건", p0.judge_apple(), T),
         light("칩 판정 조건", p0.judge_wafer(), T),
-        light("수율", big([
-            (f"{WN['pass']}", "개", "합격 칩 (PASS)"), (f"{WN['rows']}", "개", "전체 칩"),
-            (f"{WN['yield']}", "%", "수율 = 합격 ÷ 전체 · W07", True)], 3), T),
         # ── 설명 · Claude Code
         light("채팅과 에이전트", psim.chat_vs_agent(), T),
         light("에이전트 루프", psim.agent_loop()
               + src(("Claude Code 문서 · How Claude Code works", "https://code.claude.com/docs/en/how-claude-code-works")), T),
         light("Claude Code 의 데이터 작업 고리", pviz.data_loop(), T),
-        light("요청 한 문장의 구성", viz2.maprows([
-            ("대상", "data/wafer_test_W07.xlsx", "어느 파일"), ("할 일", "줄 수 · 열 묶음 · 합격 · 불합격 수", "무엇을"),
-            ("결과", "docs/데이터_요약.md", "어디에 남길지"), ("조건", "원본 수정 금지 · 쉬운 말", "하지 말 것")], "칸", "예"), T),
+        light("요청 구성", viz2.pair(
+            "한 줄 요청", [("요청", "「사과 엑셀 요약해 줘」"), ("무엇을", "Claude 가 추측"), ("저장", "대화창에만 · 파일 없음")],
+            "네 칸을 채운 요청", [("목표", "줄 수 · 열 묶음 · 상품 · 불량 수"), ("입력", "data/apple_A07.xlsx"),
+                             ("산출물", "docs/사과_요약.md"), ("하지 말 것", "원본 수정")]), T),
         # ── 적용
         light("실습 폴더 sim-lab", viz2.maprows([
             ("data/", "wafer_test_W07.xlsx · apple_A07.xlsx", "읽기만"), ("templates/", "합격기준표 · 선별기준표 · 예시 HTML", "참고 자료"),

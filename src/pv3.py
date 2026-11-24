@@ -8,7 +8,7 @@ MO = "#FFF3E6"
 RB = "#FDECEA"
 
 
-def pareto(rows):
+def pareto(rows, unit="개수"):
     """rows = [(이름, 개수)] 많은 순 · 막대가 차례로 차오르고 누적 % 꺾은선이 따라 그려짐. 12초."""
     d = _D("p3a", 12)
     tot = sum(v for _, v in rows)
@@ -16,7 +16,7 @@ def pareto(rows):
     bw = w / len(rows)
     mx = rows[0][1] * 1.1
     s = f'<line x1="{x0}" y1="{y0}" x2="{x0 + w}" y2="{y0}" stroke="#9AA5B1" stroke-width="2"/>'
-    s += _t(x0 - 12, y0 - h - 6, "다이 수", "ts", "end") + _t(x0 + w + 14, y0 - h - 6, "누적 %", "ts", "start")
+    s += _t(x0 - 12, y0 - h - 6, unit, "ts", "end") + _t(x0 + w + 14, y0 - h - 6, "누적 %", "ts", "start")
     cum, pts = 0, []
     for i, (name, v) in enumerate(rows):
         bh = h * v / mx

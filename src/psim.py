@@ -23,11 +23,13 @@ def chat_vs_agent():
         ("「11/10 회의록 정리해 줘」", "「W07 엑셀 요약해 줘」"),
         ("「회의록을 열어 할 일을 표로 정리하세요」", "「필터로 PASS 행 개수 확인」"),
         ("일은 사람 손으로", "사람이 직접 작업"),
-        ("out/11-10_정리.md", "docs/데이터_요약.md")])
+        ("out/11-10_정리.md", "docs/데이터_요약.md"), (">하네스<", ">도구<")])
 
 
 def agent_loop():
-    return anim.agent_loop()
+    """하네스는 8교시에 정의 → 1교시 그림에서는 Claude Code · 규칙으로."""
+    return _swap(anim.agent_loop(), [(">하네스 · 요청 + 지금까지의 결과<", ">규칙 · 요청 + 지금까지의 결과<"),
+                                     (">하네스<", ">Claude Code<"), (">하네스 · 조립 · 실행<", ">Claude Code · 조립 · 실행<")])
 
 
 def context_fill():

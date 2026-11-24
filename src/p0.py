@@ -7,15 +7,15 @@
 """
 import pandas as pd
 
+import pbg
 import pgen
 import sk
 import viz2
 from deck import divider, light
 from hx import code, esc
-from pkit import REF, chat
-from stats_hx import big
+from pkit import chat
+from stats_hx import quote, src
 
-GEN = REF["general"]
 P = pgen.P
 TAG = "개요"
 
@@ -78,7 +78,7 @@ CSS = """
   .p0er.on .code{border:2px solid #F28C28;}
   .p0tb{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:28px; align-items:center;}
   .p0tb .t{border:1.5px solid #D9DDE3; border-radius:12px; overflow:hidden; background:#fff;}
-  .p0tb .t .nm{background:#1F3A5F; color:#fff; font-family:var(--mono); font-size:13px; font-weight:700; padding:7px 14px;}
+  .p0tb .t .nm{background:#1D6F42; color:#fff; font-size:13px; font-weight:700; padding:7px 14px;}
   .p0tb table{border-collapse:collapse; width:100%; font-size:15px;}
   .p0tb th{background:#F4F6F9; color:#1F3A5F; font-family:var(--mono); font-size:13.5px; text-align:left; padding:8px 12px; border-bottom:1.5px solid #D9DDE3;}
   .p0tb td{padding:8px 12px; border-bottom:1px solid #EEF1F5; color:#16233A;}
@@ -147,7 +147,7 @@ def three_tools():
     py = ('import pandas as pd\ndf = pd.read_csv("apple_A07.csv")\nedge = df[df.zone == "가장자리"]\n'
           'rate = (edge.grade == "상품").mean() * 100\nprint(round(rate, 2))')
     xl = ('<ol><li>파일 열기 · 열 필터</li><li><code>=COUNTIFS(F:F,"가장자리",N:N,"상품")</code></li>'
-          '<li><code>=COUNTIF(F:F,"가장자리")</code> 로 나누기</li><li>파일 25개면 25번 반복</li></ol>')
+          '<li><code>=COUNTIF(F:F,"가장자리")</code> 로 나누기</li></ol>')
     cc = chat([("me", "apple_A07.csv 에서 가장자리 상품률 알려 줘"), ("ai", f"가장자리 {n}개 중 상품 {k}개 · {rate}%")], "Claude Code")
     cols = [("엑셀", xl, "사람이 수식 입력", False), ("파이썬", code("edge_rate.py", esc(py)), "분석가가 코드 작성", False),
             ("Claude Code", cc, "요청 한 문장 · 코드는 Claude 가 작성", True)]
@@ -160,7 +160,7 @@ def three_tools():
 
 
 def table_terms(df):
-    """DB 테이블 한 장 — 행(1초) · 열(3초) · 값(5초) 차례로 강조 · 한 번 재생."""
+    """엑셀 시트 한 장 = 테이블 — 행(1초) · 열(3초) · 값(5초) 차례로 강조 · 한 번 재생."""
     cols = ["apple_id", "zone", "variety", "weight_g", "grade"]
     h = df.head(5)[cols]
     hc = cols.index("weight_g")
@@ -172,111 +172,146 @@ def table_terms(df):
         trs += f'<tr class="{"row" if r == 1 else ""}">{tds}</tr>'
     trs += f'<tr><td class="more" colspan="{len(cols)}">… {len(df)}행</td></tr>'
     v = h.iloc[1]
-    lg = [("테이블", "table", "apple · 사과 선별 기록을 모은 표", ""),
+    lg = [("테이블", "table", f"시트 한 장 · 사과 선별 기록 {len(df)}행", ""),
           ("행", "row · 레코드", f"사과 1개 · {v.apple_id}", "#FFF3E6"),
           ("열", "column · 필드", "같은 종류의 값 · weight_g", "#E6EEF8"),
           ("값", "cell", f"행과 열이 만나는 칸 · {v.weight_g}", "#F28C28"),
           ("기본 키", "primary key", "행마다 겹치지 않는 열 · apple_id", "")]
     leg = "".join(f'<div style="--d:{0.6 + i * 1.0:.1f}s"><b>{"<i style=background:%s></i>" % c if c else ""}{a}<small>{e}</small></b><span>{x}</span></div>'
                   for i, (a, e, x, c) in enumerate(lg))
-    return (f'<div class="p0tb"><div class="t"><div class="nm">TABLE apple</div><table><tr>{th}</tr>{trs}</table></div>'
+    return (f'<div class="p0tb"><div class="t"><div class="nm">apple_A07.xlsx</div><table><tr>{th}</tr>{trs}</table></div>'
             f'<div class="p0lg">{leg}</div></div>')
 
 
-def excel_vs_csv(head):
-    """같은 사과 기록 4줄 — 엑셀 화면과 CSV 글자. 1~8교시는 CSV 를 다룬다."""
+def excel_vs_csv(head, sel="weight_g", name="apple_A07",
+                 subs=("사람이 보는 파일<br/>칸 · 서식 · 시트", "HTML 화면이 읽는 파일<br/>쉼표로 나눈 글자")):
+    """같은 기록 4줄 — 엑셀 화면과 CSV 글자 (2교시 화면용 CSV)."""
     cols = list(head.columns)
     letters = "ABCDEFGHIJ"
     num = {c for c in cols if str(head[c].dtype) != "object"}
     th = "<tr><th></th>" + "".join(f"<th>{letters[i]}</th>" for i in range(len(cols))) + "</tr>"
     hr = '<tr class="h"><th>1</th>' + "".join(f"<td>{c}</td>" for c in cols) + "</tr>"
-    sel = cols.index("weight_g")
+    first = head.iloc[0][sel]
+    sel = cols.index(sel)
     body = "".join("<tr><th>%d</th>" % (r + 2) + "".join(
         f'<td class="{"n" if c in num else ""}{" sel" if (r == 0 and j == sel) else ""}">{v}</td>' for j, (c, v) in enumerate(row.items()))
         + "</tr>" for r, (_, row) in enumerate(head.iterrows()))
-    first = head.iloc[0]["weight_g"]
-    xl = (f'<div class="p0x"><div class="bar">apple_A07.xlsx</div>'
+    xl = (f'<div class="p0x"><div class="bar">{name}.xlsx</div>'
           f'<div class="fx"><em>{letters[sel]}2</em><i>fx</i>{first}</div><table>{th}{hr}{body}</table>'
           f'<div class="tab">Sheet1</div></div>')
-    cv = code("apple_A07.csv", esc(head.to_csv(index=False).strip()))
-    rows = [("엑셀", "사람이 보는 화면<br/>칸 · 서식 · 시트", xl, False),
-            ("CSV", "1~8교시에서 다루는 형식<br/>쉼표로 나눈 글자", cv, True)]
+    cv = code(f"{name}.csv", esc(head.to_csv(index=False).strip()))
+    rows = [("엑셀", subs[0], xl, False), ("CSV", subs[1], cv, True)]
     return '<div class="p0ev">' + "".join(
         f'<div class="p0er{" on" if on else ""}" style="--d:{i * .8:.1f}s"><div><b>{h}</b><span>{sub}</span></div>{v}</div>'
         for i, (h, sub, v, on) in enumerate(rows)) + "</div>"
 
 
-def slides():
-    df = _d07()
-    head = df.head(4)[["date", "tree_x", "tree_y", "zone", "variety", "weight_g", "sugar_brix", "grade"]]
+def _steps(items, cols, step=2.0):
+    """변화 카드 — 2초 간격으로 한 칸씩 · 마지막 칸 강조."""
+    t = "".join(f'<div class="v2tile{" p0on" if i == len(items) - 1 else ""}" style="--d:{.3 + i * step:.1f}s"><b>{h}</b>{x}</div>'
+                for i, (h, x) in enumerate(items))
+    return f'<div class="v2tiles c{cols}">{t}</div>'
 
+
+def history():
+    """개요 1 · 바이브코딩까지 — 유래 · 사례 → 언어 발전 · AI 코딩 도구 변화 · 기존 코딩과 비교 → 가능성과 한계."""
+    dd = [
+        light("바이브코딩의 유래", quote(
+            "내가 <mark>「바이브코딩」</mark>이라고 부르는 새로운 코딩 방식이 있다. 느낌(vibe)에 완전히 몸을 맡기고, "
+            "AI의 빠른 발전을 받아들이고, 코드가 있다는 사실조차 잊는 방식이다.",
+            "Andrej Karpathy · X · 2025-02-02 · 원문 「There's a new kind of coding I call “vibe coding”…」")
+              + viz2.tiles([("2023-01 · Karpathy", "「가장 인기 있는 새 프로그래밍 언어는 영어」"),
+                            ("2025-02 · Karpathy", "「바이브코딩」 처음 사용"),
+                            ("2025-11 · Collins 사전", "올해의 단어 선정")], 3)
+              + src(("Karpathy · 2023-01-24", "https://x.com/karpathy/status/1617979122625712128"),
+                    ("Karpathy · 2025-02-02", "https://x.com/karpathy/status/1886192184808149383"),
+                    ("Collins · 2025-11-06", "https://blog.collinsdictionary.com/language-lovers/collins-word-of-the-year-2025-ai-meets-authenticity-as-society-shifts/")), TAG),
+        light("바이브코딩 사례", viz2.tiles([
+            ("브라우저 3D 비행 게임", "fly.pieter.com · 개발자 1명 + AI"),
+            ("메뉴판 사진 → 음식 그림", "MenuGen · Karpathy"),
+            ("수율 시뮬레이터", "엑셀 데이터 → 조절 바 화면 · 이 과정 8교시")], 3)
+              + src(("levelsio · X", "https://x.com/levelsio/status/1899596115210891751"),
+                    ("Karpathy · MenuGen", "https://karpathy.bearblog.dev/vibe-coding-menugen/")), TAG),
+    ]
+    ex = [
+        light("프로그래밍 언어의 발전", pbg.langs()
+              + src(("IBM · FORTRAN", "https://www.ibm.com/history/fortran"), ("Python · History", "https://docs.python.org/3/license.html")), TAG),
+        light("AI 코딩 도구의 변화", pbg.eras()
+              + src(("GitHub · 2021-06-29", "https://github.blog/2021-06-29-introducing-github-copilot-ai-pair-programmer/"),
+                    ("OpenAI · 2022-11-30", "https://openai.com/index/chatgpt/"),
+                    ("Anthropic · 2025-05-22", "https://www.anthropic.com/news/claude-4")), TAG),
+        light("기존 코딩과 바이브코딩", viz2.pair(
+            "기존 코딩", [("만드는 사람", "코드를 직접 씀"), ("익힐 내용", "문법 · 라이브러리"), ("수정", "코드를 찾아 고침")],
+            "바이브코딩", [("만드는 사람", "말로 요청 · Claude 가 코드 작성"), ("익힐 내용", "요청 · 확인 · 되돌리기"),
+                         ("수정", "화면을 보고 다시 요청")]), TAG),
+    ]
+    ap = [
+        light("바이브코딩의 가능성과 한계", viz2.fit(
+            [("엑셀 데이터 화면", "숫자 카드 · 지도 · 차트"), ("업무 계산 도구", "기준을 바꿔 보는 시뮬레이터"), ("시제품", "아이디어 시연용 화면")],
+            [("돈 · 개인정보 처리 서비스", "전문 보안 점검 필요"), ("동시 사용자가 많은 서비스", "서버 · DB 설계 필요"),
+             ("확인 없는 운영", "숫자 · 화면 검증 없이 배포")],
+            gt="바로 만들 수 있는 화면", bt="전문가 검토가 필요한 서비스"), TAG),
+    ]
+    return _div("바이브코딩까지"), {"도입": dd, "설명": ex, "적용": ap}
+
+
+def data_change():
+    """개요 2 · 데이터 분석과 엔지니어링 — 데이터 · 형식 · 사과 시트 → 변수 · 처리 방법 · 분석 흐름 · 요청 경로 · 엔지니어링의 변화 → 결과물의 변화(→ 1교시 완성 시뮬레이터)."""
+    df = _d07()
     dd = [
         light("데이터의 정의", viz2.maprows([
             ("편의점 결제", "시각 · 품목 · 금액", "영수증 한 장 = 한 줄"), ("출석", "날짜 · 이름 · 출결", "출석부 한 칸"),
-            ("사과 선별", "무게 · 당도 · 흠", "사과 1개 = 한 줄"), ("반도체 테스트", "다이 좌표 · 전압 · 양불", "다이 1개 = 한 줄")],
+            ("사과 선별", "무게 · 당도 · 흠", "사과 1개 = 한 줄"), ("반도체 검사", "칩 위치 · 측정값 · 합격 · 불합격", "칩 1개 = 한 줄")],
             "기록 대상", "남는 값"), TAG),
         light("데이터 저장 형식의 변화", formats(), TAG),
-        light("엑셀 · CSV · 데이터베이스", _tiles([
-            ("엑셀 .xlsx", "<span>사람이 보고 고치는 표 · 수식 · 차트</span><span>시트당 최대 1,048,576행</span>"
-                          '<span style="color:#E07A12;font-weight:700">1교시 · 웨이퍼 테스트 엑셀</span>'),
-            ("CSV .csv", "<span>쉼표로 나눈 글자 · 서식 없음</span><span>어느 프로그램이나 읽음</span>"
-                        '<span style="color:#E07A12;font-weight:700">2교시 · 화면용 CSV</span>'),
-            ("데이터베이스", "<span>표 여러 개를 키로 연결 · 여러 사람이 동시에</span><span>SQL 로 질의</span>")], 3), TAG),
-    ]
-    ex = [
-        light("AI 이전의 데이터 처리", _tiles([
-            ("손 계산", "<span>장부 · 계산기 · 그래프 용지</span><span>담당자가 한 줄씩 더함</span>"),
-            ("스프레드시트", "<span>엑셀 수식 · 필터 · 피벗 · 차트</span><span>실무자가 파일마다 반복</span>"),
-            ("코드", "<span>SQL · 파이썬 · 통계 도구</span><span>분석가 · 개발자가 작성</span>")], 3), TAG),
-        light("같은 질문, 세 가지 도구", three_tools(), TAG),
-        light("분석 요청 경로", viz2.pair(
-            "AI 이전", [("질문", "현업 담당자"), ("요청", "분석가에게 전달 · 순서 대기"), ("작업", "분석가가 SQL · 파이썬 작성"), ("결과", "보고서 · 엑셀 파일")],
-            "Claude Code", [("질문", "현업 담당자"), ("요청", "요청 한 문장 · 바로 실행"), ("작업", "Claude 가 코드 작성 · 실행 · 오류 수정"), ("결과", "파일 + 사람이 숫자 확인")]), TAG),
-        light("기존 코딩과 바이브코딩", viz2.pair(
-            "기존 코딩", [("만드는 사람", "코드를 직접 씀"), ("배우는 것", "문법 · 라이브러리"), ("수정", "코드를 찾아 고침")],
-            "바이브코딩", [("만드는 사람", "말로 요청 · Claude 가 코드 작성"), ("배우는 것", "요청 · 확인 · 되돌리기"),
-                         ("수정", "화면을 보고 다시 요청")]), TAG),
         light("테이블의 행과 열", table_terms(df), TAG),
     ]
-    ap = [
-        light("사과 선별 데이터", excel_vs_csv(head), TAG),
+    ex = [
         light("변수 종류", viz2.maprows([
             ("수치형 변수", "weight_g · sugar_brix · diameter_mm", "평균 · 합계 · 분포"), ("범주형 변수", "zone · variety · grade", "개수 · 비율 · 묶어 세기"),
             ("판정 열 grade", "상품 · 불량", f"멍 · 벌레 없음 · 무게 {sk.MIN_W}g 이상 · 당도 {sk.MIN_SUGAR:g} 이상"),
             ("파일 규모", f"{len(df)}행 × {df.shape[1]}열", "하루 한 파일 · 25일치")], "변수", "apple_A07.csv"), TAG),
         light("수치형 변수", num_anim(df), TAG),
         light("범주형 변수", cat_anim(df), TAG),
-        light("상품률", big([
-            (f"{GEN['A07']['good']}", "개", "상품 (10월 7일 수확)"), (f"{GEN['A07']['rows']}", "개", "전체 사과"),
-            (f"{GEN['A07']['rate']}", "%", "상품률 = 상품 ÷ 전체", True)], 3), TAG),
+        light("데이터 처리 방법의 변화", _steps([
+            ("손 계산", "<span>장부 · 계산기 · 그래프 용지</span><span>담당자가 한 줄씩 더함</span>"),
+            ("스프레드시트", "<span>엑셀 수식 · 필터 · 피벗 · 차트</span><span>실무자가 파일마다 반복</span>"),
+            ("코드", "<span>SQL · 파이썬 · 통계 도구</span><span>분석가 · 개발자가 작성</span>"),
+            ("AI 에이전트", "<span>요청 한 문장 · Claude Code</span><span>담당자가 요청 · 결과 확인</span>")], 4), TAG),
+        light("같은 질문, 세 가지 도구", three_tools(), TAG),
+        light("데이터 분석의 흐름", pbg.analysis_flow(), TAG),
+        light("분석 요청 경로", viz2.pair(
+            "AI 이전", [("질문", "현업 담당자"), ("요청", "분석가에게 전달 · 순서 대기"), ("작업", "분석가가 SQL · 파이썬 작성"), ("결과", "보고서 · 엑셀 파일")],
+            "Claude Code", [("질문", "현업 담당자"), ("요청", "요청 한 문장 · 바로 실행"), ("작업", "Claude 가 코드 작성 · 실행 · 오류 수정"), ("결과", "파일 + 사람이 숫자 확인")]), TAG),
+        light("분석과 엔지니어링", viz2.pair(
+            "데이터 분석", [("질문", "「가장자리 사과는 왜 불량이 많나」"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
+            "데이터 엔지니어링", [("질문", "「매일 수확 파일을 같은 기준으로 집계」"), ("결과", "읽기 · 정제 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), TAG),
+        light("엔지니어링 작업의 변화", viz2.pair(
+            "AI 이전", [("작성", "엔지니어가 스크립트 코드 작성"), ("오류", "로그를 읽고 사람이 수정"), ("반복", "같은 코드를 정해진 시각에 실행"),
+                       ("규칙", "문서 · 담당자 기억")],
+            "AI 에이전트", [("작성", "요청 → Claude 가 작성 · 실행"), ("오류", "Claude 가 오류를 읽고 고침 · 사람은 결과 확인"),
+                          ("반복", "같은 요청 · 저장해 둔 절차"), ("규칙", "규칙 파일 · 자동 차단 장치")]), TAG),
     ]
-    div = divider("0", "데이터와 바이브코딩", "").replace('<div class="kick">0</div>', f'<div class="kick">{TAG}</div>')
-    return div, {"도입": dd, "설명": ex, "적용": ap}
+    ap = [
+        light("분석 결과물의 변화", pbg.results_change(), TAG),
+    ]
+    return _div("데이터 분석과 엔지니어링"), {"도입": dd, "설명": ex, "적용": ap}
 
 
-CSS += "  .v2tile .p0hl{color:#E07A12; font-weight:700;}\n"
+def _div(title):
+    return divider("0", title, "").replace('<div class="kick">0</div>', f'<div class="kick">{TAG}</div>')
+
+
+def slides():
+    """개요 두 부분 — [(간지, {도입 · 설명 · 적용})]."""
+    return [history(), data_change()]
+
+
+CSS += "  .v2tile .p0hl{color:#E07A12; font-weight:700;}\n  .v2tile.p0on{border-color:#F28C28; background:#FFF8F0;}\n"
 
 
 # ── 변수 종류 애니메이션 · 사과 A07 ─────────────────────
 from anim import _D, _t, N, O, W, K  # noqa: E402
-
-_X0, _X1, _V0, _V1 = 90, 1070, 40, 170          # 수직선 화면 x · 값 범위(분)
-
-
-def _vx(v):
-    return _X0 + (v - _V0) / (_V1 - _V0) * (_X1 - _X0)
-
-
-def _chips(d, vals, y=46):
-    """첫 8행의 값을 위에 칩으로. 칩 중심 x 목록을 돌려준다."""
-    s, xs = "", []
-    for i, v in enumerate(vals):
-        x = 150 + i * 123
-        xs.append(x)
-        s += (f'<g {d.show(1 + i * 1.5)}><rect x="{x - 54}" y="{y - 20}" width="108" height="40" rx="8" fill="{W}" stroke="{K}" stroke-width="2"/>'
-              + _t(x, y + 1, v, "tm", extra='style="font-size:15px"') + "</g>")
-    return s, xs
-
 
 _SCOL = [("apple_id", 96, False), ("zone", 76, False), ("variety", 70, False), ("weight_g", 84, True),
          ("sugar_brix", 96, True), ("grade", 64, False)]

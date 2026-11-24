@@ -22,7 +22,7 @@ FOLDER = "wafer-lab"
 UNITS = [
     ("1", "엑셀 데이터 구조 · Claude Code 시작", "데이터 요약 문서"),
     ("2", "엑셀 집계 자동화 · CLAUDE.md", "yield_summary.xlsx · CSV"),
-    ("3", "HTML 첫 화면 · 요청 쓰는 법", "simulator.html · 숫자 카드"),
+    ("3", "HTML 첫 화면 · Plan Mode", "simulator.html · 숫자 카드"),
     ("4", "웨이퍼 맵 · 화면 보고 고치기", "simulator.html · 웨이퍼 맵"),
     ("5", "불합격 차트 · 나눠서 요청하기", "simulator.html · 차트 2종"),
     ("6", "분포와 조절 바 · 검증", "simulator.html · 조절 바 1개"),
