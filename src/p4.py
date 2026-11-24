@@ -18,10 +18,10 @@ def orchard_map():
     """과수원 나무 30 × 20 · 칸 하나 = 사과 하나 · 상품 초록 · 불량 빨강."""
     df = sk.D07
     s = '<svg viewBox="0 0 612 412" style="width:100%;max-height:430px;display:block;margin:0 auto">'
-    for r in df.itertuples():
-        c = "#2BA84A" if r.grade == "상품" else "#E8344E"
-        s += (f'<rect x="{(r.tree_x - 1) * 20 + 6}" y="{(20 - r.tree_y) * 20 + 6}" width="18" height="18" rx="3" fill="{c}">'
-              f'<title>{r.apple_id} {r.grade}</title></rect>')
+    for _, r in df.iterrows():
+        c = "#2BA84A" if r["등급"] == "상품" else "#E8344E"
+        s += (f'<rect x="{(r["가로칸"] - 1) * 20 + 6}" y="{(20 - r["세로칸"]) * 20 + 6}" width="18" height="18" rx="3" fill="{c}">'
+              f'<title>{r["사과번호"]} {r["등급"]}</title></rect>')
     return s + "</svg>"
 
 
@@ -32,7 +32,7 @@ def slides():
         # ── 설명
         light("좌표에서 사각형까지", pv4.coord_to_rect(), T),
         light("과수원 지도", f'<div class="twocol w"><div>{orchard_map()}</div><div>'
-              + viz2.tiles([("칸", "나무 한 그루 · tree_x · tree_y"), ("색", f"상품 초록 {DN['pass']}칸 · 불량 빨강 {DN['fail']}칸"),
+              + viz2.tiles([("칸", "나무 한 그루 · 가로칸 · 세로칸 열"), ("색", f"상품 초록 {DN['pass']}칸 · 불량 빨강 {DN['fail']}칸"),
                             ("가장자리", f"상품률 {DN['area']['가장자리']:.2f}% · 안쪽 {DN['area']['안쪽']:.2f}%")], 1) + "</div></div>", T),
         light("색과 범례", viz2.tiles([
             ("합격", f"초록 #2BA84A · {WN['pass']}칸"), ("불합격", f"빨강 #E8344E · {WN['fail']}칸"),

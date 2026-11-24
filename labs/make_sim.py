@@ -84,20 +84,21 @@ DOMAINS = {
             "item": "사과", "count": "개",
             "labels": {"total": "전체 사과", "pass": "상품", "fail": "불량", "rate": "상품률",
                        "scope": "집계 대상 사과", "orig": "엑셀 원본 상품률"},
-            "judgeCol": "grade", "passValue": "상품", "failValue": "불량", "reasonCol": "reason",
-            "x": "tree_x", "y": "tree_y", "outline": 0,
-            "mapTitle": "과수원 지도", "reasonTitle": "불량 사유별 개수", "zoneTitle": "구역별 상품률",
-            "zoneCol": "zone", "zones": [["안쪽", "안쪽"], ["중간", "중간"], ["가장자리", "가장자리"]],
-            "reasons": [["bruise", "멍"], ["worm", "벌레 먹음"], ["light", "무게 미달"], ["low_sugar", "당도 미달"]],
+            # 사과 엑셀은 열 이름 · 불량사유 값이 한글 (상품이면 불량사유 「없음」)
+            "judgeCol": "등급", "passValue": "상품", "failValue": "불량", "reasonCol": "불량사유", "noneValue": "없음",
+            "x": "가로칸", "y": "세로칸", "outline": 0,
+            "mapTitle": "과수원 지도", "reasonTitle": "불량 사유별 개수", "zoneTitle": "위치별 상품률",
+            "zoneCol": "위치", "zones": [["안쪽", "안쪽"], ["중간", "중간"], ["가장자리", "가장자리"]],
+            "reasons": [["멍", "멍"], ["벌레 먹음", "벌레 먹음"], ["무게 미달", "무게 미달"], ["당도 미달", "당도 미달"]],
             "rules": [
-                {"col": "bruise", "name": "멍", "kind": "flag", "reason": "bruise", "flagText": "멍 든 사과 불량"},
-                {"col": "worm", "name": "벌레", "kind": "flag", "reason": "worm", "flagText": "벌레 먹은 사과 불량"},
-                {"col": "weight_g", "name": "무게", "unit": "g", "lo": 250, "step": 1, "reason": "light"},
-                {"col": "sugar_brix", "name": "당도", "unit": "brix", "lo": 11.0, "step": 0.1, "reason": "low_sugar"},
+                {"col": "멍", "name": "멍", "kind": "flag", "reason": "멍", "flagText": "멍 든 사과 불량"},
+                {"col": "벌레", "name": "벌레", "kind": "flag", "reason": "벌레 먹음", "flagText": "벌레 먹은 사과 불량"},
+                {"col": "무게", "name": "무게", "unit": "g", "lo": 250, "step": 1, "reason": "무게 미달"},
+                {"col": "당도", "name": "당도", "unit": "brix", "lo": 11.0, "step": 0.1, "reason": "당도 미달"},
             ],
-            "scopes": [{"col": "dist_m", "name": "중심에서 거리", "unit": "m", "step": 0.1},
-                       {"col": "diameter_mm", "name": "지름", "unit": "mm", "step": 0.1}],
-            "slider": "sugar_brix",
+            "scopes": [{"col": "중심거리", "name": "중심에서 거리", "unit": "m", "step": 0.1},
+                       {"col": "지름", "name": "지름", "unit": "mm", "step": 0.1}],
+            "slider": "당도",
             "target": None,            # 아래에서 웨이퍼 목표와 같은 값으로
         },
     },
@@ -194,8 +195,10 @@ def numbers(dom):
     alt = to_num(read_rows(dom["alt"]), cfg)
     spec = base_spec(cfg, rows)
     ev = evaluate(rows, cfg, spec)
-    mism = sum((judge(r, cfg, spec) == "none") != (r[cfg["judgeCol"]] == cfg["passValue"]) or
-               judge(r, cfg, spec) != r[cfg["reasonCol"]] for r in rows)
+    none = cfg.get("noneValue", "none")   # 통과한 줄의 사유 글자 (웨이퍼 none · 사과 없음)
+    got = [judge(r, cfg, spec) for r in rows]
+    mism = sum((k == "none") != (r[cfg["judgeCol"]] == cfg["passValue"]) or
+               (none if k == "none" else k) != r[cfg["reasonCol"]] for r, k in zip(rows, got))
     out = {"file": cfg["dataName"], "rows": len(rows), "cols": len(read_rows(dom["src"])[0]),
            "total": ev["total"], "pass": ev["pass"], "fail": ev["fail"], "rate": ev["rate"],
            "reasons": ev["reasons"],
@@ -214,10 +217,10 @@ def numbers(dom):
                ("깨짐·긁힘 판정 끄기", with_change(spec, "crack", on=False)),
                (f"중심에서 거리 상한 {fmtnum(spec['radius_mm']['hi'])} → 120 mm", with_change(spec, "radius_mm", hi=120))]
     else:
-        ops = [("무게 하한 250 → 230 g", with_change(spec, "weight_g", lo=230)),
-               ("벌레 판정 끄기", with_change(spec, "worm", on=False)),
-               (f"중심에서 거리 상한 {fmtnum(spec['dist_m']['hi'])} → 40 m", with_change(spec, "dist_m", hi=40)),
-               (f"지름 상한 {fmtnum(spec['diameter_mm']['hi'])} → 80 mm", with_change(spec, "diameter_mm", hi=80))]
+        ops = [("무게 하한 250 → 230 g", with_change(spec, "무게", lo=230)),
+               ("벌레 판정 끄기", with_change(spec, "벌레", on=False)),
+               (f"중심에서 거리 상한 {fmtnum(spec['중심거리']['hi'])} → 40 m", with_change(spec, "중심거리", hi=40)),
+               (f"지름 상한 {fmtnum(spec['지름']['hi'])} → 80 mm", with_change(spec, "지름", hi=80))]
     out["s7_checks"] = [{"op": name, **brief(evaluate(rows, cfg, s)), "hash": spec_hash(s, spec)} for name, s in ops]
     # 8교시: 둘째 파일 · 목표 수율
     alt_spec = base_spec(cfg, alt)
@@ -284,17 +287,17 @@ def pick_combo(cfg, rs, sp, steps):
 def find_pick(cfg, rs, sp, t):
     """판정 조절 바 두 개(무게 하한 · 당도 하한)를 함께 낮춰 목표를 넘는 조합 중 변화가 가장 작은 것.
     무게는 5 g, 당도는 0.5 brix 눈금. 변화 크기 = 무게 10 g 과 당도 0.5 brix 를 1 로 친 합."""
-    w0, s0 = sp["weight_g"]["lo"], sp["sugar_brix"]["lo"]
+    w0, s0 = sp["무게"]["lo"], sp["당도"]["lo"]
     best = None
     for dw in range(1, 11):
         for ds in range(1, 5):
             w, s = w0 - dw * 5, round(s0 - ds * 0.5, 1)
-            ev = evaluate(rs, cfg, with_change(with_change(sp, "weight_g", lo=w), "sugar_brix", lo=s))
+            ev = evaluate(rs, cfg, with_change(with_change(sp, "무게", lo=w), "당도", lo=s))
             if ev["rate"] < t:
                 continue
             key = (dw / 2 + ds, ev["rate"])
             if best is None or key < best[0]:
-                best = (key, [("weight_g", "lo", w), ("sugar_brix", "lo", s)])
+                best = (key, [("무게", "lo", w), ("당도", "lo", s)])
     return best and best[1]
 
 
@@ -334,18 +337,26 @@ def criteria_md(key, ref):
     L = cfg["labels"]
     reason = dict(cfg["reasons"])
     title = "합격 기준표" if key == "wafer" else "선별 기준표"
+    none = cfg.get("noneValue", "none")
+    ok = f"{L['pass']}(none)이다." if none == "none" else f"{L['pass']}이고 {cfg['reasonCol']} 열은 「{none}」이다."
+    # 열 이름 · 사유 글자가 화면 이름과 모두 같으면 (사과: 한글 열 이름) 화면 이름 칸은 뺀다
+    name_col = any(x["col"] != x["name"] for x in cfg["rules"])
+    reason_col = any(k != v for k, v in cfg["reasons"])
+    head = (["순서", "열 이름"] + (["화면 이름"] if name_col else []) + ["단위", "합격 조건", "걸렸을 때 사유"]
+            + (["사유 화면 이름"] if reason_col else []))
     lines = [f"# {title}", "",
-             "위에서부터 차례로 확인하고, 먼저 걸린 줄의 사유 하나로 판정한다. 하나도 안 걸리면 "
-             f"{L['pass']}(none)이다.", "",
-             "| 순서 | 열 이름 | 화면 이름 | 단위 | 합격 조건 | 걸렸을 때 사유 | 사유 화면 이름 |", "|---|---|---|---|---|---|---|"]
+             f"위에서부터 차례로 확인하고, 먼저 걸린 줄의 사유 하나로 판정한다. 하나도 안 걸리면 {ok}", "",
+             "| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
     order = 0
     prev = None
     for rule in cfg["rules"]:
         if rule["reason"] != prev:
             order += 1
         prev = rule["reason"]
-        lines.append(f"| {order} | {rule['col']} | {rule['name']} | {rule.get('unit', '0 또는 1')} | {rule_cond(rule)} | "
-                     f"{rule['reason']} | {reason[rule['reason']]} |")
+        row = ([order, rule["col"]] + ([rule["name"]] if name_col else [])
+               + [rule.get("unit", "0 또는 1"), rule_cond(rule), rule["reason"]]
+               + ([reason[rule["reason"]]] if reason_col else []))
+        lines.append("| " + " | ".join(map(str, row)) + " |")
     lines += ["", "## 집계 범위", "", "| 열 이름 | 화면 이름 | 단위 | 처음 값 |", "|---|---|---|---|"]
     for sc in cfg["scopes"]:
         lines.append(f"| {sc['col']} | {sc['name']} | {sc['unit']} | 데이터 최댓값 (모두 집계) |")
@@ -357,6 +368,9 @@ def criteria_md(key, ref):
 
 def claude_md(ref):
     w, d = ref["wafer"], ref["apple"]
+    a = DOMAINS["apple"]["cfg"]           # 사과 열 이름은 CSV 머리 행 · CFG 에서 그대로
+    acols = " · ".join(read_rows(DOMAINS["apple"]["src"])[0])
+    azones = " · ".join(k for k, _ in a["zones"])
     return f"""# 수율 시뮬레이터 프로젝트
 
 ## 만드는 것
@@ -374,9 +388,10 @@ def claude_md(ref):
 
 ## 데이터
 - 엑셀 가로 한 줄 = 칩 한 개 (웨이퍼 맵의 네모 한 칸). 사과는 한 줄 = 사과 한 개 (과수원 지도의 네모 한 칸).
+- 열 이름: 사과 엑셀은 한글({acols}), 웨이퍼 엑셀은 영어.
 - 웨이퍼 위치 열: `die_x` · `die_y` (맵의 칸 번호), `radius_mm` (중심에서 거리), `zone` (center · mid · edge)
-- 사과 위치 열: `tree_x` · `tree_y` (과수원 지도의 칸 번호), `dist_m` (중심에서 거리), `zone` (안쪽 · 중간 · 가장자리)
-- 판정 열: 웨이퍼 `pass_fail` · `fail_type`, 사과 `grade` · `reason`
+- 사과 위치 열: `{a['x']}` · `{a['y']}` (과수원 지도의 칸 번호), `{a['scopes'][0]['col']}` (과수원 중심에서 거리 · m), `{a['zoneCol']}` ({azones})
+- 판정 열: 웨이퍼 `pass_fail` · `fail_type`, 사과 `{a['judgeCol']}` · `{a['reasonCol']}` (상품이면 불량사유 `{a['noneValue']}`)
 - 합격 기준은 `templates/합격기준표.md` · `templates/선별기준표.md` 를 따른다.
 
 ## 작업 규칙
@@ -483,9 +498,11 @@ def summary_doc(dom, ref):
                   ("측정값", ["vth_v", "idsat_ma", "ioff_na", "rc_ohm", "ox_thk_nm", "crack", "particle_cnt"]),
                   ("판정", ["bin", "fail_type", "pass_fail"])]
     else:
-        groups = [("이름표", ["date", "apple_id", "variety"]), ("위치", ["tree_x", "tree_y", "dist_m", "zone"]),
-                  ("측정값", ["weight_g", "diameter_mm", "sugar_brix", "bruise", "worm"]),
-                  ("판정", ["reason", "grade"])]
+        groups = [("이름표", ["날짜", "사과번호", "품종"]), ("위치", ["가로칸", "세로칸", "중심거리", "위치"]),
+                  ("측정값", ["무게", "지름", "당도", "멍", "벌레"]),
+                  ("판정", ["불량사유", "등급"])]
+    grouped = [c for _, cs in groups for c in cs]
+    assert sorted(grouped) == sorted(head), f"열 묶음이 머리 행과 다르다: {sorted(set(grouped) ^ set(head))}"
     lines += ["| 묶음 | 열 |", "|---|---|"] + [f"| {g} | {', '.join(c)} |" for g, c in groups]
     lines += ["", "## 판정 숫자", "", f"| 항목 | 값 |", "|---|---|",
               f"| {L['total']} | {n['total']} |", f"| {L['pass']} | {n['pass']} |", f"| {L['fail']} | {n['fail']} |",
@@ -518,10 +535,12 @@ def result_csv(dom, rows_raw, spec, name):
     w.writerow([])
     head = list(rows_raw[0].keys())
     w.writerow(head + ["sim_scope", "sim_reason", "sim_result"])
+    none = cfg.get("noneValue", "none")
     for raw, r in zip(rows_raw, rows):
         ins = in_scope(r, cfg, spec)
         k = judge(r, cfg, spec)
-        w.writerow([raw[h] for h in head] + ["IN" if ins else "OUT", k, (cfg["passValue"] if k == "none" else cfg.get("failValue", "FAIL")) if ins else ""])
+        w.writerow([raw[h] for h in head] + ["IN" if ins else "OUT", none if k == "none" else k,
+                                             (cfg["passValue"] if k == "none" else cfg.get("failValue", "FAIL")) if ins else ""])
     return "﻿" + out.getvalue()
 
 

@@ -1,7 +1,7 @@
 """시뮬레이터 과정 공통 — 데이터 · 판정 · 기준 숫자. 교시 모듈(p1 … p8)이 쓴다.
 
 웨이퍼: labs/wafer-lab/data/wafer_test_W07.csv (합성 · 616칩) + spec.csv(합격 기준표)
-사과:   labs/wafer-lab/data/practice/apple_A07.csv (합성 · 600개) · 판정 멍 → 벌레 → 무게 미달 → 당도 미달
+사과:   labs/wafer-lab/data/practice/apple_A07.csv (합성 · 600개 · 열 이름 한글) · 판정 멍 → 벌레 먹음 → 무게 미달 → 당도 미달
 화면 숫자는 여기서 계산한다(손으로 적지 않는다). 조절 바를 바꾼 숫자도 같은 판정 함수로 구한다.
 """
 import json
@@ -18,8 +18,8 @@ KO = {"crack": "깨짐 · 긁힘", "open_short": "접촉저항 초과", "leakage
 COL_KO = {"crack": "깨짐 · 긁힘", "rc_ohm": "접촉저항", "ioff_na": "누설전류", "vth_v": "문턱전압",
           "particle_cnt": "먼지 개수", "idsat_ma": "포화전류", "ox_thk_nm": "산화막 두께"}
 ZONE_KO = {"center": "중심", "mid": "중간", "edge": "가장자리"}
-D_ORDER = ["bruise", "worm", "light", "low_sugar"]
-D_KO = {"bruise": "멍", "worm": "벌레 먹음", "light": "무게 미달", "low_sugar": "당도 미달", "none": "상품"}
+D_ORDER = ["멍", "벌레 먹음", "무게 미달", "당도 미달"]            # 사과 불량사유 값(한글) · 판정 순서
+D_KO = {**{k: k for k in D_ORDER}, "없음": "상품"}
 AREA = ["안쪽", "중간", "가장자리"]
 MIN_W, MIN_SUGAR = 250, 11.0
 SIM = json.loads((LAB / "sim_ref.json").read_text(encoding="utf-8"))  # labs/make_sim.py 결과 · 시뮬레이터 화면 숫자
@@ -62,30 +62,30 @@ def yld(df, **over):
 
 
 def d_judge(df, sugar=MIN_SUGAR, weight=MIN_W):
-    """사과 판정 · 멍 → 벌레 → 무게 미달 → 당도 미달 · 처음 걸린 사유 하나."""
-    r = pd.Series("none", index=df.index)
-    r[df.sugar_brix < sugar] = "low_sugar"
-    r[df.weight_g < weight] = "light"
-    r[df.worm == 1] = "worm"
-    r[df.bruise == 1] = "bruise"
+    """사과 판정 · 멍 → 벌레 먹음 → 무게 미달 → 당도 미달 · 처음 걸린 사유 하나 · 없으면 「없음」."""
+    r = pd.Series("없음", index=df.index)
+    r[df["당도"] < sugar] = "당도 미달"
+    r[df["무게"] < weight] = "무게 미달"
+    r[df["벌레"] == 1] = "벌레 먹음"
+    r[df["멍"] == 1] = "멍"
     return r
 
 
 def d_rate(df, sugar=MIN_SUGAR, weight=MIN_W):
     r = d_judge(df, sugar, weight)
-    return int((r == "none").sum()), round((r == "none").mean() * 100, 2)
+    return int((r == "없음").sum()), round((r == "없음").mean() * 100, 2)
 
 
 W07 = wafer()
 D07 = apple()
 assert (judge(W07) == W07.fail_type).all(), "기준표 재판정이 fail_type 과 다르다"
-assert (d_judge(D07) == D07.reason).all(), "사과 판정이 reason 과 다르다"
+assert (d_judge(D07) == D07["불량사유"]).all(), "사과 판정이 불량사유 열과 다르다"
 WN = {"rows": len(W07), "cols": W07.shape[1], "pass": yld(W07)[0], "fail": len(W07) - yld(W07)[0], "yield": yld(W07)[1],
       "reason": judge(W07).value_counts().drop("none").reindex(ORDER).to_dict(),
       "zone": {z: round((g.pass_fail == "PASS").mean() * 100, 2) for z, g in W07.groupby("zone")}}
 DN = {"rows": len(D07), "cols": D07.shape[1], "pass": d_rate(D07)[0], "fail": len(D07) - d_rate(D07)[0], "rate": d_rate(D07)[1],
-      "reason": d_judge(D07).value_counts().drop("none").reindex(D_ORDER).fillna(0).astype(int).to_dict(),
-      "area": {a: round((g.grade == "상품").mean() * 100, 2) for a, g in D07.groupby("zone")}}
+      "reason": d_judge(D07).value_counts().drop("없음").reindex(D_ORDER).fillna(0).astype(int).to_dict(),
+      "area": {a: round((g["등급"] == "상품").mean() * 100, 2) for a, g in D07.groupby("위치")}}
 
 
 # ── 화면 도구 ───────────────────────────────────────

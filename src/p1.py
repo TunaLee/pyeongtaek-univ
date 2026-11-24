@@ -53,7 +53,7 @@ def slides():
             ("Python", "pandas · openpyxl"), ("sim-lab 폴더", "파일 → 폴더 열기")], 2)
               + src(("Claude Code 문서 · VS Code", "https://code.claude.com/docs/en/vs-code")), T),
         lab("1-1", "사과 엑셀 요약", T, "apple_A07.xlsx 를 Claude Code 로 읽고 줄 수 · 열 묶음 · 상품 · 불량 수를 보고받는다",
-            ["sim-lab 열기 · Claude Code 실행", "사과 엑셀 요약 요청", "선별기준표로 판정 다시 요청", "grade 열과 대조"],
+            ["sim-lab 열기 · Claude Code 실행", "사과 엑셀 요약 요청", "선별기준표로 판정 다시 요청", "등급 열과 대조"],
             [f"{DN['rows']}행 × {DN['cols']}열", f"상품 {DN['pass']} · 불량 {DN['fail']} · {DN['rate']}%"],
             files="data/apple_A07.xlsx · templates/선별기준표.md"),
         lab("1-2", "웨이퍼 엑셀 요약", T, "wafer_test_W07.xlsx 를 읽고 요약 문서를 만든다",

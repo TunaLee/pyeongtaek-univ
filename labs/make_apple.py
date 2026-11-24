@@ -5,9 +5,10 @@
 구조
   사과 1개 = 1행 = 과수원 지도 한 칸(나무 한 그루에서 고른 사과)
   하루 파일 A01~A25 (10월 1일~25일 수확) · 화면 기본 파일은 A07
-  위치 tree_x · tree_y (1~30 · 1~20) · dist_m(과수원 중심에서 거리) · zone(안쪽 · 중간 · 가장자리)
-  측정 weight_g · diameter_mm · sugar_brix · 검사 bruise(멍) · worm(벌레 먹음)
-  판정 순서 멍 → 벌레 → 무게 미달(250g 미만) → 당도 미달(11 brix 미만) → 상품
+  열 이름은 모두 한글 (처음 다루는 데이터 · 웨이퍼는 영어 열 이름)
+  위치 가로칸 · 세로칸 (1~30 · 1~20 · 과수원 지도의 칸 번호) · 중심거리(m) · 위치(안쪽 · 중간 · 가장자리)
+  측정 무게(g) · 지름(mm) · 당도(brix) · 검사 멍 · 벌레 (0 · 1)
+  판정 순서 멍 → 벌레 먹음 → 무게 미달(250g 미만) → 당도 미달(11 brix 미만) → 상품 · 불량사유 · 등급
   상품률 = 상품 ÷ 전체
 """
 import csv
@@ -20,18 +21,18 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "wafer-lab" / "data" / "practice"
 RAW = OUT / "raw"
-HEADER = ["date", "apple_id", "tree_x", "tree_y", "dist_m", "zone", "variety", "weight_g", "diameter_mm", "sugar_brix",
-          "bruise", "worm", "reason", "grade"]
+HEADER = ["날짜", "사과번호", "가로칸", "세로칸", "중심거리", "위치", "품종", "무게", "지름", "당도",
+          "멍", "벌레", "불량사유", "등급"]
 MIN_WEIGHT, MIN_SUGAR = 250, 11.0
 NX, NY, STEP = 30, 20, 4.0          # 나무 30 × 20 그루 · 나무 간격 4m
 
 
 def judge(bruise, worm, w, b):
-    if bruise: return "bruise"
-    if worm: return "worm"
-    if w < MIN_WEIGHT: return "light"
-    if b < MIN_SUGAR: return "low_sugar"
-    return "none"
+    if bruise: return "멍"
+    if worm: return "벌레 먹음"
+    if w < MIN_WEIGHT: return "무게 미달"
+    if b < MIN_SUGAR: return "당도 미달"
+    return "없음"
 
 
 def day(k, rng):
@@ -56,7 +57,7 @@ def day(k, rng):
         r = judge(bruise[i], worm[i], weight[i], sugar[i])
         rows.append([f"2026-10-{k:02d}", f"A{k:02d}-{i + 1:04d}", int(xs[i]), int(ys[i]), f"{dist[i]:.1f}", zone[i], variety[i],
                      int(weight[i]), f"{diam[i]:.1f}", f"{sugar[i]:.1f}", int(bruise[i]), int(worm[i]), r,
-                     "상품" if r == "none" else "불량"])
+                     "상품" if r == "없음" else "불량"])
     return rows
 
 
@@ -89,7 +90,7 @@ def main():
     stat["rate_all"] = rate(allrows)
     stat["zone"] = {z: rate([r for r in a7 if r[5] == z]) for z in ("안쪽", "중간", "가장자리")}
     stat["variety"] = {v: rate([r for r in a7 if r[6] == v]) for v in ("부사", "홍옥", "감홍")}
-    stat["reason"] = {x: sum(r[12] == x for r in a7) for x in ("bruise", "worm", "light", "low_sugar")}
+    stat["reason"] = {x: sum(r[12] == x for r in a7) for x in ("멍", "벌레 먹음", "무게 미달", "당도 미달")}
     stat["A07"] = {"rows": len(a7), "good": sum(r[-1] == "상품" for r in a7), "rate": rate(a7),
                    "mean_w": round(float(np.mean([r[7] for r in a7])), 1), "std_w": round(float(np.std([r[7] for r in a7], ddof=1)), 1)}
     ref_p = ROOT / "ref.json"

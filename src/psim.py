@@ -164,9 +164,9 @@ def wafer_slider():
 
 
 def apple_slider():
-    v = list(sk.D07.sugar_brix)
+    v = list(sk.D07["당도"])
     st = [(t, *sk.d_rate(sk.D07, sugar=t)) for t in (sk.MIN_SUGAR, 10.0, 12.0)]
-    return slider(v, st, 9, 17, 16, " brix", "당도 sugar_brix", "하한", "상품률", "smd", low=True, ticks=8)
+    return slider(v, st, 9, 17, 16, " brix", "당도", "하한", "상품률", "smd", low=True, ticks=8)
 
 
 # ── 조절 바 한 번 → 네 곳이 함께 ──────────────────────────

@@ -376,10 +376,10 @@
   "fail": 130,
   "rate": 78.33,
   "reasons": {
-   "bruise": 23,
-   "worm": 8,
-   "light": 63,
-   "low_sugar": 36
+   "멍": 23,
+   "벌레 먹음": 8,
+   "무게 미달": 63,
+   "당도 미달": 36
   },
   "reasons_sorted": [
    [
@@ -419,29 +419,29 @@
   "rejudge_mismatch": 0,
   "rejudge_match": true,
   "spec": {
-   "bruise": {
+   "멍": {
     "on": true
    },
-   "worm": {
+   "벌레": {
     "on": true
    },
-   "weight_g": {
+   "무게": {
     "lo": 250,
     "hi": null
    },
-   "sugar_brix": {
+   "당도": {
     "lo": 11.0,
     "hi": null
    },
-   "dist_m": {
+   "중심거리": {
     "hi": 69.3
    },
-   "diameter_mm": {
+   "지름": {
     "hi": 91.0
    }
   },
   "s6_slider": {
-   "col": "sugar_brix",
+   "col": "당도",
    "name": "당도",
    "unit": "brix",
    "side": "lo",
@@ -485,7 +485,7 @@
     "fail": 86,
     "rate": 85.67,
     "delta_pp": 7.34,
-    "hash": "#weight_g_lo=230"
+    "hash": "#무게_lo=230"
    },
    {
     "op": "벌레 판정 끄기",
@@ -494,7 +494,7 @@
     "fail": 123,
     "rate": 79.5,
     "delta_pp": 1.17,
-    "hash": "#worm_on=0"
+    "hash": "#벌레_on=0"
    },
    {
     "op": "중심에서 거리 상한 69.3 → 40 m",
@@ -503,7 +503,7 @@
     "fail": 48,
     "rate": 84.81,
     "delta_pp": 6.48,
-    "hash": "#dist_m_hi=40"
+    "hash": "#중심거리_hi=40"
    },
    {
     "op": "지름 상한 91 → 80 mm",
@@ -512,7 +512,7 @@
     "fail": 101,
     "rate": 72.25,
     "delta_pp": -6.08,
-    "hash": "#diameter_mm_hi=80"
+    "hash": "#지름_hi=80"
    }
   ],
   "s8_alt": {
@@ -524,10 +524,10 @@
    "rate": 78.0,
    "orig_rate": 78.0,
    "reasons": {
-    "bruise": 30,
-    "worm": 9,
-    "light": 67,
-    "low_sugar": 26
+    "멍": 30,
+    "벌레 먹음": 9,
+    "무게 미달": 67,
+    "당도 미달": 26
    },
    "zones": {
     "안쪽": {
@@ -547,8 +547,8 @@
     }
    },
    "scope_max": {
-    "dist_m": 69.3,
-    "diameter_mm": 92.1
+    "중심거리": 69.3,
+    "지름": 92.1
    }
   },
   "s8_target": {
@@ -558,7 +558,7 @@
     "reached_at_base": false,
     "single": [
      {
-      "col": "bruise",
+      "col": "멍",
       "flag_off": true,
       "total": 600,
       "pass": 491,
@@ -568,7 +568,7 @@
       "reach": false
      },
      {
-      "col": "worm",
+      "col": "벌레",
       "flag_off": true,
       "total": 600,
       "pass": 477,
@@ -584,7 +584,7 @@
     "reached_at_base": false,
     "single": [
      {
-      "col": "bruise",
+      "col": "멍",
       "flag_off": true,
       "total": 600,
       "pass": 493,
@@ -594,7 +594,7 @@
       "reach": false
      },
      {
-      "col": "worm",
+      "col": "벌레",
       "flag_off": true,
       "total": 600,
       "pass": 475,
@@ -610,14 +610,14 @@
     "data_file": "apple_A07.xlsx",
     "set": [
      {
-      "col": "weight_g",
+      "col": "무게",
       "side": "lo",
       "value": 235,
       "label": "무게 하한",
       "display": "235"
      },
      {
-      "col": "sugar_brix",
+      "col": "당도",
       "side": "lo",
       "value": 10.0,
       "label": "당도 하한",
@@ -629,7 +629,7 @@
     "fail": 60,
     "rate": 90.0,
     "delta_pp": 11.67,
-    "hash": "#weight_g_lo=235&sugar_brix_lo=10.0"
+    "hash": "#무게_lo=235&당도_lo=10.0"
    }
   }
  }

@@ -1,6 +1,6 @@
 """2교시 엑셀 집계 자동화 · CLAUDE.md.
 
-도입(손 집계와 요청) → 설명(수율 계산 · 사과 집계 표 · 칩 집계 표(시트 세 장) · 화면용 CSV · 새 대화의 시작 · CLAUDE.md · 확인할 수 있는 문장 · 숫자 대조)
+도입(손 집계와 요청) → 설명(수율 계산 · 사과 집계 표 · 칩 집계 표(시트 세 장) · 엑셀과 CSV · 새 대화의 시작 · CLAUDE.md · 확인할 수 있는 문장 · 숫자 대조)
 → 적용(실습 2-1 사과 집계 → 2-2 웨이퍼 yield_summary.xlsx).
 """
 import p0
@@ -72,13 +72,13 @@ def slides():
         light("사과 집계 표", workbook("apple_summary", [
             ("요약", ["항목", "값"], [("전체", DN["rows"]), ("상품", DN["pass"]), ("불량", DN["fail"]), ("상품률", f"{DN['rate']}%")], 3),
             ("사유별", ["불량 사유", "개수"], [(sk.D_KO[k], v) for k, v in sorted(DN["reason"].items(), key=lambda x: -x[1])], 0),
-            ("위치별", ["위치", "전체", "상품", "상품률"], *_zones(sk.D07, "zone", ("grade", "상품"), sk.AREA))]), T),
+            ("위치별", ["위치", "전체", "상품", "상품률"], *_zones(sk.D07, "위치", ("등급", "상품"), sk.AREA))]), T),
         light("칩 집계 표", workbook("yield_summary", [
             ("요약", ["항목", "값"], [("전체", WN["rows"]), ("합격", WN["pass"]), ("불합격", WN["fail"]), ("수율", f"{WN['yield']}%")], 3),
             ("사유별", ["불합격 사유", "칩 수"], [(sk.KO[k], v) for k, v in sorted(WN["reason"].items(), key=lambda x: -x[1])], 0),
             ("위치별", ["위치", "전체", "합격", "합격률"], *_zones(sk.W07, "zone", ("pass_fail", "PASS"), ("center", "mid", "edge"), sk.ZONE_KO))]), T),
-        light("화면용 CSV", p0.excel_vs_csv(sk.W07.head(4)[["die_x", "die_y", "zone", "ioff_na", "vth_v", "fail_type", "pass_fail"]],
-                                           "ioff_na", "wafer_test_W07"), T),
+        light("엑셀과 CSV", p0.excel_vs_csv(sk.D07.head(4)[["날짜", "사과번호", "가로칸", "세로칸", "위치", "품종", "무게", "당도", "등급"]],
+                                          full=sk.D07.columns), T),
         # ── 설명 · CLAUDE.md
         light("새 대화의 시작", viz2.pair(
             "CLAUDE.md 없음", [("새 대화", "폴더 · 규칙 · 정답 숫자를 모름"), ("사람", "대화마다 같은 설명 반복"),
@@ -100,7 +100,7 @@ def slides():
             ["CLAUDE.md 에 사과 정답 숫자 추가", "집계 요청 (요약 · 사유별 · 위치별)", "CSV 저장 요청", "엑셀 필터로 대조"],
             [f"상품 {DN['pass']} · {DN['rate']}%", f"{TOPK} {max(DN['reason'].values())}개 1위 · 가장자리 {DN['area']['가장자리']:.2f}%",
              "output/apple_summary.xlsx · apple_A07.csv"], files="data/apple_A07.xlsx"),
-        lab("2-2", "수율 집계 엑셀", T, "W07 을 사유별 · 위치별로 집계해 yield_summary.xlsx 와 화면용 CSV 를 만든다",
+        lab("2-2", "수율 집계 엑셀", T, "W07 을 사유별 · 위치별로 집계해 yield_summary.xlsx 로 저장하고 CSV 로도 저장한다",
             ["CLAUDE.md 정답 숫자 확인", "집계 요청 (요약 · 사유별 · 위치별)", "CSV 저장 요청", "엑셀 필터로 대조"],
             [f"수율 {WN['yield']}% · 깨짐 · 긁힘 {WN['reason']['crack']}개 1위", "output/yield_summary.xlsx (시트 3장)",
              "output/wafer_test_W07.csv"], files="data/wafer_test_W07.xlsx"),

@@ -31,7 +31,7 @@ bash ~/.claude/skills/lecture-deck/scripts/capture_anim.sh $PWD/docs/index.html 
 - `src/pkit.py` 교시 목록 UNITS / `src/sk.py` 데이터 · 판정 · 기준 숫자(W07 · 사과 A07 · 조절 바 실험) · 화면 도구 / `src/p1~p8.py` 교시 본문 / `src/psim.py · pviz.py · pv3 · pv4` 애니메이션(anim._D, 접두어 고유)
 - `labs/sim-lab/` 수강생 실습 폴더 · `labs/sim-solution/stage*` 교시별 완성본 · `labs/make_sim.py` 재생성 · `docs/img/sim/` 완성본 캡처
 - 공통 모듈(deck · hx · viz2 · v1kit · v3kit · anim …)은 vibe-coding 저장소에서 복사한 것.
-- `labs/make_data.py` 웨이퍼 25장 합성(시드 2611 · ETCH_03 가장자리 · W05 중복 · W11 mV · W19 결측 · W26 은 data/new) · `labs/make_apple.py` 사과 선별 25일치(A01~A25 · 시드 1007 · 판정 멍 → 벌레 → 무게 250g → 당도 11) · `labs/make_secom.py` UCI SECOM(CC BY 4.0)
+- `labs/make_data.py` 웨이퍼 25장 합성(시드 2611 · ETCH_03 가장자리 · W05 중복 · W11 mV · W19 결측 · W26 은 data/new) · `labs/make_apple.py` 사과 선별 25일치(A01~A25 · 시드 1007 · 판정 멍 → 벌레 → 무게 250g → 당도 11 · **열 이름 한글** 날짜 · 사과번호 · 가로칸 · 세로칸 · 중심거리 · 위치 · 품종 · 무게 · 지름 · 당도 · 멍 · 벌레 · 불량사유 · 등급. 처음 다루는 데이터라 한글, 웨이퍼는 영어 열 이름) · `labs/make_secom.py` UCI SECOM(CC BY 4.0)
 - `labs/wafer-lab/data` 원본 합성 데이터(sk.py · make_sim.py 가 읽음) · `labs/solution/` 은 이전 분석 과정 완성본(덱에서 안 씀)
 - **화면 숫자는 손으로 적지 않는다** — ref.json · 완성본 출력 · CSV 에서 코드로 계산해 넣는다.
 

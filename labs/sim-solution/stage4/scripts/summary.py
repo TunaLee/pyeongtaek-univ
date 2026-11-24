@@ -1,4 +1,4 @@
-"""웨이퍼 엑셀 집계 — 수율 · 불합격 사유별 · 위치별 시트 3장과 화면용 CSV.
+"""웨이퍼 엑셀 집계 — 수율 · 불합격 사유별 · 위치별 시트 3장과 HTML 이 읽는 CSV.
 
 실행: python scripts/summary.py
 결과: output/yield_summary.xlsx · output/wafer_test_W07.csv
