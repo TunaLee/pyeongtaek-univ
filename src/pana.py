@@ -1,5 +1,6 @@
 """데이터 분석의 흐름 애니메이션 — 큰 흐름 → 2차원 → 차원 더하기 → 여러 날 → 특이점 → 원인 → 추세선 예측
-→ 지도학습 · 비지도학습(정답 열 · 경계 찾기 · 무리 묶기 · 활용 예) → 기준 바꿔 보기 · 바이브코딩의 흐름.
+→ 지도학습 · 비지도학습(정답 열) → 분류와 회귀(정답 열의 종류) → 분류(경계) → 회귀(추세선) → 비지도학습(무리 묶기) → 활용 예
+→ 기준 바꿔 보기 · 바이브코딩의 흐름.
 
 사과 데이터(sk.D07 · 25일치 · labs/ref.json general)로 그린다. 숫자는 모두 코드로 계산. 장면 간격 2초 이상 · 한 번 재생. 접두어 pa.
 """
@@ -481,38 +482,111 @@ def supervised(df):
     return d.svg(1160, 410, s)
 
 
+def cls_reg(df):
+    """지도학습의 두 갈래 — 같은 사과 시트에서 정답 열이 범주형(등급)이면 분류, 수치형(지름)이면 회귀.
+    새 사과 한 줄의 「?」 칸을 채운다: 등급 → 상품(경계) · 지름 → 추세선 값(뒤의 「회귀」 장과 같은 무게). 색은 「수치형과 범주형」 장과 같음. 12초."""
+    d = _D("pcr", 12)
+    pc = lambda t: t / 12 * 100  # noqa: E731
+    rows = _rows8(df)
+    scol = [("사과번호", 100, False), ("무게", 70, True), ("지름", 70, True), ("당도", 70, True), ("등급", 66, False)]
+    sh, cells, W_ = _sheet(d, rows, len(df), None, 0, scol)
+    tw, ts, _ = _boundary(df)
+    a, b = np.polyfit(df["무게"].to_numpy(float), df["지름"].to_numpy(float), 1)
+    nw, nb = 320, 13.6                                            # 새 사과 — 「회귀」 장의 무게 320g 와 같음
+    ng = "상품" if nw >= tw and nb >= ts else "불량"
+    nd = a * nw + b
+    Y, NY = 46, 344                                               # 시트 위치 · 새 사과 줄 y (시트 안 좌표)
+    col = {c: cells[(0, c)][::2] for c, *_ in scol}               # 열 → (x, w)
+    s = f'<g {d.show(pc(.5))} transform="translate(0,{Y})">{sh}</g>'
+    # 새 사과 한 줄 — 정답 칸은 「?」
+    nr = f'<rect x="0" y="{NY}" width="{W_}" height="{_RH}" fill="#FFFDF5" stroke="{N}" stroke-width="2" stroke-dasharray="6 4"/>'
+    for c, v in [("사과번호", "새 사과"), ("무게", nw), ("당도", nb)]:
+        x, w = col[c]
+        nr += _t(x + 8, NY + _RH / 2, v, "tn", "start", 'style="font-size:14px"') if c == "사과번호" else _t(x + w - 8, NY + _RH / 2, v, "tn", "end", 'style="font-size:14px"')
+    for c in ("지름", "등급"):
+        x, w = col[c]
+        nr += f'<g {d.show(pc(2), pc(6 if c == "등급" else 9))}>' + _t(x + w / 2, NY + _RH / 2, "?", "tt", extra='style="font-size:17px"') + "</g>"
+    s += f'<g {d.show(pc(2))} transform="translate(0,{Y})">{nr}</g>'
+    cards = [("등급", "분류", O, "#FFF4E8", 4, "등급 · 범주형", "상품 · 불량 중 하나", ng, GOOD, 60),
+             ("지름", "회귀", BLUE, "#EEF4FD", 7, "지름 · 수치형", "지름 몇 mm", f"{nd:.1f}", BLUE, 250)]
+    for c, name, cc, tint, t0, ans, pred, fill, fc, cy in cards:
+        x, w = col[c]
+        s += (f'<g {d.show(pc(t0))} transform="translate(0,{Y})"><rect x="{x}" y="44" width="{w}" height="{NY + _RH - 44}" fill="none" stroke="{cc}" stroke-width="3.5"/></g>'
+              f'<g {d.show(pc(t0))}>' + _t(x + w / 2, Y - 16, f"{name}의 정답", "tn", extra=f'style="font-size:15px;fill:{cc}"') + "</g>")
+        s += (f'<g {d.show(pc(t0 + 2))}>' + _t(x + w / 2, Y + NY + _RH / 2, fill, "tt", extra=f'style="font-size:15px;fill:{fc}"') + "</g>")
+        cx0 = W_ + 60
+        cw = 1160 - cx0
+        s += (f'<g {d.show(pc(t0))}><rect x="{cx0}" y="{cy}" width="{cw}" height="150" rx="16" fill="{tint}" stroke="{cc}" stroke-width="2.5"/>'
+              + _t(cx0 + 80, cy + 75, name, "tt", extra=f'style="font-size:30px;fill:{cc}"')
+              + f'<line x1="{cx0 + 160}" y1="{cy + 24}" x2="{cx0 + 160}" y2="{cy + 126}" stroke="{cc}" stroke-width="1.5" stroke-opacity=".5"/>'
+              + _t(cx0 + 190, cy + 52, "정답 열", "ts", "start", 'style="font-size:15px"') + _t(cx0 + 290, cy + 52, ans, "tn", "start", 'style="font-size:20px"')
+              + _t(cx0 + 190, cy + 102, "예측", "ts", "start", 'style="font-size:15px"') + _t(cx0 + 290, cy + 102, pred, "tn", "start", 'style="font-size:20px"')
+              + "</g>")
+    return d.svg(1160, 430, s)
+
+
+CL = {1: "#7E57C2", 2: "#26A69A"}     # 무리 A · B — 앞 장의 위치 색(파랑 · 주황)과 다른 색 · 라벨이 아니라 묶은 결과
+CLN = {1: "A", 2: "B"}
+
+
 def unsupervised():
-    """정답 없는 점(나무 600그루 · 25일 평균 무게 · 당도) → 두 무리로 묶임 → 지도에 칠하면 무리 2 가 가장자리 띠. 14초."""
-    d = _D("pau", 14)
-    pc = lambda t: t / 14 * 100  # noqa: E731
+    """① 정답 없는 회색 점(나무 600그루 · 25일 평균 무게 · 당도) → ② 비슷한 점끼리 두 무리(무리 색 · 점선 테두리)
+    → ③ 무리마다 특징(중심 + · 평균 무게 · 당도) → ④ 지도에서 위치 확인 · 무리 B 가 가장자리. 위치 열은 묶을 때 쓰지 않는다.
+    처음엔 색을 칠하지 않는다(라벨처럼 보이지 않게). 다른 장보다 천천히 · 20초."""
+    d = _D("pau", 20)
+    pc = lambda t: t / 20 * 100  # noqa: E731
     g = _trees()
-    col = {1: BLUE, 2: O}
-    ax, fx, fy = _axes(100, 50, 440, 300, (255, 315), (10.8, 13.4), range(260, 311, 10), [11, 12, 13],
+    ax, fx, fy = _axes(90, 60, 450, 290, (255, 315), (10.8, 13.4), range(260, 311, 10), [11, 12, 13],
                        "25일 평균 무게 (g)", "25일 평균 당도 (brix)", d.show(0))
-    s = ax + (f'<g {d.show(pc(.5))}>' + "".join(f'<circle cx="{fx(r["무게"]):.1f}" cy="{fy(r["당도"]):.1f}" r="3.2" fill="{GRAY}" fill-opacity=".7"/>'
-                                                for _, r in g.iterrows())
-              + _t(100, 12, f"점 하나 = 나무 한 그루 · {len(g)}그루 · 정답 없음", "to", "start", 'style="font-size:16px"') + "</g>")
-    s += f'<g {d.show(pc(3))}>' + "".join(f'<circle cx="{fx(r["무게"]):.1f}" cy="{fy(r["당도"]):.1f}" r="3.4" fill="{col[r["무리"]]}"/>'
-                                          for _, r in g.iterrows())
+    s = ax
+    for t0, t1, txt in [(.5, 4, f"① 정답 없는 점 · 나무 {len(g)}그루"), (4, 8, "② 비슷한 점끼리 묶음 · 무리 2개"),
+                        (8, 12, "③ 무리마다 특징"), (12, None, "④ 지도에서 위치 확인")]:
+        s += f'<g {d.show(pc(t0), pc(t1)) if t1 else d.show(pc(t0))}>' + _t(90, 16, txt, "to", "start", 'style="font-size:17px"') + "</g>"
+    s += f'<g {d.show(pc(.5))}>' + "".join(f'<circle cx="{fx(r["무게"]):.1f}" cy="{fy(r["당도"]):.1f}" r="3.2" fill="{GRAY}" fill-opacity=".75"/>'
+                                           for _, r in g.iterrows()) + "</g>"
+    st = g.groupby("무리").agg(w=("무게", "mean"), b=("당도", "mean"), sw=("무게", "std"), sb=("당도", "std"), n=("무게", "size"))
+    s += f'<g {d.show(pc(4))}>' + "".join(f'<circle cx="{fx(r["무게"]):.1f}" cy="{fy(r["당도"]):.1f}" r="3.4" fill="{CL[r["무리"]]}"/>'
+                                         for _, r in g.iterrows())
     for k in (1, 2):
-        m = g[g["무리"] == k]
-        lx, ly = (m["무게"].mean() + 8, m["당도"].min() - .3) if k == 1 else (m["무게"].mean() - 6, m["당도"].max() + .3)
-        s += _t(fx(lx), fy(ly), f"무리 {k} · {len(m)}그루", "tn", extra=f'style="font-size:16px;fill:{col[k]}"')
+        r = st.loc[k]
+        cx, cy = fx(r.w), fy(r.b)
+        rx, ry = fx(r.w + 2.8 * r.sw) - cx, cy - fy(r.b + 2.8 * r.sb)
+        s += f'<ellipse cx="{cx:.1f}" cy="{cy:.1f}" rx="{rx:.1f}" ry="{ry:.1f}" fill="none" stroke="{CL[k]}" stroke-width="2.5" stroke-dasharray="7 5"/>'
+        lx, ly = (cx + rx * .5, cy - ry - 8) if k == 1 else (cx - 40, cy - ry - 12)
+        s += _t(lx, ly, f"무리 {CLN[k]}", "tn", extra=f'style="font-size:16px;fill:{CL[k]}"')
     s += "</g>"
-    C, X0, Y0 = 15, 630, 50
+    # ③ 특징 — 무리 중심(+) · 평균 무게 · 당도
+    o = {1: 2, 2: 1}
+    s += f'<g {d.show(pc(8))}>'
+    for k in (1, 2):
+        r = st.loc[k]
+        cx, cy = fx(r.w), fy(r.b)
+        s += f'<path d="M{cx - 9:.1f} {cy:.1f} H{cx + 9:.1f} M{cx:.1f} {cy - 9:.1f} V{cy + 9:.1f}" stroke="{N}" stroke-width="3.5"/>'
+        x0 = 600 + (k - 1) * 285
+        up = lambda a, b: "↑" if a > b else "↓"  # noqa: E731
+        s += (f'<rect x="{x0}" y="36" width="265" height="128" rx="14" fill="{W}" stroke="{CL[k]}" stroke-width="2.5"/>'
+              + _t(x0 + 20, 62, f"무리 {CLN[k]} · {int(r.n)}그루", "tt", "start", f'style="font-size:18px;fill:{CL[k]}"')
+              + _t(x0 + 20, 92, f"평균 무게 {r.w:.1f}g", "tn", "start", 'style="font-size:15px"')
+              + _t(x0 + 20, 118, f"평균 당도 {r.b:.2f} brix", "tn", "start", 'style="font-size:15px"')
+              + _t(x0 + 20, 146, f"무게 {up(r.w, st.loc[o[k]].w)} · 당도 {up(r.b, st.loc[o[k]].b)}", "to", "start", 'style="font-size:15px"'))
+    s += "</g>"
+    # ④ 지도 — 회색 칸 → 무리 색
+    C, X0, Y0 = 11, 640, 200
     nx, ny = int(g["가로칸"].max()), int(g["세로칸"].max())
     gx = lambda x: X0 + (x - 1) * C  # noqa: E731
     gy = lambda y: Y0 + (ny - y) * C  # noqa: E731
-    cell = lambda r, f: f'<rect x="{gx(r["가로칸"])}" y="{gy(r["세로칸"])}" width="{C - 2}" height="{C - 2}" rx="2" fill="{f}"/>'  # noqa: E731
-    s += (f'<g {d.show(pc(6))}>' + _t(X0, 26, "과수원 지도", "tn", "start", 'style="font-size:16px"')
+    cell = lambda r, f: f'<rect x="{gx(r["가로칸"])}" y="{gy(r["세로칸"])}" width="{C - 1.5}" height="{C - 1.5}" rx="1.5" fill="{f}"/>'  # noqa: E731
+    s += (f'<g {d.show(pc(12))}>' + _t(X0, 186, "과수원 지도", "tn", "start", 'style="font-size:16px"')
           + "".join(cell(r, "#E1E5EB") for _, r in g.iterrows()) + "</g>")
-    s += f'<g {d.show(pc(8))}>' + "".join(cell(r, col[r["무리"]]) for _, r in g.iterrows()) + "</g>"
+    s += f'<g {d.show(pc(14))}>' + "".join(cell(r, CL[r["무리"]]) for _, r in g.iterrows()) + "</g>"
     edge = g["위치"] == "가장자리"
     n2 = int((g["무리"] == 2).sum())
-    assert n2 == int(((g["무리"] == 2) & edge).sum()) == int(edge.sum()), "무리 2 와 가장자리가 어긋남 — 문구를 고친다"
-    s += (f'<g {d.show(pc(10.5))}><rect x="{X0}" y="366" width="{nx * C - 2}" height="58" rx="12" fill="#FFF8F0" stroke="{O}" stroke-width="2.5"/>'
-          + _t(X0 + nx * C / 2, 386, f"무리 2 = 가장자리 나무 {n2}그루", "to", extra='style="font-size:17px"')
-          + _t(X0 + nx * C / 2, 410, "묶을 때 쓴 열 · 무게 · 당도", "ts", extra='style="font-size:14px"') + "</g>")
+    assert n2 == int(((g["무리"] == 2) & edge).sum()) == int(edge.sum()), "무리 B 와 가장자리가 어긋남 — 문구를 고친다"
+    s += (f'<g {d.show(pc(16.5))}><rect x="{X0 + nx * C + 16}" y="236" width="{1150 - X0 - nx * C - 16}" height="140" rx="14" fill="#E8F6F4" stroke="{CL[2]}" stroke-width="2.5"/>'
+          + _t(X0 + nx * C + 32, 264, f"무리 B", "tt", "start", f'style="font-size:18px;fill:{CL[2]}"')
+          + _t(X0 + nx * C + 32, 294, "= 가장자리", "tt", "start", 'style="font-size:18px"')
+          + _t(X0 + nx * C + 32, 322, f"{n2}그루 전부", "tn", "start", 'style="font-size:15px"')
+          + _t(X0 + nx * C + 32, 352, "위치 열은 안 씀", "ts", "start", 'style="font-size:13px"') + "</g>")
     return d.svg(1160, 430, s)
 
 
@@ -539,7 +613,7 @@ def _mini(x, y, w, h, kind, df):
     elif kind == "군집":
         g = _trees().iloc[::2]
         fx, fy = sc((255, 315), (10.8, 13.4))
-        s += "".join(dot(fx, fy, a, b, BLUE if k == 1 else O) for a, b, k in zip(g["무게"], g["당도"], g["무리"]))
+        s += "".join(dot(fx, fy, a, b, CL[k]) for a, b, k in zip(g["무게"], g["당도"], g["무리"]))
     else:
         days = REF["general"]["days"]
         vals = [days[f"A{k:02d}"] for k in range(1, 26)]

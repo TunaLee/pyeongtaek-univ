@@ -192,7 +192,7 @@ def _steps(items, cols, step=2.0):
 
 def data_part():
     """개요 1 · 데이터 분석 — 배경(빅데이터의 등장 · 전 세계 데이터 양 · 일상 속 데이터) → 큰 흐름 → 데이터 관리의 변화(수기 → 엑셀 → 시스템 · 센서 → 클라우드 · AI) → 엑셀과 CSV → 행과 열 → 사과 데이터 한 줄 → 수치형과 범주형 → 데이터 시각화 방법(차트 다섯 종류) → 값 하나(분포) → 두 값(산점도) → 등급 색(3차원) → 위치(지도) → 묶어 보기(막대)
-    → 여러 날(선그래프) → 10월 18일 불량 사유 · 원인 후보 → 상관관계 · 인과관계(숨은 원인 위치) → 추세선 예측 → 지도학습 · 비지도학습(정답 열 · 경계 · 무리 · 활용 예) → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
+    → 여러 날(선그래프) → 10월 18일 불량 사유 · 원인 후보 → 상관관계 · 인과관계(숨은 원인 위치) → 지도학습 · 비지도학습(정답 열) → 분류와 회귀 → 분류(경계) · 회귀(추세선) → 비지도학습(무리) → 활용 예 → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
     import pana                      # pana 가 p0 의 시트 그림을 쓰므로 함수 안에서 불러옴
     df = _d07()
     dd = [
@@ -221,9 +221,10 @@ def data_part():
         light(f"{pana.odd_label()} 불량 사유", pana.odd_day(), TAG),
         light("상관관계", pana.correlation(df), TAG),
         light("상관관계와 인과관계", pana.causation(), TAG),
-        light("추세선과 예측", pana.trend_predict(df), TAG),
         light("지도학습과 비지도학습", pana.label_or_not(df), TAG),
-        light("지도학습", pana.supervised(df), TAG),
+        light("분류와 회귀", pana.cls_reg(df), TAG),
+        light("분류", pana.supervised(df), TAG),
+        light("회귀", pana.trend_predict(df), TAG),
         light("비지도학습", pana.unsupervised(), TAG),
         light("지도학습 · 비지도학습 활용 예", pana.ml_uses(df), TAG),
         light("기준 바꿔 보기", pana.rule_whatif(df), TAG),
@@ -249,7 +250,7 @@ def data_part():
 
 
 def vibe_part():
-    """개요 2 · 바이브코딩 — 배경(언어 발전 · AI 코딩 도구 변화) → 등장 · 사례 → 흐름(기존 코딩과 바이브코딩) → Claude Code 의 동작(채팅과 에이전트 · 루프)."""
+    """개요 2 · 바이브코딩 — 배경(언어 발전 · AI 코딩 도구 변화) → 등장 · 사례 → 흐름(기존 코딩과 바이브코딩) → Claude Code 의 동작(Claude와 Claude Code · 루프)."""
     import pana
     dd = [
         light("프로그래밍 언어의 발전", pbg.langs()
@@ -277,7 +278,7 @@ def vibe_part():
               + src(("levelsio · X", "https://x.com/levelsio/status/1899596115210891751"),
                     ("Karpathy · MenuGen", "https://karpathy.bearblog.dev/vibe-coding-menugen/")), TAG),
         light("바이브코딩의 흐름", pana.vibe_flow(), TAG),
-        light("채팅과 에이전트", psim.chat_vs_agent(), TAG),
+        light("Claude와 Claude Code", psim.claude_vs_code(), TAG),
         light("에이전트 루프", psim.agent_loop()
               + src(("Claude Code 문서 · How Claude Code works", "https://code.claude.com/docs/en/how-claude-code-works")), TAG),
     ]
