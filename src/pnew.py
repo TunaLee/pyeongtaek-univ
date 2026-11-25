@@ -7,7 +7,7 @@ vibe-coding 1부(LLM · 배포) · 3부(CLAUDE.md · Skill · 하네스) 장을 
 """
 import sk
 import viz2
-from anim import K, N, O, W, _D, _t
+from anim import K, N, O, OK, R, W, _D, _t
 from deck import flow, lab, light
 from hx import code, esc
 from pkit import brief, chat
@@ -31,6 +31,93 @@ def llm():
     no = "".join(f'<li style="--d:{d}s">{t}</li>' for t, d in [("엑셀 파일 열기 · 저장", 8.0), ("코드 실행", 8.5), ("결과 화면 확인", 9.0)])
     return (f'<div class="pnlNs">{name}</div>' + head + f'<div class="pnlG"><div class="pnlC ok" style="--d:5.2s"><b>할 수 있는 일</b><ul>{ok}</ul></div>'
             f'<div class="pnlC no" style="--d:7.8s"><b>도구 없이 못 하는 일</b><ul>{no}</ul></div></div>')
+
+
+# ── 도구가 필요한 이유 · 토큰을 확률로 골라 이어 씀 ─────────────────
+def token_pick(a=48217, b=29356):
+    """LLM 이 곱셈 답을 토큰 단위로 이어 씀 — 토큰마다 후보 셋 · 확률 막대(길이만 · 값은 예) → 셋째 토큰에서 강조 틀이
+    후보 사이를 오가다 막대가 가장 길지 않은 후보에 멈춤 → 그럴듯한 틀린 답 · 오른쪽 계산 도구는 코드로 계산한 값.
+    정답은 a*b 로 계산 · 틀린 토큰은 셋째 묶음 첫 자리만 바꾼 것. 20초 · 한 번 · 마지막 장면 = 셋째 토큰 후보 + 두 답."""
+    d = _D("pnt", 20)
+    pc = lambda t: t / 20 * 100  # noqa: E731
+    ok = a * b
+    g = f"{ok:,}".split(",")                                   # 1 · 415 · 458 · 252
+    bad = ("7" if g[2][0] != "7" else "3") + g[2][1:]          # 758
+    sw = lambda s, i, c: s[:i] + str(c) + s[i + 1:]  # noqa: E731
+    # (후보 · 확률 예, 고른 번호, 창 시작, 고르는 때, 창 끝) — 막대 길이만 보이고 숫자는 적지 않음
+    steps = [([(g[0] + ",", .86), (str(int(g[0]) + 1) + ",", .09), ("9", .05)], 0, .8, 3.0, 4.6),
+             ([(g[1] + ",", .71), (sw(g[1], 2, (int(g[1][2]) - 1) % 10) + ",", .17),
+               (sw(g[1], 2, (int(g[1][2]) + 1) % 10) + ",", .12)], 0, 4.6, 6.8, 8.4),
+             ([(g[2] + ",", .38), (bad + ",", .34), (sw(g[2], 1, 1) + ",", .28)], 1, 8.4, 12.0, 14.0),
+             ([(g[3], .80), (sw(g[3], 1, 6), .12), (sw(g[3], 0, 3), .08)], 0, 14.0, 15.6, 17.0)]
+    toks = [st[0][st[1]][0] for st in steps]                   # 1, · 415, · 758, · 252
+    cw = [30 + 16 * len(t) for t in toks]
+    cx = [360 + sum(cw[:i]) + 10 * i for i in range(4)]
+    ROW = [222, 286, 350]
+    mono = 'style="font-size:{}px;fill:{}"'.format
+
+    # 질문 줄 · 답 칸
+    s = (f'<rect x="0" y="14" width="1160" height="80" rx="14" fill="#F4F6F9" stroke="#DDE3EA" stroke-width="1.5"/>'
+         + _t(30, 54, f"{a:,} × {b:,} =", "tm", "start", mono(28, N)))
+    for x, w in zip(cx, cw):
+        s += f'<rect x="{x}" y="31" width="{w}" height="46" rx="10" fill="none" stroke="#C9CFD8" stroke-width="2" stroke-dasharray="5 5"/>'
+    for i, (st, x, w) in enumerate(zip(steps, cx, cw)):
+        s += (f'<g {d.show(pc(st[3] + .4))}><rect x="{x}" y="31" width="{w}" height="46" rx="10" fill="{W}" stroke="{K}" stroke-width="2"/>'
+              + _t(x + w / 2, 55, toks[i], "tm", "middle", mono(26, N)) + "</g>")
+    s += (f'<g {d.show(pc(17))}><rect x="{cx[2]}" y="31" width="{cw[2]}" height="46" rx="10" fill="#FDECEC" stroke="{R}" stroke-width="2.5"/>'
+          + _t(cx[2] + cw[2] / 2, 55, toks[2], "tm", "middle", mono(26, R))
+          + _t(cx[3] + cw[3] + 30, 55, "✕", "tt", "middle", f'style="font-size:30px;fill:{R}"') + "</g>")
+
+    # 왼쪽 · LLM 이 토큰을 고르는 판
+    s += (f'<rect x="0" y="110" width="748" height="310" rx="16" fill="{W}" stroke="#DDE3EA" stroke-width="1.5"/>'
+          + _t(24, 142, "LLM · 다음 토큰을 확률로 골라 이어 씀", "tn", "start", 'style="font-size:17px"')
+          + _t(724, 142, "후보 · 확률 막대는 예", "ts", "end", 'style="font-size:13.5px"'))
+
+    def rows(k, cand, mark=None):
+        """mark: {번호: (테두리 색, 칠, 막대 색, 꼬리표, 꼬리표 색)} — 강조할 줄."""
+        r = _t(24, 180, f"토큰 {k + 1} / 4", "to", "start", 'style="font-size:15px"')
+        for j, (tok, p) in enumerate(cand):
+            y = ROW[j]
+            m = (mark or {}).get(j)
+            if m:
+                r += f'<rect x="14" y="{y - 29}" width="720" height="58" rx="12" fill="{m[1]}" stroke="{m[0]}" stroke-width="3"/>'
+            r += (_t(44, y, tok, "tm", "start", mono(26, N))
+                  + f'<rect x="200" y="{y - 14}" width="{p * 480:.0f}" height="28" rx="6" fill="{m[2] if m else "#C9D3E0"}"/>')
+            if m:
+                r += _t(716, y, m[3], "to", "end", f'style="font-size:15px;fill:{m[4]}"')
+        return r
+
+    for k, (cand, pick, t0, tp, t1) in enumerate(steps):
+        y = ROW[pick]
+        body = f'<g {d.show(pc(tp))}><rect x="14" y="{y - 29}" width="720" height="58" rx="12" fill="#FFF3E6" stroke="{O}" stroke-width="3"/></g>'
+        top = (f'<g {d.show(pc(tp))}><rect x="200" y="{y - 14}" width="{cand[pick][1] * 480:.0f}" height="28" rx="6" fill="{O}"/>'
+               + _t(716, y, "고름", "to", "end") + "</g>")
+        if k == 2:   # 셋째 토큰 · 강조 틀이 후보 사이를 오가다 멈춤 (확률로 뽑기)
+            seq = [(9.6, 0), (10.0, 2), (10.4, 1), (10.8, 0), (11.2, 2), (11.6, 1)]
+            st = [(0, "opacity:0;transform:translate(0px,0px)")]
+            for (t, r_), nxt in zip(seq, seq[1:] + [(tp, None)]):
+                dy = ROW[r_] - ROW[0]
+                st += [(pc(t), f"opacity:1;transform:translate(0px,{dy}px)"),
+                       (pc(nxt[0]) - .05, f"opacity:1;transform:translate(0px,{dy}px)")]
+            st += [(pc(tp) + .3, f"opacity:0;transform:translate(0px,{ROW[1] - ROW[0]}px)"), (100, "opacity:0")]
+            body = (f'<rect x="14" y="{ROW[0] - 29}" width="720" height="58" rx="12" fill="none" stroke="{O}" stroke-width="3" '
+                    f'stroke-dasharray="8 5" {d.a(st)}/>' + body)
+        s += f'<g {d.show(pc(t0), pc(t1))}>' + body + rows(k, cand) + top + "</g>"
+    # 마지막 장면 · 셋째 토큰 후보를 다시 보여 줌 (뽑힌 758 · 막대가 가장 긴 458)
+    s += (f'<g {d.show(pc(17))}>' + rows(2, steps[2][0], {
+        0: ("#C9E7CC", "#F1F8F2", OK, "실제 값", OK),
+        1: (R, "#FDECEC", R, "뽑힘 · 틀림", R)}) + "</g>")
+
+    # 오른쪽 · 계산 도구
+    s += (f'<g {d.show(pc(17.6))}><rect x="772" y="110" width="388" height="310" rx="16" fill="#F1F8F2" stroke="{OK}" stroke-width="2.5"/>'
+          + _t(792, 142, "계산 도구 · 코드로 실제 계산", "tn", "start", f'style="font-size:17px;fill:{OK}"')
+          + f'<rect x="792" y="172" width="348" height="58" rx="10" fill="{N}"/>'
+          + _t(812, 201, f"{a} * {b}", "tm", "start", mono(24, W))
+          + f'<path d="M966 240 V276" stroke="{OK}" stroke-width="3" marker-end="url(#{d.id("g")})"/></g>')
+    s += (f'<g {d.show(pc(18.4))}>'
+          + _t(966, 318, f'{g[0]},{g[1]},<tspan style="fill:{OK};text-decoration:underline">{g[2]}</tspan>,{g[3]}', "tm", "middle", mono(32, N))
+          + _t(966, 372, "✓ 다시 해도 같은 답", "tn", "middle", f'style="font-size:16px;fill:{OK}"') + "</g>")
+    return d.svg(1160, 430, s)
 
 
 # ── 정적 웹과 동적 웹 ─────────────────────────────────────
@@ -117,7 +204,7 @@ def slides():
     return [
         # ── Ⅱ AI 전반
         light("LLM", llm(), T),
-        light("도구가 필요한 이유", viz2.calc_compare(), T),
+        light("도구가 필요한 이유", token_pick(), T),
         # ── Ⅱ CLAUDE.md
         light("CLAUDE.md에 적을 내용", viz2.tiles([
             ("같은 실수가 두 번", "원본 엑셀을 고쳐 저장"), ("같은 설명을 또 함", "「결과는 output/ 에 저장」"),
