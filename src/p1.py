@@ -30,9 +30,10 @@ def slides():
         # ── 도입
         light("실습 환경", viz2.tiles([
             ("VS Code", "편집기 · 파일 탐색기 · 터미널"), ("Claude Code 확장", "VS Code 확장 · 교육용 계정 로그인"),
-            ("Python 3.10 이상", "pandas · openpyxl"), ("실습 데이터", "sim-data.zip · 엑셀 4개 · 기준표 2장")], 2)
+            ("Python", "pandas · openpyxl"), ("실습 데이터", "sim-data.zip · 엑셀 4개 · 기준표 2장")], 2)
               + src(("Claude Code 문서 · VS Code", "https://code.claude.com/docs/en/vs-code")), T),
-        light("실습 폴더 만들기", viz2.tiles([("실습 데이터 받기", DATA_URL)], 1) + viz2.maprows([
+        light("실습 폴더 만들기", viz2.tiles([("실습 데이터 받기", f'<a href="https://{DATA_URL}" download target="_blank" rel="noopener" '
+                                                   f'style="color:#1F5FBF;text-decoration:underline">{DATA_URL}</a>')], 1) + viz2.maprows([
             ("sim-lab/", "새 폴더 · VS Code 로 열기", "직접 만듦"),
             ("data/", "엑셀 4개 · 사과 A07 · A25 · 웨이퍼 W07 · W21", "sim-data.zip · 읽기만"),
             ("templates/", "선별기준표 · 합격기준표", "sim-data.zip · 판정 기준"),

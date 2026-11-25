@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "yield-tools": {
-      "command": "python3",
-      "args": ["tools/yield_server.py"]
-    }
-  }
-}

@@ -3,7 +3,6 @@
 예전 「실습 N 순서 · 요청 항목」(목표 · 입력 · 산출물 · 하지 말 것)은 무엇을 입력할지 바로 보이지 않아 이 모듈의 「실습 N 순서」로 바꾼다.
 build.py 가 v1kit.SKIP 에 PROMPTS 의 실습 번호를 넣어 예전 brief() 장을 만들지 않게 한다. 숫자는 sk 에서 계산. 접두어 plb.
 """
-import json
 from pathlib import Path
 
 import sk
@@ -81,12 +80,12 @@ def prompts():
                   ("표로 모으기", "결과를 표 하나로 모아 output/ 에 저장해 줘")],
                  [f"A07 {_pct(f['apple_A07'][2])} · A25 {_pct(f['apple_A25'][2])}",
                   f"W07 {_pct(f['wafer_test_W07'][2])} · W21 {_pct(f['wafer_test_W21'][2])}"]),
-        "22-3": ([("도구 만들기", "data/ 엑셀의 수율을 계산하는 MCP 도구를 만들어 이 프로젝트에 연결해 줘"),
-                  ("다시 열기", "!Claude Code 다시 열기 → 서버 사용 승인 → /mcp 에서 yield-tools 확인"),
-                  ("도구로 계산", "yield 도구로 data/ 엑셀 4개의 수율을 알려 줘"),
-                  ("호출 확인", "!답 위에 yield_of 호출 표시가 있는지 보기")],
+        "22-3": ([("도구 만들기", "엑셀 파일을 주면 행 수 · 합격 수 · 수율을 출력하는 tools/yield.py 를 만들어 줘"),
+                  ("규칙 한 줄", "수율은 tools/yield.py 로 계산한다는 줄을 CLAUDE.md 에 넣어 줘"),
+                  ("도구로 계산", "data/ 엑셀 4개의 수율을 알려 줘"),
+                  ("실행 확인", "!답 위에 tools/yield.py 실행 기록이 있는지 보기")],
                  [f"A07 {_pct(f['apple_A07'][2])} · A25 {_pct(f['apple_A25'][2])}",
-                  f"W07 {_pct(f['wafer_test_W07'][2])} · W21 {_pct(f['wafer_test_W21'][2])}", "/mcp · yield-tools 도구 1개"]),
+                  f"W07 {_pct(f['wafer_test_W07'][2])} · W21 {_pct(f['wafer_test_W21'][2])}", "도구 실행 기록"]),
         "3-2": ([("계획 · Plan Mode", "!Shift+Tab 으로 Plan Mode → 「data/wafer_test_W07.xlsx 로 숫자 카드 4개 화면 계획 세워 줘」"),
                  ("뼈대", "계획대로 output/simulator.html 을 만들어 줘. 꾸밈 없이 숫자만"),
                  ("꾸밈", "숫자 4개를 카드 모양으로 꾸며 줘"),
@@ -223,78 +222,63 @@ def parallel():
     return d.svg(1160, 372, s)
 
 
-# ── 수율 도구 (MCP) — 완성본 labs/harness-solution · MCP 공식 클라이언트로 시험함(엑셀 4개 = FOUR)
+# ── 수율 계산 도구 (스크립트) — 완성본 labs/harness-solution/tools/yield.py · 엑셀 4개로 실행해 FOUR 와 같음
+# 프로젝트 안 스크립트를 Claude 가 내장 Bash 도구로 실행 · CLAUDE.md 한 줄로 연결 (MCP · 설치 · 다시 열기 없음)
 SOL = Path(__file__).resolve().parent.parent / "labs" / "harness-solution"
-CC_MCP = ("Claude Code 문서 · MCP", "https://code.claude.com/docs/en/mcp")
+TOOL_RULE = "수율은 tools/yield.py 로 계산한다"
 
 
 def _tool_code():
-    """완성본 tools/yield_server.py 의 핵심 부분(server = … return …) — 화면 코드 = 시험한 파일."""
-    t = (SOL / "tools" / "yield_server.py").read_text(encoding="utf-8").split("\n")
-    i = next(k for k, x in enumerate(t) if x.startswith("server = "))
-    j = next(k for k, x in enumerate(t) if x.strip().startswith("return "))
-    body = [x for x in t[i:j + 1] if x.strip()]
-    return "\n".join(body)
+    """완성본 tools/yield.py 에서 설명문(docstring)을 뺀 코드 — 화면 코드 = 실행해 본 파일."""
+    t = (SOL / "tools" / "yield.py").read_text(encoding="utf-8")
+    return t[t.index('"""', 3) + 3:].strip("\n")
 
 
-def _mcp_json():
-    """완성본 .mcp.json 의 서버 이름 → 실행 명령 한 줄."""
-    cfg = json.loads((SOL / ".mcp.json").read_text(encoding="utf-8"))["mcpServers"]
-    name, v = next(iter(cfg.items()))
-    return f"{name} → {v['command']} {' '.join(v['args'])}"
-
-
-def mcp_flow():
-    """MCP 도구 흐름 — Claude Code ↔ MCP 서버(yield-tools) ↔ data/ 엑셀.
-    ① 시작할 때 도구 목록을 받아 Claude Code 의 도구 목록(컨텍스트)에 yield_of 가 더해짐 → ② 「W07 수율 알려 줘」 → yield_of 호출
-    → ③ 서버가 엑셀을 읽어 계산 → ④ 결과 → ⑤ 답. 숫자는 FOUR(데이터에서 계산). 11초 · 한 번."""
-    D = 11
-    d = _D("plm", D)
+def tool_flow():
+    """수율 계산 도구 흐름 — Claude Code(CLAUDE.md 한 줄) ↔ tools/yield.py ↔ data/ 엑셀.
+    ① CLAUDE.md 에 「수율은 tools/yield.py 로 계산」 → ② 「W07 수율 알려 줘」 → Bash 로 도구 실행
+    → ③ 엑셀 읽기 · 계산 → ④ 출력 → ⑤ 답. 숫자는 FOUR(데이터에서 계산). 10초 · 한 번."""
+    D = 10
+    d = _D("plt", D)
     pc = lambda t: t / D * 100  # noqa: E731
     _, rows, ok, rate = next(x for x in FOUR if x[0].endswith("W07"))
     mono = 'style="font-size:{}px;fill:{}"'.format
-    # Claude Code · 도구 목록
+    # Claude Code · CLAUDE.md
     s = (f'<rect x="0" y="8" width="340" height="414" rx="18" fill="#F4F6F9" stroke="{K}" stroke-width="2.5"/>'
          + _t(20, 36, "Claude Code", "tt", "start")
          + f'<rect x="14" y="56" width="312" height="196" rx="12" fill="{W}" stroke="#C9CFD8" stroke-width="1.5"/>'
-         + _t(28, 78, "컨텍스트 · 쓸 수 있는 도구 목록", "ts", "start", 'style="font-size:13.5px;font-weight:700"'))
-    for i, (n, x) in enumerate([("Read", "파일 읽기"), ("Edit", "파일 고치기"), ("Bash", "명령 실행")]):
-        y = 106 + i * 32
-        s += _t(30, y, n, "tm", "start", mono(15, N)) + _t(118, y, x, "ts", "start", 'style="font-size:14px"')
-    s += (f'<g {d.show(pc(2.4))}><rect x="22" y="187" width="296" height="38" rx="8" fill="#FFF3E6" stroke="{O}" stroke-width="2"/>'
-          + _t(30, 206, "yield_of", "tm", "start", mono(15, "#EF6C00")) + _t(118, 206, "엑셀 수율 · yield-tools", "ts", "start", 'style="font-size:14px"')
-          + "</g>")
-    s += (f'<g {d.show(pc(3.6))}><rect x="14" y="268" width="312" height="52" rx="12" fill="#EEF4FD" stroke="#4A86E8" stroke-width="2"/>'
+         + _t(28, 78, "CLAUDE.md · 대화 시작 때 읽음", "ts", "start", 'style="font-size:13.5px;font-weight:700"'))
+    for i, x in enumerate(["data/ 는 읽기만", "결과는 output/ 에"]):
+        s += _t(30, 110 + i * 32, "- " + x, "tn", "start", 'style="font-size:14.5px"')
+    s += (f'<g {d.show(pc(.8))}><rect x="22" y="160" width="296" height="40" rx="8" fill="#FFF3E6" stroke="{O}" stroke-width="2"/>'
+          + _t(30, 180, "- " + TOOL_RULE, "tn", "start", 'style="font-size:14.5px;fill:#EF6C00"') + "</g>")
+    s += (f'<g {d.show(pc(2.2))}><rect x="14" y="268" width="312" height="52" rx="12" fill="#EEF4FD" stroke="#4A86E8" stroke-width="2"/>'
           + _t(28, 294, "사용자 「W07 수율 알려 줘」", "tn", "start", 'style="font-size:15px"') + "</g>")
-    s += (f'<g {d.show(pc(8.2))}><rect x="14" y="336" width="312" height="70" rx="12" fill="{W}" stroke="{OK}" stroke-width="2.5"/>'
+    s += (f'<g {d.show(pc(7.2))}><rect x="14" y="336" width="312" height="70" rx="12" fill="{W}" stroke="{OK}" stroke-width="2.5"/>'
           + _t(28, 360, f"「W07 수율 {rate:.2f}%」", "tn", "start", f'style="font-size:17px;fill:{OK}"')
-          + _t(28, 388, "yield_of 결과로 답", "ts", "start", 'style="font-size:13.5px"') + "</g>")
-    # MCP 서버
+          + _t(28, 388, "도구 출력 그대로 답", "ts", "start", 'style="font-size:13.5px"') + "</g>")
+    # 도구 스크립트
     s += (f'<rect x="500" y="110" width="270" height="200" rx="16" fill="{W}" stroke="{K}" stroke-width="2.5"/>'
-          + _t(520, 140, "MCP 서버", "tt", "start") + _t(520, 170, "yield-tools", "tm", "start", mono(15, N))
-          + _t(520, 196, "tools/yield_server.py", "ts", "start", 'style="font-size:13px"')
-          + _t(520, 218, "내 PC 에서 실행", "ts", "start", 'style="font-size:13px"')
-          + f'<rect x="516" y="242" width="238" height="38" rx="9" fill="#FFF3E6" stroke="{O}" stroke-width="2"/>'
-          + _t(635, 261, "yield_of(file)", "tm", "middle", mono(15, "#EF6C00")))
+          + _t(520, 140, "도구 스크립트", "tt", "start") + _t(520, 170, "tools/yield.py", "tm", "start", mono(15, N))
+          + _t(520, 196, "프로젝트 폴더 안 · 내 PC 에서 실행", "ts", "start", 'style="font-size:13px"')
+          + f'<rect x="516" y="226" width="238" height="64" rx="9" fill="{N}"/>'
+          + _t(530, 248, "python3 tools/yield.py", "tm", "start", mono(13.5, W))
+          + _t(530, 270, "data/wafer_test_W07.xlsx", "tm", "start", mono(13.5, "#FFD7A8")))
     # data/
     s += (f'<rect x="880" y="110" width="280" height="200" rx="16" fill="{W}" stroke="#C9CFD8" stroke-width="2"/>'
           + _t(900, 140, "data/", "tt", "start"))
-    files = [n for n, *_ in FOUR]
-    for i, f in enumerate(files):
+    for i, (f, *_) in enumerate(FOUR):
         y = 176 + i * 32
         if f.endswith("W07"):
-            s += f'<rect x="892" y="{y - 14}" width="256" height="28" rx="6" fill="#FFF3E6" stroke="{O}" stroke-width="2" {d.show(pc(5.8))}/>'
+            s += f'<rect x="892" y="{y - 14}" width="256" height="28" rx="6" fill="#FFF3E6" stroke="{O}" stroke-width="2" {d.show(pc(4.6))}/>'
         s += _t(904, y, f + ".xlsx", "tm", "start", mono(14, N))
-    # 화살표 · ① ~ ④
-    arrows = [(1.0, "M344 138 H494", "① 도구 목록 요청", 420, 122, K),
-              (1.8, "M496 174 H346", "도구 이름 · 설명 · 입력", 420, 192, K),
-              (4.6, "M344 252 H494", "② yield_of(file=W07)", 420, 236, O),
-              (5.8, "M774 210 H874", "③ 엑셀 읽기 · 계산", 825, 194, O),
-              (7.0, "M496 290 H346", f"④ {rows}행 · 합격 {ok} · {rate:.2f}%", 420, 310, OK)]
-    for t, path, lab_, lx, ly, c in arrows:
-        mk = {K: "k", O: "o", OK: "g"}[c]
+    # 화살표 · 실행 → 읽기 · 계산 → 출력
+    for t, path, lab_, lx, ly, c in [(3.4, "M344 200 H494", "Bash 로 실행", 420, 184, O),
+                                     (4.6, "M774 210 H874", "엑셀 읽기 · 계산", 825, 194, O),
+                                     (5.8, "M496 290 H346", f"{rows}행 · 합격 {ok} · {rate:.2f}%", 428, 310, OK)]:
+        mk = {O: "o", OK: "g"}[c]
         s += (f'<g {d.show(pc(t))}><path d="{path}" stroke="{c}" stroke-width="3" marker-end="url(#{d.id(mk)})"/>'
-              + _t(lx, ly, lab_, "tn", "middle", f'style="font-size:13.5px;fill:{c if c != K else N}"') + "</g>")
+              + _t(lx, ly, lab_, "tn", "middle", f'style="font-size:13.5px;fill:{c}"') + "</g>")
     return d.svg(1160, 430, s)
 
 
@@ -325,13 +309,13 @@ def slides():
             ["file-summary Agent 만들기", "Agent 파일 확인", "엑셀 4개 동시에 맡기기", "표 하나로 모으기"],
             [" · ".join(f"{n.split('_')[-1]} {_pct(p)}" for n, _, _, p in FOUR[:2]), " · ".join(f"{n.split('_')[-1]} {_pct(p)}" for n, _, _, p in FOUR[2:]),
              "output/ 요약 표"], files=".claude/agents/file-summary.md"),
-        light("MCP 도구 흐름", mcp_flow() + src(CC_MCP), T),
-        light("도구 코드 · .mcp.json", code("tools/yield_server.py · 핵심 부분", esc(_tool_code()))
-              + viz2.tiles([(".mcp.json", _mcp_json()), ("docstring", "도구 설명 · Claude 가 고르는 기준"),
-                            ("/mcp", "연결 상태 · 서버별 도구 개수")], 3) + src(CC_MCP), T),
-        lab("22-3", "수율 도구 만들기", T, "data/ 엑셀의 수율을 계산하는 MCP 도구를 만들어 연결하고, 그 도구로 엑셀 4개의 수율을 받는다",
-            ["수율 도구 요청", "다시 열기 · 승인 · /mcp 확인", "도구로 엑셀 4개 수율 요청", "답 위 yield_of 호출 확인"],
-            ["tools/yield_server.py · .mcp.json",
+        light("수율 계산 도구 흐름", tool_flow(), T),
+        light("도구 코드 · tools/yield.py", code("tools/yield.py", esc(_tool_code()))
+              + viz2.tiles([("CLAUDE.md 한 줄", TOOL_RULE), ("실행", "Claude 가 Bash 로 · python3 tools/yield.py 파일"),
+                            ("결과", "같은 파일 → 매번 같은 숫자")], 3), T),
+        lab("22-3", "수율 계산 도구 만들기", T, "엑셀의 수율을 계산하는 도구 스크립트를 만들어 CLAUDE.md 에 연결하고, 그 도구로 엑셀 4개의 수율을 받는다",
+            ["도구 스크립트 요청", "CLAUDE.md 에 한 줄", "엑셀 4개 수율 요청", "답 위 실행 기록 확인"],
+            ["tools/yield.py · CLAUDE.md 한 줄",
              " · ".join(f"{n.split('_')[-1]} {_pct(p)}" for n, _, _, p in FOUR[:2]),
              " · ".join(f"{n.split('_')[-1]} {_pct(p)}" for n, _, _, p in FOUR[2:])], files="data/ 엑셀 4개"),
     ]
