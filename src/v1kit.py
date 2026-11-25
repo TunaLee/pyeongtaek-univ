@@ -124,7 +124,7 @@ CSS = """
   .v1map{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:6px 0 18px;}
   .v1u{display:flex; flex-direction:column; gap:6px; padding:20px 20px; border:2px solid #D9DDE3; border-radius:16px; background:#fff; text-decoration:none; min-height:150px;}
   .v1u .c{font-family:var(--mono); font-size:15px; font-weight:800; color:#6B7785;}
-  .v1u b{font-size:23px; color:#16233A; line-height:1.25;} .v1u small{font-size:16px; color:#3A4657; margin-top:auto;}
+  .v1u b{font-size:23px; color:#16233A; line-height:1.25; word-break:keep-all;} .v1u small{font-size:16px; color:#3A4657; margin-top:auto; word-break:keep-all;}
   .v1u.done{opacity:.5;} .v1u.on{border-color:#F28C28; background:#FFF3E6; box-shadow:0 6px 18px rgba(242,140,40,.18);}
   .v1u.on .c{color:#F28C28;}
   .v1end{position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; padding:0 90px;}

@@ -1108,7 +1108,7 @@
   .v1map{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:6px 0 18px;}
   .v1u{display:flex; flex-direction:column; gap:6px; padding:20px 20px; border:2px solid #D9DDE3; border-radius:16px; background:#fff; text-decoration:none; min-height:150px;}
   .v1u .c{font-family:var(--mono); font-size:15px; font-weight:800; color:#6B7785;}
-  .v1u b{font-size:23px; color:#16233A; line-height:1.25;} .v1u small{font-size:16px; color:#3A4657; margin-top:auto;}
+  .v1u b{font-size:23px; color:#16233A; line-height:1.25; word-break:keep-all;} .v1u small{font-size:16px; color:#3A4657; margin-top:auto; word-break:keep-all;}
   .v1u.done{opacity:.5;} .v1u.on{border-color:#F28C28; background:#FFF3E6; box-shadow:0 6px 18px rgba(242,140,40,.18);}
   .v1u.on .c{color:#F28C28;}
   .v1end{position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; padding:0 90px;}
@@ -1979,7 +1979,7 @@ description: 엑셀 · CSV 파일을 요약 문서로 정리할 때
   <div class="eyebrow"><span class="tag">사과 분석</span><span class="p0ph"><i class="on">도입</i><i>설명</i><i>적용</i></span></div>
   <h2 class="s-title sm">실습 지도</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="v1map"><div class="v1u"><span class="c">01</span><b>사과 데이터 분석</b><small>사과 요약 · 집계 엑셀</small></div><div class="v1u"><span class="c">02</span><b>Skill 로 반도체 분석</b><small>data-report Skill · 웨이퍼 요약 · 집계</small></div><div class="v1u"><span class="c">03</span><b>Hook · Sub Agent</b><small>원본 보호 Hook · 엑셀 4개 병렬 요약</small></div><div class="v1u"><span class="c">04</span><b>시뮬레이터 화면</b><small>simulator.html · 숫자 카드</small></div><div class="v1u"><span class="c">05</span><b>웨이퍼 맵</b><small>맵 · 색 · 툴팁</small></div><div class="v1u"><span class="c">06</span><b>불합격 차트</b><small>사유별 · 위치별 막대</small></div><div class="v1u"><span class="c">07</span><b>조절 바</b><small>누설전류 조절 바</small></div><div class="v1u"><span class="c">08</span><b>조절 바 전체</b><small>조절 바 8종 · 처음 값</small></div><div class="v1u"><span class="c">09</span><b>보고서 템플릿</b><small>엑셀 올리기 · 결과 내려받기</small></div><div class="v1u"><span class="c">10</span><b>GitHub · Vercel 배포</b><small>저장소 주소 · 배포 주소</small></div><div class="v1u"><span class="c">11</span><b>마지막 프로젝트</b><small>내 웹 · 배포 주소</small></div></div></div></div>
+  <div class="body"><div class="mid"><div class="v1map"><div class="v1u"><span class="c">01</span><b>사과 데이터 분석</b><small>사과 요약 · 집계 엑셀</small></div><div class="v1u"><span class="c">02</span><b>Skill 로 반도체 분석</b><small>data-report Skill · 웨이퍼 요약 · 집계</small></div><div class="v1u"><span class="c">03</span><b>Hook · Sub Agent · 도구</b><small>원본 보호 Hook · 엑셀 4개 병렬 요약 · 수율 도구</small></div><div class="v1u"><span class="c">04</span><b>시뮬레이터 화면</b><small>simulator.html · 숫자 카드</small></div><div class="v1u"><span class="c">05</span><b>웨이퍼 맵</b><small>맵 · 색 · 툴팁</small></div><div class="v1u"><span class="c">06</span><b>불합격 차트</b><small>사유별 · 위치별 막대</small></div><div class="v1u"><span class="c">07</span><b>조절 바</b><small>누설전류 조절 바</small></div><div class="v1u"><span class="c">08</span><b>조절 바 전체</b><small>조절 바 8종 · 처음 값</small></div><div class="v1u"><span class="c">09</span><b>보고서 템플릿</b><small>엑셀 올리기 · 결과 내려받기</small></div><div class="v1u"><span class="c">10</span><b>GitHub · Vercel 배포</b><small>저장소 주소 · 배포 주소</small></div><div class="v1u"><span class="c">11</span><b>마지막 프로젝트</b><small>내 웹 · 배포 주소</small></div></div></div></div>
 </section>
 
 <section class="slide lt" data-title="실습 환경">
@@ -1987,7 +1987,7 @@ description: 엑셀 · CSV 파일을 요약 문서로 정리할 때
   <div class="eyebrow"><span class="tag">사과 분석</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
   <h2 class="s-title sm">실습 환경</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>VS Code</b><span>편집기 · 파일 탐색기 · 터미널</span></div><div class="v2tile" style="--d:0.03s"><b>Claude Code 확장</b><span>VS Code 확장 · 교육용 계정 로그인</span></div><div class="v2tile" style="--d:0.06s"><b>Python</b><span>pandas · openpyxl</span></div><div class="v2tile" style="--d:0.10s"><b>실습 데이터</b><span>sim-data.zip · 엑셀 4개 · 기준표 2장 · 예시 HTML</span></div></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/vs-code" target="_blank" rel="noopener">Claude Code 문서 · VS Code</a></div></div></div>
+  <div class="body"><div class="mid"><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>VS Code</b><span>편집기 · 파일 탐색기 · 터미널</span></div><div class="v2tile" style="--d:0.03s"><b>Claude Code 확장</b><span>VS Code 확장 · 교육용 계정 로그인</span></div><div class="v2tile" style="--d:0.06s"><b>Python 3.10 이상</b><span>pandas · openpyxl</span></div><div class="v2tile" style="--d:0.10s"><b>실습 데이터</b><span>sim-data.zip · 엑셀 4개 · 기준표 2장 · 예시 HTML</span></div></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/vs-code" target="_blank" rel="noopener">Claude Code 문서 · VS Code</a></div></div></div>
 </section>
 
 <section class="slide lt" data-title="실습 폴더 만들기">
@@ -2156,10 +2156,10 @@ description: 엑셀 · CSV 파일을 요약 문서로 정리할 때
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>확인</span><i></i><span>W07</span></div><div class="v2m" style="--d:0.00s"><div class="a">Claude 보고</div><i>→</i><div class="b"><b>합격 557</b><small>요청 결과</small></div></div><div class="v2m" style="--d:0.05s"><div class="a">엑셀 필터</div><i>→</i><div class="b"><b>pass_fail = PASS · 557행</b><small>사람이 직접</small></div></div><div class="v2m" style="--d:0.10s"><div class="a">다르면</div><i>→</i><div class="b"><b>어느 쪽이 맞는지 행 단위로 확인 요청</b><small>그대로 넘어가지 않음</small></div></div></div></div></div>
 </section>
 
-<section class="slide dk divider" data-title="[03] Hook · Sub Agent">
+<section class="slide dk divider" data-title="[03] Hook · Sub Agent · 도구">
   <div class="ghost">03</div>
   <div class="kick">실습</div>
-  <h2 class="big">Hook · Sub Agent</h2>
+  <h2 class="big">Hook · Sub Agent · 도구</h2>
 </section>
 
 <section class="slide lt" data-title="Hook 차단과 Agent 병렬">
@@ -2208,6 +2208,30 @@ tools: Read, Bash
   <div class="body"><div class="mid"><svg class="an an-plq" viewBox="0 0 1160 372" xmlns="http://www.w3.org/2000/svg"><style>.an-plq{width:100%;height:auto;max-height:470px;display:block;margin:0 auto;overflow:visible}.an-plq text{dominant-baseline:middle}.an-plq .tt{font-size:19px;font-weight:800;fill:#16233A}.an-plq .ts{font-size:15px;fill:#6B7785}.an-plq .to{font-size:15px;font-weight:800;fill:#EF6C00}.an-plq .tw{font-size:15px;font-weight:800;fill:#FFFFFF}.an-plq .tn{font-size:15px;font-weight:700;fill:#16233A}.an-plq .tm{font-size:14px;font-weight:700;fill:#16233A;font-family:var(--mono,monospace)}@media print{.an-plq *{animation:none!important}}@media (prefers-reduced-motion:reduce){.an-plq *{animation:none!important}}@keyframes anplq1{0%{width:0px}4%{width:0px}22%{width:214px}100%{width:214px}}@keyframes anplq2{0%{opacity:0}6%{opacity:0}9%{opacity:1}100%{opacity:1}}@keyframes anplq3{0%{width:0px}24%{width:0px}42%{width:214px}100%{width:214px}}@keyframes anplq4{0%{opacity:0}26%{opacity:0}29%{opacity:1}100%{opacity:1}}@keyframes anplq5{0%{width:0px}44%{width:0px}62%{width:214px}100%{width:214px}}@keyframes anplq6{0%{opacity:0}46%{opacity:0}49%{opacity:1}100%{opacity:1}}@keyframes anplq7{0%{width:0px}64%{width:0px}82%{width:214px}100%{width:214px}}@keyframes anplq8{0%{opacity:0}66%{opacity:0}69%{opacity:1}100%{opacity:1}}@keyframes anplq9{0%{width:0px}4%{width:0px}22%{width:214px}100%{width:214px}}@keyframes anplq10{0%{opacity:0}6%{opacity:0}9%{opacity:1}100%{opacity:1}}@keyframes anplq11{0%{width:0px}4%{width:0px}22%{width:214px}100%{width:214px}}@keyframes anplq12{0%{opacity:0}6%{opacity:0}9%{opacity:1}100%{opacity:1}}@keyframes anplq13{0%{width:0px}4%{width:0px}22%{width:214px}100%{width:214px}}@keyframes anplq14{0%{opacity:0}6%{opacity:0}9%{opacity:1}100%{opacity:1}}@keyframes anplq15{0%{width:0px}4%{width:0px}22%{width:214px}100%{width:214px}}@keyframes anplq16{0%{opacity:0}6%{opacity:0}9%{opacity:1}100%{opacity:1}}@keyframes anplq17{0%{opacity:0}26%{opacity:0}29%{opacity:1}100%{opacity:1}}@keyframes anplq18{0%{opacity:0}86%{opacity:0}89%{opacity:1}100%{opacity:1}}@keyframes anplq19{0%{opacity:0}92%{opacity:0}95%{opacity:1}100%{opacity:1}}</style><defs><marker id="anplqk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1F3A5F"/></marker><marker id="anplqo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#F28C28"/></marker><marker id="anplqr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#C62828"/></marker><marker id="anplqg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2E7D32"/></marker></defs><text x="20" y="40" text-anchor="start" class="tn" style="font-size:17px">한 대화에서 하나씩</text><text x="20" y="196" text-anchor="start" class="tn" style="font-size:17px;fill:#EF6C00">Sub Agent 4개 동시</text><rect x="220" y="22" width="214" height="36" rx="8" fill="#EEF1F5" stroke="#C9CFD8"/><rect x="220" y="22" height="36" rx="8" fill="#1F3A5F" style="animation:anplq1 4.0s linear 1 both;"/><g style="animation:anplq2 4.0s linear 1 both;"><text x="327" y="40" text-anchor="middle" class="tw" style="font-size:12.5px;font-family:var(--mono,monospace)">apple_A07</text></g><rect x="442" y="22" width="214" height="36" rx="8" fill="#EEF1F5" stroke="#C9CFD8"/><rect x="442" y="22" height="36" rx="8" fill="#1F3A5F" style="animation:anplq3 4.0s linear 1 both;"/><g style="animation:anplq4 4.0s linear 1 both;"><text x="549" y="40" text-anchor="middle" class="tw" style="font-size:12.5px;font-family:var(--mono,monospace)">apple_A25</text></g><rect x="664" y="22" width="214" height="36" rx="8" fill="#EEF1F5" stroke="#C9CFD8"/><rect x="664" y="22" height="36" rx="8" fill="#1F3A5F" style="animation:anplq5 4.0s linear 1 both;"/><g style="animation:anplq6 4.0s linear 1 both;"><text x="771" y="40" text-anchor="middle" class="tw" style="font-size:12.5px;font-family:var(--mono,monospace)">wafer_test_W07</text></g><rect x="886" y="22" width="214" height="36" rx="8" fill="#EEF1F5" stroke="#C9CFD8"/><rect x="886" y="22" height="36" rx="8" fill="#1F3A5F" style="animation:anplq7 4.0s linear 1 both;"/><g style="animation:anplq8 4.0s linear 1 both;"><text x="993" y="40" text-anchor="middle" class="tw" style="font-size:12.5px;font-family:var(--mono,monospace)">wafer_test_W21</text></g><rect x="220" y="170" width="214" height="36" rx="8" fill="#FFF3E6" stroke="#F2C58F"/><rect x="220" y="170" height="36" rx="8" fill="#F28C28" style="animation:anplq9 4.0s linear 1 both;"/><g style="animation:anplq10 4.0s linear 1 both;"><text x="327" y="188" text-anchor="middle" class="tw" style="font-size:12.5px;font-family:var(--mono,monospace)">apple_A07</text></g><rect x="220" y="214" width="214" height="36" rx="8" fill="#FFF3E6" stroke="#F2C58F"/><rect x="220" y="214" height="36" rx="8" fill="#F28C28" style="animation:anplq11 4.0s linear 1 both;"/><g style="animation:anplq12 4.0s linear 1 both;"><text x="327" y="232" text-anchor="middle" class="tw" style="font-size:12.5px;font-family:var(--mono,monospace)">apple_A25</text></g><rect x="220" y="258" width="214" height="36" rx="8" fill="#FFF3E6" stroke="#F2C58F"/><rect x="220" y="258" height="36" rx="8" fill="#F28C28" style="animation:anplq13 4.0s linear 1 both;"/><g style="animation:anplq14 4.0s linear 1 both;"><text x="327" y="276" text-anchor="middle" class="tw" style="font-size:12.5px;font-family:var(--mono,monospace)">wafer_test_W07</text></g><rect x="220" y="302" width="214" height="36" rx="8" fill="#FFF3E6" stroke="#F2C58F"/><rect x="220" y="302" height="36" rx="8" fill="#F28C28" style="animation:anplq15 4.0s linear 1 both;"/><g style="animation:anplq16 4.0s linear 1 both;"><text x="327" y="320" text-anchor="middle" class="tw" style="font-size:12.5px;font-family:var(--mono,monospace)">wafer_test_W21</text></g><g style="animation:anplq17 4.0s linear 1 both;"><path d="M450 188 H490" stroke="#F28C28" stroke-width="2.5" marker-end="url(#anplqo)"/><rect x="500" y="200" width="420" height="96" rx="14" fill="#FFFFFF" stroke="#F28C28" stroke-width="2.5"/><text x="710" y="232" text-anchor="middle" class="tn" style="font-size:17px">메인 대화에는 결과 4줄만</text><text x="710" y="264" text-anchor="middle" class="ts" style="font-size:14.5px">파일 읽기 · 계산은 각자 자기 컨텍스트에서</text></g><g style="animation:anplq18 4.0s linear 1 both;"><text x="1106" y="84" text-anchor="end" class="tn" style="font-size:15px;fill:#1F3A5F">메인 대화에 파일 4개 기록이 다 쌓임</text></g><g style="animation:anplq19 4.0s linear 1 both;"><rect x="500" y="320" width="420" height="40" rx="20" fill="#F4F6F9"/><text x="710" y="340" text-anchor="middle" class="ts" style="font-size:14.5px">Agent 마다 따로 요청 · 토큰은 더 듦</text></g></svg><div class="src">출처 · <a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code 문서 · Subagents</a> · <a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Claude Code 문서 · Best practices</a></div></div></div>
 </section>
 
+<section class="slide lt" data-title="MCP 도구 흐름">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">하네스</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">MCP 도구 흐름</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><svg class="an an-plm" viewBox="0 0 1160 430" xmlns="http://www.w3.org/2000/svg"><style>.an-plm{width:100%;height:auto;max-height:470px;display:block;margin:0 auto;overflow:visible}.an-plm text{dominant-baseline:middle}.an-plm .tt{font-size:19px;font-weight:800;fill:#16233A}.an-plm .ts{font-size:15px;fill:#6B7785}.an-plm .to{font-size:15px;font-weight:800;fill:#EF6C00}.an-plm .tw{font-size:15px;font-weight:800;fill:#FFFFFF}.an-plm .tn{font-size:15px;font-weight:700;fill:#16233A}.an-plm .tm{font-size:14px;font-weight:700;fill:#16233A;font-family:var(--mono,monospace)}@media print{.an-plm *{animation:none!important}}@media (prefers-reduced-motion:reduce){.an-plm *{animation:none!important}}@keyframes anplm1{0%{opacity:0}21.8182%{opacity:0}24.8182%{opacity:1}100%{opacity:1}}@keyframes anplm2{0%{opacity:0}32.7273%{opacity:0}35.7273%{opacity:1}100%{opacity:1}}@keyframes anplm3{0%{opacity:0}74.5455%{opacity:0}77.5455%{opacity:1}100%{opacity:1}}@keyframes anplm4{0%{opacity:0}52.7273%{opacity:0}55.7273%{opacity:1}100%{opacity:1}}@keyframes anplm5{0%{opacity:0}9.09091%{opacity:0}12.0909%{opacity:1}100%{opacity:1}}@keyframes anplm6{0%{opacity:0}16.3636%{opacity:0}19.3636%{opacity:1}100%{opacity:1}}@keyframes anplm7{0%{opacity:0}41.8182%{opacity:0}44.8182%{opacity:1}100%{opacity:1}}@keyframes anplm8{0%{opacity:0}52.7273%{opacity:0}55.7273%{opacity:1}100%{opacity:1}}@keyframes anplm9{0%{opacity:0}63.6364%{opacity:0}66.6364%{opacity:1}100%{opacity:1}}</style><defs><marker id="anplmk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1F3A5F"/></marker><marker id="anplmo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#F28C28"/></marker><marker id="anplmr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#C62828"/></marker><marker id="anplmg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2E7D32"/></marker></defs><rect x="0" y="8" width="340" height="414" rx="18" fill="#F4F6F9" stroke="#1F3A5F" stroke-width="2.5"/><text x="20" y="36" text-anchor="start" class="tt" >Claude Code</text><rect x="14" y="56" width="312" height="196" rx="12" fill="#FFFFFF" stroke="#C9CFD8" stroke-width="1.5"/><text x="28" y="78" text-anchor="start" class="ts" style="font-size:13.5px;font-weight:700">컨텍스트 · 쓸 수 있는 도구 목록</text><text x="30" y="106" text-anchor="start" class="tm" style="font-size:15px;fill:#16233A">Read</text><text x="118" y="106" text-anchor="start" class="ts" style="font-size:14px">파일 읽기</text><text x="30" y="138" text-anchor="start" class="tm" style="font-size:15px;fill:#16233A">Edit</text><text x="118" y="138" text-anchor="start" class="ts" style="font-size:14px">파일 고치기</text><text x="30" y="170" text-anchor="start" class="tm" style="font-size:15px;fill:#16233A">Bash</text><text x="118" y="170" text-anchor="start" class="ts" style="font-size:14px">명령 실행</text><g style="animation:anplm1 4.4s linear 1 both;"><rect x="22" y="187" width="296" height="38" rx="8" fill="#FFF3E6" stroke="#F28C28" stroke-width="2"/><text x="30" y="206" text-anchor="start" class="tm" style="font-size:15px;fill:#EF6C00">yield_of</text><text x="118" y="206" text-anchor="start" class="ts" style="font-size:14px">엑셀 수율 · yield-tools</text></g><g style="animation:anplm2 4.4s linear 1 both;"><rect x="14" y="268" width="312" height="52" rx="12" fill="#EEF4FD" stroke="#4A86E8" stroke-width="2"/><text x="28" y="294" text-anchor="start" class="tn" style="font-size:15px">사용자 「W07 수율 알려 줘」</text></g><g style="animation:anplm3 4.4s linear 1 both;"><rect x="14" y="336" width="312" height="70" rx="12" fill="#FFFFFF" stroke="#2E7D32" stroke-width="2.5"/><text x="28" y="360" text-anchor="start" class="tn" style="font-size:17px;fill:#2E7D32">「W07 수율 90.42%」</text><text x="28" y="388" text-anchor="start" class="ts" style="font-size:13.5px">yield_of 결과로 답</text></g><rect x="500" y="110" width="270" height="200" rx="16" fill="#FFFFFF" stroke="#1F3A5F" stroke-width="2.5"/><text x="520" y="140" text-anchor="start" class="tt" >MCP 서버</text><text x="520" y="170" text-anchor="start" class="tm" style="font-size:15px;fill:#16233A">yield-tools</text><text x="520" y="196" text-anchor="start" class="ts" style="font-size:13px">tools/yield_server.py</text><text x="520" y="218" text-anchor="start" class="ts" style="font-size:13px">내 PC 에서 실행</text><rect x="516" y="242" width="238" height="38" rx="9" fill="#FFF3E6" stroke="#F28C28" stroke-width="2"/><text x="635" y="261" text-anchor="middle" class="tm" style="font-size:15px;fill:#EF6C00">yield_of(file)</text><rect x="880" y="110" width="280" height="200" rx="16" fill="#FFFFFF" stroke="#C9CFD8" stroke-width="2"/><text x="900" y="140" text-anchor="start" class="tt" >data/</text><text x="904" y="176" text-anchor="start" class="tm" style="font-size:14px;fill:#16233A">apple_A07.xlsx</text><text x="904" y="208" text-anchor="start" class="tm" style="font-size:14px;fill:#16233A">apple_A25.xlsx</text><rect x="892" y="226" width="256" height="28" rx="6" fill="#FFF3E6" stroke="#F28C28" stroke-width="2" style="animation:anplm4 4.4s linear 1 both;"/><text x="904" y="240" text-anchor="start" class="tm" style="font-size:14px;fill:#16233A">wafer_test_W07.xlsx</text><text x="904" y="272" text-anchor="start" class="tm" style="font-size:14px;fill:#16233A">wafer_test_W21.xlsx</text><g style="animation:anplm5 4.4s linear 1 both;"><path d="M344 138 H494" stroke="#1F3A5F" stroke-width="3" marker-end="url(#anplmk)"/><text x="420" y="122" text-anchor="middle" class="tn" style="font-size:13.5px;fill:#16233A">① 도구 목록 요청</text></g><g style="animation:anplm6 4.4s linear 1 both;"><path d="M496 174 H346" stroke="#1F3A5F" stroke-width="3" marker-end="url(#anplmk)"/><text x="420" y="192" text-anchor="middle" class="tn" style="font-size:13.5px;fill:#16233A">도구 이름 · 설명 · 입력</text></g><g style="animation:anplm7 4.4s linear 1 both;"><path d="M344 252 H494" stroke="#F28C28" stroke-width="3" marker-end="url(#anplmo)"/><text x="420" y="236" text-anchor="middle" class="tn" style="font-size:13.5px;fill:#F28C28">② yield_of(file=W07)</text></g><g style="animation:anplm8 4.4s linear 1 both;"><path d="M774 210 H874" stroke="#F28C28" stroke-width="3" marker-end="url(#anplmo)"/><text x="825" y="194" text-anchor="middle" class="tn" style="font-size:13.5px;fill:#F28C28">③ 엑셀 읽기 · 계산</text></g><g style="animation:anplm9 4.4s linear 1 both;"><path d="M496 290 H346" stroke="#2E7D32" stroke-width="3" marker-end="url(#anplmg)"/><text x="420" y="310" text-anchor="middle" class="tn" style="font-size:13.5px;fill:#2E7D32">④ 616행 · 합격 557 · 90.42%</text></g></svg><div class="src">출처 · <a href="https://code.claude.com/docs/en/mcp" target="_blank" rel="noopener">Claude Code 문서 · MCP</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="도구 코드 · .mcp.json">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">하네스</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">도구 코드 · .mcp.json</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">tools/yield_server.py · 핵심 부분</span></div><pre><code>server = MCPServer("yield-tools")
+DATA = Path(__file__).resolve().parent.parent / "data"   # 스크립트 위치 기준 · 작업 폴더와 상관없음
+@server.tool()
+def yield_of(file: str) -&gt; dict:
+    """data/ 엑셀 한 개의 행 수 · 합격 · 불합격 · 수율(%) — 웨이퍼 pass_fail=PASS · 사과 등급=상품"""
+    df = pd.read_excel(DATA / Path(file).name)
+    n = len(df)
+    ok = int((df["pass_fail"] == "PASS").sum()) if "pass_fail" in df else int((df["등급"] == "상품").sum())
+    return {"파일": Path(file).name, "행": n, "합격": ok, "불합격": n - ok, "수율": round(ok / n * 100, 2)}</code></pre></div><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>.mcp.json</b><span>yield-tools → python3 tools/yield_server.py</span></div><div class="v2tile" style="--d:0.03s"><b>docstring</b><span>도구 설명 · Claude 가 고르는 기준</span></div><div class="v2tile" style="--d:0.06s"><b>/mcp</b><span>연결 상태 · 서버별 도구 개수</span></div></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/mcp" target="_blank" rel="noopener">Claude Code 문서 · MCP</a></div></div></div>
+</section>
+
 <section class="slide lt labs" data-title="[실습 5] 원본 보호 Hook">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">하네스</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 5</span></div>
@@ -2246,6 +2270,26 @@ tools: Read, Bash
   <h2 class="s-title sm">실습 6 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>Agent 만들기</b><q>엑셀 하나를 요약하는 file-summary Agent 를 만들어 줘</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>파일 보기</b><q>만든 Agent 파일을 보여 줘</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>동시에 맡기기</b><q>data/ 엑셀 4개를 file-summary 4개로 동시에 요약해 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>표로 모으기</b><q>결과를 표 하나로 모아 output/ 에 저장해 줘</q></div></div><div class="plbk"><b>확인</b><span>A07 78.33% · A25 78.00%</span><span>W07 90.42% · W21 86.20%</span></div></div></div>
+</section>
+
+<section class="slide lt labs" data-title="[실습 7] 수율 도구 만들기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">하네스</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 7</span></div>
+  <h2 class="s-title sm">수율 도구 만들기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="labgrid">
+    <div class="lc goal"><div class="lh">목표</div><p>data/ 엑셀의 수율을 계산하는 MCP 도구를 만들어 연결하고, 그 도구로 엑셀 4개의 수율을 받는다</p><div class="lf">사용 파일 · data/ 엑셀 4개</div></div>
+    <div class="lc steps"><div class="lh">단계</div><ol><li>수율 도구 요청</li><li>다시 열기 · 승인 · /mcp 확인</li><li>도구로 엑셀 4개 수율 요청</li><li>답 위 yield_of 호출 확인</li></ol></div>
+    <div class="lc done"><div class="lh">완료 기준</div><ul><li>tools/yield_server.py · .mcp.json</li><li>A07 78.33% · A25 78.00%</li><li>W07 90.42% · W21 86.20%</li></ul></div>
+  </div></div>
+</section>
+
+<section class="slide lt" data-title="실습 7 순서">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">하네스</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
+  <h2 class="s-title sm">실습 7 순서</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>도구 만들기</b><q>data/ 엑셀의 수율을 계산하는 MCP 도구를 만들어 이 프로젝트에 연결해 줘</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>다시 열기</b><q class="nb">Claude Code 다시 열기 → 서버 사용 승인 → /mcp 에서 yield-tools 확인</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>도구로 계산</b><q>yield 도구로 data/ 엑셀 4개의 수율을 알려 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>호출 확인</b><q class="nb">답 위에 yield_of 호출 표시가 있는지 보기</q></div></div><div class="plbk"><b>확인</b><span>A07 78.33% · A25 78.00%</span><span>W07 90.42% · W21 86.20%</span><span>/mcp · yield-tools 도구 1개</span></div></div></div>
 </section>
 
 <section class="slide dk divider" data-title="[04] 시뮬레이터 화면">
@@ -2342,9 +2386,9 @@ document.getElementById("rate")
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>모드</span><i></i><span>동작</span></div><div class="v2m" style="--d:0.00s"><div class="a">기본</div><i>→</i><div class="b"><b>파일 수정 · 명령 실행 전에 물어봄</b><small>처음 쓸 때</small></div></div><div class="v2m" style="--d:0.05s"><div class="a">자동 수락</div><i>→</i><div class="b"><b>파일 수정은 묻지 않음</b><small>익숙해진 뒤</small></div></div><div class="v2m" style="--d:0.10s"><div class="a">Plan</div><i>→</i><div class="b"><b>읽기만 · 계획만</b><small>큰 변경 전</small></div></div></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/permission-modes" target="_blank" rel="noopener">Claude Code 문서 · Permission modes</a></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 7] 웨이퍼 숫자 카드">
+<section class="slide lt labs" data-title="[실습 8] 웨이퍼 숫자 카드">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">화면</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 7</span></div>
+  <div class="eyebrow"><span class="tag">화면</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 8</span></div>
   <h2 class="s-title sm">웨이퍼 숫자 카드</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2354,10 +2398,10 @@ document.getElementById("rate")
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 7 순서">
+<section class="slide lt" data-title="실습 8 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">화면</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 7 순서</h2>
+  <h2 class="s-title sm">실습 8 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>계획 · Plan Mode</b><q class="nb">Shift+Tab 으로 Plan Mode → 「W07 숫자 카드 4개 화면 계획 세워 줘」</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>뼈대</b><q>계획대로 만들어 줘. 꾸밈 없이 숫자만</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>꾸밈</b><q>숫자 4개를 카드 모양으로 꾸며 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>바꾸기</b><q>수율 카드만 주황색으로 크게 해 줘</q></div></div><div class="plbk"><b>확인</b><span>616 · 557 · 59 · 90.42%</span></div></div></div>
 </section>
@@ -2416,9 +2460,9 @@ document.getElementById("rate")
   <div class="body"><div class="mid"><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>캡처</b><span>Windows · Win + Shift + S / Mac · Cmd + Shift + 4</span></div><div class="v2tile" style="--d:0.03s"><b>붙여 넣기</b><span>Claude Code 입력창에 Ctrl + V</span></div><div class="v2tile" style="--d:0.06s"><b>한 줄 덧붙임</b><span>어디가 · 어떻게 달라야 하는지</span></div><div class="v2tile" style="--d:0.10s"><b>확인</b><span>고친 뒤 새로 고침 · 다시 캡처</span></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 8] 웨이퍼 맵">
+<section class="slide lt labs" data-title="[실습 9] 웨이퍼 맵">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">맵</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 8</span></div>
+  <div class="eyebrow"><span class="tag">맵</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 9</span></div>
   <h2 class="s-title sm">웨이퍼 맵</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2428,10 +2472,10 @@ document.getElementById("rate")
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 8 순서">
+<section class="slide lt" data-title="실습 9 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">맵</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 8 순서</h2>
+  <h2 class="s-title sm">실습 9 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>칸 그리기</b><q>카드 아래에 칩 616개를 die_x · die_y 위치대로 회색 칸으로 그려 줘</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>색 · 범례</b><q>합격은 초록, 불합격은 빨강으로 칠하고 범례를 붙여 줘</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>툴팁</b><q>칸에 마우스를 올리면 그 칩 정보를 보여 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>캡처로 고치기</b><q class="nb">화면 캡처를 붙이고 「이 부분이 겹쳐 보여. 고쳐 줘」</q></div></div><div class="plbk"><b>확인</b><span>초록 557 · 빨강 59</span><span>툴팁 값 = 엑셀 그 행</span></div></div></div>
 </section>
@@ -2474,9 +2518,9 @@ document.getElementById("rate")
   <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">한 번에</div><div class="v2pc" style="--d:0.00s"><b>요청</b><span>「차트 두 개 · 배치 · 색 다 해 줘」</span></div><div class="v2pc" style="--d:0.03s"><b>결과</b><span>여러 곳이 동시에 바뀜</span></div><div class="v2pc" style="--d:0.06s"><b>틀리면</b><span>어디서 틀렸는지 모름</span></div></div><div class="v2p on"><div class="v2ph">나눠서</div><div class="v2pc" style="--d:0.00s"><b>1</b><span>사유별 막대 → 확인</span></div><div class="v2pc" style="--d:0.03s"><b>2</b><span>위치별 막대 → 확인</span></div><div class="v2pc" style="--d:0.06s"><b>3</b><span>배치 → 확인</span></div></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 9] 웨이퍼 차트">
+<section class="slide lt labs" data-title="[실습 10] 웨이퍼 차트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">차트</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 9</span></div>
+  <div class="eyebrow"><span class="tag">차트</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 10</span></div>
   <h2 class="s-title sm">웨이퍼 차트</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2486,10 +2530,10 @@ document.getElementById("rate")
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 9 순서">
+<section class="slide lt" data-title="실습 10 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">차트</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 9 순서</h2>
+  <h2 class="s-title sm">실습 10 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>사유별 막대</b><q>불합격 사유별 개수를 막대그래프로 넣어 줘</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>위치별 막대</b><q>위치별 합격률 막대도 넣어 줘</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>배치</b><q>맵은 왼쪽, 차트는 오른쪽으로 놓아 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>읽히는 사실</b><q>차트에서 읽히는 사실 세 가지를 적어 줘</q></div></div><div class="plbk"><b>확인</b><span>막대 합계 59</span><span>깨짐 · 긁힘 25개 1위</span></div></div></div>
 </section>
@@ -2564,9 +2608,9 @@ document.getElementById("rate")
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>칸</span><i></i><span>예</span></div><div class="v2m" style="--d:0.00s"><div class="a">한 일</div><i>→</i><div class="b"><b>「조절 바를 5 로 옮김」</b><small>무엇을 했나</small></div></div><div class="v2m" style="--d:0.05s"><div class="a">본 화면</div><i>→</i><div class="b"><b>「카드는 바뀌고 맵 색은 그대로」</b><small>무엇이 보였나</small></div></div><div class="v2m" style="--d:0.10s"><div class="a">기대</div><i>→</i><div class="b"><b>「불합격 칸이 늘어 74칸」</b><small>어떻게 돼야 하나</small></div></div><div class="v2m" style="--d:0.14s"><div class="a">범위</div><i>→</i><div class="b"><b>「맵 다시 그리기만 고침」</b><small>어디까지</small></div></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 10] 누설전류 조절 바">
+<section class="slide lt labs" data-title="[실습 11] 누설전류 조절 바">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">조절 바</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 10</span></div>
+  <div class="eyebrow"><span class="tag">조절 바</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 11</span></div>
   <h2 class="s-title sm">누설전류 조절 바</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2576,18 +2620,18 @@ document.getElementById("rate")
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 10 순서">
+<section class="slide lt" data-title="실습 11 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">조절 바</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 10 순서</h2>
+  <h2 class="s-title sm">실습 11 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>분포 · 합격선</b><q>누설전류 분포를 그리고 합격선을 표시해 줘</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>조절 바</b><q>합격선을 조절 바로 바꾸면 카드 · 맵 · 차트가 다시 계산되게 해 줘</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>숫자 보고</b><q>상한 5 · 10 · 20 일 때 수율과 불합격 수를 알려 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>다시 지시</b><q class="nb">안 바뀐 곳이 있으면 「맵도 같이 바뀌게 해 줘」</q></div></div><div class="plbk"><b>확인</b><span>상한 10 → 90.42%</span><span>카드 · 맵 · 차트 · 분포가 함께 바뀜</span></div></div></div>
 </section>
 
-<section class="slide lt" data-title="실습 10 확인">
+<section class="slide lt" data-title="실습 11 확인">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">조절 바</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 10 확인</h2>
+  <h2 class="s-title sm">실습 11 확인</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">확인 대화 예</div><div class="v1b me"><span>나</span><p>누설전류 상한을 5, 10, 20 으로 바꿨을 때 수율과 불합격 칸 수를 보고해 줘.</p></div><div class="v1b ai"><span>Claude</span><p>5 → 87.99% · 불합격 74<br/>10 → 90.42% · 불합격 59<br/>20 → 90.58% · 불합격 58<br/>맵 · 사유별 막대 · 분포 모두 같은 숫자</p></div></div></div></div>
 </section>
@@ -2638,9 +2682,9 @@ document.getElementById("rate")
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>조작</span><i></i><span>기대 숫자</span></div><div class="v2m" style="--d:0.00s"><div class="a">누설전류 상한 10 → 5 nA</div><i>→</i><div class="b"><b>수율 87.99%</b><small>합격 542 / 616 · -2.43%p</small></div></div><div class="v2m" style="--d:0.05s"><div class="a">문턱전압 범위 0.38~0.52 → 0.36~0.54 V</div><i>→</i><div class="b"><b>수율 90.58%</b><small>합격 558 / 616 · +0.16%p</small></div></div><div class="v2m" style="--d:0.10s"><div class="a">깨짐·긁힘 판정 끄기</div><i>→</i><div class="b"><b>수율 94.32%</b><small>합격 581 / 616 · +3.90%p</small></div></div><div class="v2m" style="--d:0.14s"><div class="a">중심에서 거리 상한 140 → 120 mm</div><i>→</i><div class="b"><b>수율 90.85%</b><small>합격 407 / 448 · +0.43%p</small></div></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 11] 조절 바 8종">
+<section class="slide lt labs" data-title="[실습 12] 조절 바 8종">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">조절 바</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 11</span></div>
+  <div class="eyebrow"><span class="tag">조절 바</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 12</span></div>
   <h2 class="s-title sm">조절 바 8종</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2650,10 +2694,10 @@ document.getElementById("rate")
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 11 순서">
+<section class="slide lt" data-title="실습 12 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">조절 바</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 11 순서</h2>
+  <h2 class="s-title sm">실습 12 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>설계표</b><q>합격기준표.md 기준마다 조절 바 설계표를 만들어 줘</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>조절 바 8개</b><q>설계표대로 조절 바 8개를 만들어 줘</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>배치</b><q>조절 바는 왼쪽, 결과는 오른쪽에 놓아 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>처음 값</b><q>처음 값 버튼과 원본 대비 차이를 넣어 줘</q></div><div class="plbr" style="--d:0.56s"><em>5</em><b>점검</b><q>점검할 숫자 네 가지가 맞는지 확인해 줘</q></div></div><div class="plbk"><b>확인</b><span>처음 값 → 90.42%</span><span>점검 숫자 네 가지 일치</span></div></div></div>
 </section>
@@ -2688,9 +2732,9 @@ document.getElementById("rate")
   <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>파일</span><i></i><span>내용</span></div><div class="v2m" style="--d:0.00s"><div class="a">판정 결과 CSV</div><i>→</i><div class="b"><b>칩마다 · 새 판정 · 사유</b><small>616행</small></div></div><div class="v2m" style="--d:0.05s"><div class="a">기준값 CSV</div><i>→</i><div class="b"><b>조절 바 8개 값</b><small>실험 조건</small></div></div><div class="v2m" style="--d:0.10s"><div class="a">파일 이름</div><i>→</i><div class="b"><b>날짜 · 시각 포함</b><small>덮어쓰지 않음</small></div></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 12] 보고서 템플릿">
+<section class="slide lt labs" data-title="[실습 13] 보고서 템플릿">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">보고서</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 12</span></div>
+  <div class="eyebrow"><span class="tag">보고서</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 13</span></div>
   <h2 class="s-title sm">보고서 템플릿</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2700,10 +2744,10 @@ document.getElementById("rate")
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 12 순서">
+<section class="slide lt" data-title="실습 13 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">보고서</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 12 순서</h2>
+  <h2 class="s-title sm">실습 13 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>올리기</b><q>엑셀이나 CSV 를 올리면 그 파일로 다시 분석하게 해 줘</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>다른 파일</b><q class="nb">브라우저에서 wafer_test_W21.xlsx 올리기 · 숫자가 바뀌는지 보기</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>내려받기</b><q>판정 결과를 CSV 로 내려받는 버튼을 넣어 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>한 파일 정리</b><q>index.html 한 파일로 정리해 줘</q></div></div><div class="plbk"><b>확인</b><span>W07 → 90.42%</span><span>W21 → 86.20%</span></div></div></div>
 </section>
@@ -2913,9 +2957,9 @@ document.getElementById("rate")
   <div class="body"><div class="mid"><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>키 · 비밀번호</b><span>코드 · 파일에 들어 있지 않은지</span></div><div class="v2tile" style="--d:0.03s"><b>데이터 파일</b><span>저장소에 올리지 않음 · 보고서는 올린 파일만 읽음</span></div><div class="v2tile" style="--d:0.06s"><b>배포 주소는 공개</b><span>주소를 아는 누구나 열람</span></div><div class="v2tile" style="--d:0.10s"><b>Hobby 는 개인 · 비상업</b><span>회사 서비스는 Pro 이상</span></div></div><div class="src">출처 · <a href="https://vercel.com/docs/plans/hobby" target="_blank" rel="noopener">Vercel · Hobby</a></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 13] GitHub · Vercel 배포">
+<section class="slide lt labs" data-title="[실습 14] GitHub · Vercel 배포">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 13</span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 14</span></div>
   <h2 class="s-title sm">GitHub · Vercel 배포</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2925,10 +2969,10 @@ document.getElementById("rate")
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 13 순서">
+<section class="slide lt" data-title="실습 14 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 13 순서</h2>
+  <h2 class="s-title sm">실습 14 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>GitHub 로그인</b><q>GitHub 에 로그인해 줘</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>올리기 전 점검</b><q>올리기 전에 키나 개인 정보가 있는지 확인해 줘</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>저장소 올리기</b><q>이 폴더를 GitHub 저장소로 만들어 올려 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>Vercel 배포</b><q class="nb">vercel.com → Add New → Project → 저장소 Import → Deploy</q></div></div><div class="plbk"><b>확인</b><span>배포 주소에서 W07 수율 90.42%</span><span>고친 뒤 같은 주소에 반영</span></div></div></div>
 </section>
@@ -2955,9 +2999,9 @@ document.getElementById("rate")
   <div class="body"><div class="mid"><div class="flow"><div class="fs"><b>주제 · 데이터</b><span>하나 고르기</span></div><div class="fa">→</div><div class="fs"><b>CLAUDE.md · 계획</b><span>규칙 · Plan Mode</span></div><div class="fa">→</div><div class="fs hl"><b>만들기 · 확인</b><span>나눠서 요청</span></div><div class="fa">→</div><div class="fs"><b>배포</b><span>GitHub · Vercel 주소</span></div></div></div></div>
 </section>
 
-<section class="slide lt labs" data-title="[실습 14] 마지막 프로젝트">
+<section class="slide lt labs" data-title="[실습 15] 마지막 프로젝트">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="eyebrow"><span class="tag">프로젝트</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 14</span></div>
+  <div class="eyebrow"><span class="tag">프로젝트</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span><span class="labtag">실습 15</span></div>
   <h2 class="s-title sm">마지막 프로젝트</h2>
   <div class="rule"></div>
   <div class="body"><div class="labgrid">
@@ -2967,10 +3011,10 @@ document.getElementById("rate")
   </div></div>
 </section>
 
-<section class="slide lt" data-title="실습 14 순서">
+<section class="slide lt" data-title="실습 15 순서">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">프로젝트</span><span class="p0ph"><i>도입</i><i>설명</i><i class="on">적용</i></span></div>
-  <h2 class="s-title sm">실습 14 순서</h2>
+  <h2 class="s-title sm">실습 15 순서</h2>
   <div class="rule"></div>
   <div class="body"><div class="mid"><div class="plbs"><div class="plbr" style="--d:0.00s"><em>1</em><b>주제</b><q>내 엑셀로 만들 수 있는 화면 세 가지만 제안해 줘</q></div><div class="plbr" style="--d:0.14s"><em>2</em><b>규칙</b><q>이 프로젝트용 CLAUDE.md 를 만들어 줘</q></div><div class="plbr" style="--d:0.28s"><em>3</em><b>계획 · Plan Mode</b><q>만들 화면 계획 세워 줘</q></div><div class="plbr" style="--d:0.42s"><em>4</em><b>만들기</b><q>첫 화면부터 하나씩 만들어 줘</q></div><div class="plbr" style="--d:0.56s"><em>5</em><b>배포</b><q>GitHub 저장소로 올려 줘</q></div></div><div class="plbk"><b>확인</b><span>배포 주소가 열림</span><span>입력을 바꾸면 결과가 바뀜</span></div></div></div>
 </section>
