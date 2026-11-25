@@ -45,16 +45,21 @@ def cover():
 # 각 모듈(p0 · p1 … p8 · pnew)이 만든 장을 제목으로 모으고, 부 · 장마다 도입 → 설명 → 적용 순서로 엮는다.
 # 실습 번호는 OUTLINE 에 나오는 차례대로 1 부터 다시 매긴다(모듈 안의 「1-2 · 21-1」 같은 번호는 자리표).
 STEPS = ("도입", "설명", "적용")
-VIBE = {  # Ⅱ AI와 바이브코딩 — AI 전반 → 에이전트 → 컨텍스트 → CLAUDE.md → Skill → Hook → 하네스
-    "도입": ["프로그래밍 언어의 발전", "AI 코딩 도구의 변화", "바이브코딩의 등장", "바이브코딩 사례", "바이브코딩의 흐름"],
+VIBE = {  # Ⅱ AI와 바이브코딩 — AI 활용 방식의 변화(프롬프트 → 컨텍스트 → 에이전틱 → 하네스) → LLM → 에이전트 → 컨텍스트 → .claude → CLAUDE.md → Skill → Sub Agent → Hook
+    "도입": ["프로그래밍 언어의 발전", "AI 코딩 도구의 변화",
+             "AI 활용 방식의 변화", "프롬프트 엔지니어링", "프롬프트만의 한계", "컨텍스트 엔지니어링", "컨텍스트만의 한계",
+             "에이전틱 AI", "AI가 맡을 수 있는 작업 길이", "에이전트만의 한계", "마구와 하네스", "하네스 엔지니어링",
+             "바이브코딩의 등장", "바이브코딩 사례", "바이브코딩의 흐름"],
     "설명": ["LLM", "도구가 필요한 이유", "Claude와 Claude Code", "에이전트 루프",
-             "컨텍스트", "대화 비우기와 요약", "새 대화의 시작",
+             "컨텍스트", "컨텍스트 관리가 필요한 이유", "대화 비우기와 요약", "새 대화의 시작",
+             "Claude가 작업할 때 참고하는 것", "프로젝트 폴더 구조 · .claude/", "전역 · 프로젝트 하네스 위치",
              "CLAUDE.md", "CLAUDE.md에 적을 내용", "확인할 수 있는 문장",
              "매번 같은 설명", "Skill의 정의", "SKILL.md 예", "Skill 을 불러오는 순서", "CLAUDE.md vs Skill",
-             "부탁과 Hook", "Hook 이 끼어드는 시점",
-             "프롬프트 · 컨텍스트 · 하네스", "마구와 하네스", "Claude Code = 기본 하네스"],
+             "Sub Agent의 흐름", "부탁과 Hook", "Hook 이 끼어드는 시점", "Claude Code = 기본 하네스"],
     "적용": [],
 }
+APPENDIX = ("플러그인 마켓플레이스", "부록",  # 마지막 프로젝트 뒤 · 과정 이후 앞
+            {"도입": ["플러그인"], "설명": ["마켓플레이스", "플러그인 설치 순서", "많이 쓰는 공개 하네스"], "적용": ["설치 전 점검"]})
 CHAPTERS = [  # (제목, 꼬리표, 산출물, 도입, 설명, 적용)
     ("사과 데이터 분석", "사과 분석", "사과 요약 · 차트 세 장 · 집계 엑셀",
      ["실습 지도"], ["실습 환경", "실습 폴더 sim-lab", "요청 쓰는 법"],
@@ -87,9 +92,9 @@ CHAPTERS = [  # (제목, 꼬리표, 산출물, 도입, 설명, 적용)
     ("GitHub · Vercel 배포", "배포", "저장소 주소 · 배포 주소",
      ["배포 흐름"], ["파일 이름 버전 관리", "Git 커밋", "체크포인트", "GitHub · Vercel 준비", "수정과 재배포", "배포 전 점검"],
      ["[실습 31-2] GitHub · Vercel 배포", "실습 31-2 순서", "실습 31-2 요청 항목"]),
-    ("마지막 프로젝트", "프로젝트", "내 웹 · 배포 주소 · 1분 발표",
+    ("마지막 프로젝트", "프로젝트", "내 웹 · 배포 주소",
      ["프로젝트 주제"], ["프로젝트 진행 순서"],
-     ["[실습 41-1] 마지막 프로젝트", "실습 41-1 순서", "실습 41-1 요청 항목", "1분 발표", "제출물"]),
+     ["[실습 41-1] 마지막 프로젝트", "실습 41-1 순서", "실습 41-1 요청 항목", "제출물"]),
 ]
 
 
@@ -115,6 +120,14 @@ def _chdiv(n, title):
 </section>"""
 
 
+def _apdiv(title):
+    return f"""<section class="slide dk divider" data-title="[부록] {title}">
+  <div class="ghost">+</div>
+  <div class="kick">부록</div>
+  <h2 class="big">{title}</h2>
+</section>"""
+
+
 def lab_map():
     cells = "".join(f'<div class="v1u"><span class="c">{i:02d}</span><b>{t}</b><small>{o}</small></div>'
                     for i, (t, _, o, *_) in enumerate(CHAPTERS, 1))
@@ -131,9 +144,10 @@ def closing():
 
 def main():
     """한 파일 docs/index.html — 표지 · Ⅰ 데이터 분석 · Ⅱ AI와 바이브코딩 · 실습 장 열 개(장마다 도입 · 설명 · 적용) · 마지막 장. 교시 없음."""
+    import pai
     import pana
     import pnew
-    mods = [importlib.import_module(f"p{u}") for u, *_ in pkit.UNITS] + [pnew]
+    mods = [importlib.import_module(f"p{u}") for u, *_ in pkit.UNITS] + [pnew, pai]
     css = (BASE_CSS + "".join(getattr(m, "CSS", "") for m in mods)
            + ".v1shot figcaption,.ph figcaption,.v3ph figcaption{display:none}")  # 그림 밑 설명 줄은 내지 않는다
     pool = {}
@@ -180,6 +194,9 @@ def main():
     for n, (title, tag, _, intro_t, expl_t, app_t) in enumerate(CHAPTERS, 1):
         parts.append(_chdiv(n, title))
         emit({"도입": intro_t, "설명": expl_t, "적용": app_t}, tag)
+    ap_title, ap_tag, ap_ph = APPENDIX
+    parts.append(_apdiv(ap_title))
+    emit(ap_ph, ap_tag)
     parts.append(closing())
     # 실습 번호 — 나온 차례대로 1, 2, 3 …
     order = [m.group(1) for x in parts for m in [re.match(r'<section[^>]*data-title="\[실습 ([\d-]+)\]', x)] if m]

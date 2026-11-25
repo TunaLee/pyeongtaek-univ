@@ -56,9 +56,9 @@ def slides():
         light("컨텍스트", psim.context_fill()
               + src(("Claude Code 문서 · Context window", "https://code.claude.com/docs/en/context-window")), T),
         light("대화 비우기와 요약", viz2.tiles([
-            ("/clear", "대화를 비움 · CLAUDE.md 는 다시 읽음"), ("/compact", "지금까지를 요약해 이어 감"),
-            ("쓰는 때", "다른 일로 넘어갈 때 · 대화가 길어졌을 때"), ("남기는 법", "결정 · 숫자는 파일로(docs/)")], 2)
-              + src(("Claude Code 문서 · Commands", "https://code.claude.com/docs/en/commands")), T),
+            ("/clear", "대화를 비움 · CLAUDE.md 는 다시 읽음"), ("/compact", "지금까지를 요약해 이어 감 · 남길 것 지정"),
+            ("쓰는 때", "다른 일로 넘어갈 때 · 두 번 고쳐도 틀릴 때"), ("남기는 법", "꼭 지킬 규칙은 CLAUDE.md · 결정 · 숫자는 파일로")], 2)
+              + src(("Claude Code 문서 · Best practices", "https://code.claude.com/docs/en/best-practices")), T),
         light("매번 같은 설명", viz2.pair(
             "요청마다 설명", [("첫 요청", "「행 · 열 · 열마다 뜻 다 적어 줘」"), ("다음 요청", "「숫자 열은 평균 · 최솟값 · 최댓값도」"),
                              ("또 다음", "「결과는 docs/ 에 같은 형식으로」")],

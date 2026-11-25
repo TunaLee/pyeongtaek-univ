@@ -264,18 +264,19 @@ def dev_team():
     return f'<svg viewBox="0 0 1180 340" class="v2">{"".join(s)}</svg>'
 
 
-def calc_compare():
-    """도구 없이 계산 vs 계산 도구를 부를 때 — 왼쪽이 먼저, 오른쪽이 뒤따름."""
+def calc_compare(a=48217, b=29356, wrong=1415758252):
+    """도구 없이 계산 vs 계산 도구를 부를 때 — 왼쪽이 먼저, 오른쪽이 뒤따름. 5자리 × 5자리 · 답은 코드로 계산."""
     def col(cls, head, rows, d0):
         r = "".join(f'<div class="tv2r" style="--d:{d0 + i * .45:.2f}s"><b>{a}</b><span>{b}</span></div>' for i, (a, b) in enumerate(rows))
         return f'<div class="tv2c {cls}"><div class="tv2h">{head}</div>{r}</div>'
-    a = col("no", "도구 없이", [("질문", "4,817 × 293 = ?"), ("LLM", "다음 숫자를 확률로 이어 씀"), ("답", "「1,411,281」 <em class=x>✕</em>")], 0)
-    b = col("yes", "계산 도구가 있으면", [("LLM", "calc 도구를 (4817 * 293)로 부르기로 결정"), ("도구", "실제로 계산 → 1,411,381"), ("답", "「1,411,381」 <em class=o>✓</em>")], 1.6)
-    return f'<div class="tv2">{a}<div class="tv2a">→</div>{b}</div>'
+    ok = a * b
+    a_ = col("no", "도구 없이", [("질문", f"{a:,} × {b:,} = ?"), ("LLM", "다음 숫자를 확률로 이어 씀"), ("답", f"「{wrong:,}」 <em class=x>✕</em>")], 0)
+    b_ = col("yes", "계산 도구가 있으면", [("LLM", f"calc 도구를 ({a} * {b})로 부르기로 결정"), ("도구", f"실제로 계산 → {ok:,}"), ("답", f"「{ok:,}」 <em class=o>✓</em>")], 1.6)
+    return f'<div class="tv2">{a_}<div class="tv2a">→</div>{b_}</div>'
 
 
 def subagent_flow(ask="「shop 코드 리뷰해 줘」", name="security-reviewer", tools=("Read", "Grep", "Glob"),
-                  files=("orders.py", "payment.py", "users.py", "refund.py"), back="보안 지적 3건 · 파일:줄"):
+                  files=("orders.py", "payment.py", "users.py", "refund.py"), back="보안 지적 3건 · 파일:줄", fw=150, ffs=15):
     """Sub Agent 흐름 — 요청 → 위임문 → 새 컨텍스트에서 읽기 → 결과만 → 닫힘. 메인 컨텍스트는 조금만 참."""
     s = [f"<defs>{_defs('sub')}</defs>"]
     s.append(_box(20, 150, 190, 90, "사용자", ask, fill="#F4F6F9", stroke=G, d=0))
@@ -300,8 +301,8 @@ def subagent_flow(ask="「shop 코드 리뷰해 줘」", name="security-reviewer
     # 파일들
     for i, f in enumerate(files):
         y = 170 + i * 26
-        s.append(f'<g class="v2-in" style="--d:{1.8 + i * .25:.2f}s"><rect x="1000" y="{y}" width="150" height="22" rx="5" fill="#fff" stroke="#C9CFD8"/>'
-                 f'<text x="1012" y="{y + 16}" class="v2-l" style="fill:#16233A;font-family:var(--mono,monospace)">{f}</text></g>')
+        s.append(f'<g class="v2-in" style="--d:{1.8 + i * .25:.2f}s"><rect x="1000" y="{y}" width="{fw}" height="22" rx="5" fill="#fff" stroke="#C9CFD8"/>'
+                 f'<text x="1010" y="{y + 16}" class="v2-l" style="fill:#16233A;font-family:var(--mono,monospace);font-size:{ffs}px">{f}</text></g>')
     s.append(_arrow(990, 225, 975, 225, c=O, d=1.8))
     # 결과만
     s.append(_arrow(690, 240, 550, 240, c=GR, d=3.2, label="④ 결과만"))
