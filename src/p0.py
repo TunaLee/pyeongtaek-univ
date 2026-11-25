@@ -161,7 +161,7 @@ def _letters(cols, full):
 
 def excel_vs_csv(head, sel="무게", name="apple_A07",
                  subs=("사람이 보는 파일<br/>칸 · 서식 · 시트", "HTML 화면이 읽는 파일<br/>쉼표로 나눈 글자"), full=None):
-    """같은 기록 4줄 — 엑셀 화면과 CSV 글자 (2교시 엑셀과 CSV). 열 글자는 원본 파일 기준."""
+    """같은 기록 4줄 — 엑셀 화면과 CSV 글자 (개요 「엑셀과 CSV」). 열 글자는 원본 파일 기준."""
     cols = list(head.columns)
     letters = _letters(cols, full if full is not None else cols)
     num = {c for c in cols if str(head[c].dtype) != "object"}
@@ -190,23 +190,27 @@ def _steps(items, cols, step=2.0):
 
 
 def data_part():
-    """개요 1 · 데이터 분석 — 배경(빅데이터의 등장 · 전 세계 데이터 양 · 하루 간편결제 건수 · 일상 속 데이터) → 큰 흐름 → 사과 데이터 한 줄 → 값 하나(분포) → 두 값(산점도) → 등급 색(3차원) → 위치(지도) → 묶어 보기(막대)
+    """개요 1 · 데이터 분석 — 배경(빅데이터의 등장 · 전 세계 데이터 양 · 일상 속 데이터) → 큰 흐름 → 데이터 관리의 변화(수기 → 엑셀 → 시스템 · 센서 → 클라우드 · AI) → 엑셀과 CSV → 행과 열 → 사과 데이터 한 줄 → 수치형과 범주형 → 데이터 시각화 방법(차트 다섯 종류) → 값 하나(분포) → 두 값(산점도) → 등급 색(3차원) → 위치(지도) → 묶어 보기(막대)
     → 여러 날(선) → 특이한 날 · 원인 짐작 → 상관관계 · 인과관계(숨은 원인 위치) → 추세선 예측 → 지도학습 · 비지도학습(정답 열 · 경계 · 무리 · 활용 예) → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
     import pana                      # pana 가 p0 의 시트 그림을 쓰므로 함수 안에서 불러옴
     df = _d07()
     dd = [
         light("빅데이터의 등장", pbg.bigdata_timeline() + src(*pbg.BIG_SRC), TAG),
         light("전 세계 데이터 양", pbg.data_growth() + src(*pbg.GROWTH_SRC), TAG),
-        light("하루 간편결제 건수", pbg.payments() + src(pbg.PAY["src"], pbg.EXCEL_SRC), TAG),
         light("일상 속 데이터", viz2.maprows([
             ("간편결제", "결제 시각 · 가맹점 · 금액", "결제 1건 = 한 줄"), ("출석", "날짜 · 이름 · 출결", "출석부 한 칸"),
             ("사과 선별", "무게 · 당도 · 흠", "사과 1개 = 한 줄"), ("반도체 검사", "칩 위치 · 측정값 · 합격 · 불합격", "칩 1개 = 한 줄")],
             "기록 대상", "기록 항목"), TAG),
         light("데이터 분석의 큰 흐름", pana.roadmap(), TAG),
+        light("데이터 관리의 변화", pbg.data_mgmt(), TAG),
     ]
     ex = [
-        light("사과 선별 데이터", pbg.orchard_zones(), TAG),
+        light("엑셀과 CSV", excel_vs_csv(df.head(4)[["날짜", "사과번호", "가로칸", "세로칸", "위치", "품종", "무게", "당도", "등급"]],
+                                    subs=("사람이 보는 파일<br/>칸 · 서식 · 시트", "프로그램이 읽는 파일<br/>쉼표로 나눈 글자"), full=df.columns), TAG),
         light("행과 열", table_terms(df), TAG),
+        light("사과 선별 데이터", pbg.orchard_zones(), TAG),
+        light("수치형과 범주형", pana.type_kinds(df), TAG),
+        light("데이터 시각화 방법", pana.chart_menu(df), TAG),
         light("무게 분포", num_anim(df), TAG),
         light("무게와 당도", pana.scatter_2d(df), TAG),
         light("무게 · 당도 · 등급", pana.scatter_3d(df), TAG),

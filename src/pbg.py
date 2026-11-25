@@ -1,4 +1,4 @@
-"""배경 장 그림 — 빅데이터의 등장 · 전 세계 데이터 양(IDC) · 하루 간편결제 건수(한국은행) · 바이브코딩까지의 변화 · 데이터 분석과 엔지니어링의 변화 · Git 이전의 버전 관리.
+"""배경 장 그림 — 빅데이터의 등장 · 전 세계 데이터 양(IDC) · 데이터 관리의 변화(수기 → 클라우드 · AI) · 바이브코딩까지의 변화 · 데이터 분석과 엔지니어링의 변화 · Git 이전의 버전 관리.
 
 언어 발전 · AI 코딩 도구 변화 · 파일 이름 버전 관리는 vibe-coding 강의(1-1 · 1-5)의 구성을 이 과정 예시로 옮긴 것.
 장면 간격 2초 이상 · 한 번 재생 후 마지막 장면에 멈춤. CSS 접두어 pbg.
@@ -98,46 +98,66 @@ def data_growth():
     return d.svg(1160, 380, s)
 
 
-# ── 하루 간편결제 건수 · 한국은행 ─────────────────────────────────────
-# 한국은행 보도자료 「2026년 상반기중 전자지급서비스 이용현황」(2026-09-18) 부록 「간편지급 서비스 이용 현황」 표
-# (일평균 · 만 건 · 이용건수 합계 행) · 원문 PDF 에서 직접 확인
-PAY = {"src": ("한국은행 · 2026년 상반기중 전자지급서비스 이용현황 (2026.9)",
-               "https://www.bok.or.kr/portal/bbs/B0000502/view.do?nttId=11064870&menuNo=201265"),
-       "count": [("24년 상", 2973.5), ("24년 하", 3177.8), ("25년 상", 3388.1), ("25년 하", 3758.3), ("26년 상", 3822.1)]}
-EXCEL_ROWS = 1_048_576   # 엑셀 한 시트 최대 행 수 — Microsoft 「Excel specifications and limits」 1,048,576 rows by 16,384 columns
-EXCEL_SRC = ("Microsoft · Excel 사양 및 제한", "https://support.microsoft.com/en-us/office/excel-specifications-and-limits-1672b34d-7043-467e-8e27-269d656771c3")
+# ── 데이터 관리의 변화 · 수기 → 엑셀 → 시스템 · 센서 → 클라우드 · AI (사과 선별 예) ───────
+MGMT = [  # (이름, 기록, 보관, 사과 선별)
+    ("수기", "사람이 손으로 적음", "종이 장부 · 일지", "장부에 무게 · 등급"),
+    ("엑셀", "사람이 PC에 입력", "엑셀 파일", "하루 결과를 엑셀에"),
+    ("시스템 · 센서", "기계가 측정 · 자동 저장", "데이터베이스", "선별기가 무게 · 당도 측정"),
+    ("클라우드 · AI", "기계가 실시간 전송", "클라우드 저장소", "날마다 파일 · AI로 분석"),
+]
 
 
-def payments():
-    """반기별 간편결제 하루 평균 건수 막대가 자람 → 마지막 막대 강조 · 1년 전 대비 → 1초 · 엑셀 시트로 환산. 12초."""
-    d = _D("pbp", 12)
-    pc = lambda t: t / 12 * 100  # noqa: E731
-    cnt = PAY["count"]
-    mx = max(v for _, v in cnt)
-    base, top, bw, gap, x0 = 340, 250, 84, 44, 60
-    grow = "transform-box:fill-box;transform-origin:50% 100%"
-    s = (_t(40, 20, "간편결제 · 하루 평균 건수", "tn", "start", 'style="font-size:16px"')
-         + f'<line x1="40" y1="{base}" x2="{x0 + len(cnt) * (bw + gap)}" y2="{base}" stroke="{N}" stroke-width="2"/>')
-    st = [(0, "transform:scaleY(0)"), (pc(.5), "transform:scaleY(0)"), (pc(2), "transform:scaleY(1)"), (100, "transform:scaleY(1)")]
-    for i, (lab, v) in enumerate(cnt):
-        x, h = x0 + i * (bw + gap), top * v / mx
-        last = i == len(cnt) - 1
-        s += f'<rect x="{x}" y="{base - h:.1f}" width="{bw}" height="{h:.1f}" rx="5" fill="{K}" {d.a(st, "ease-out", grow)}/>'
-        if last:
-            s += f'<rect x="{x}" y="{base - h:.1f}" width="{bw}" height="{h:.1f}" rx="5" fill="{O}" {d.show(pc(4))}/>'
-        s += (f'<g {d.show(pc(2))}>' + _t(x + bw / 2, base - h - 16, f"{v:,.0f}만", "tn", extra='style="font-size:15px"')
-              + _t(x + bw / 2, base + 22, lab, "ts", extra='style="font-size:15px"') + "</g>")
-    (pl, pv), (ll, lv) = cnt[-3], cnt[-1]                               # 1년 전 같은 반기와 비교
-    s += (f'<g {d.show(pc(4))}><rect x="720" y="50" width="420" height="140" rx="16" fill="#FFF8F0" stroke="{O}" stroke-width="2.5"/>'
-          + _t(930, 82, f"20{ll[:2]}년 상반기 · 하루 평균", "ts", extra='style="font-size:15px"')
-          + _t(930, 122, f"{lv:,.0f}만 건", "tt", extra=f'style="font-size:30px;fill:{O}"')
-          + _t(930, 162, f"1년 전보다 {(lv / pv - 1) * 100:.1f}% 증가", "tn", extra='style="font-size:16px"') + "</g>")
-    n = lv * 1e4                                                        # 만 건 → 건
-    s += (f'<g {d.show(pc(7))}><rect x="720" y="210" width="420" height="130" rx="16" fill="{W}" stroke="{K}" stroke-width="2.5"/>'
-          + _t(930, 248, f"1초에 약 {n / 86400:,.0f}건", "tt", extra='style="font-size:26px"')
-          + _t(930, 288, f"하루치 엑셀 시트 {math.ceil(n / EXCEL_ROWS)}장 분량", "tn", extra='style="font-size:18px"')
-          + _t(930, 318, f"시트 한 장 최대 {EXCEL_ROWS:,}행", "ts", extra='style="font-size:14px"') + "</g>")
-    return d.svg(1160, 400, s)
+def _mg_glyph(k, cx, cy):
+    """단계 그림 — 종이 장부 · 엑셀 시트 · 센서 → 데이터베이스 · 클라우드 + AI."""
+    if k == 0:
+        s = (f'<path d="M{cx - 48} {cy - 46} H{cx + 30} L{cx + 48} {cy - 28} V{cy + 46} H{cx - 48} Z" fill="#FFFBF0" stroke="{K}" stroke-width="2"/>'
+             f'<path d="M{cx + 30} {cy - 46} V{cy - 28} H{cx + 48}" fill="none" stroke="{K}" stroke-width="2"/>')
+        for r in range(4):
+            y = cy - 22 + r * 18
+            s += f'<path d="M{cx - 36} {y} q 8 -7 16 0 t 16 0 t 16 0 t {16 if r < 3 else 8} 0" fill="none" stroke="{GRAY}" stroke-width="2.2"/>'
+        return s
+    if k == 1:
+        s = f'<rect x="{cx - 60}" y="{cy - 44}" width="120" height="16" fill="#1D6F42"/><rect x="{cx - 60}" y="{cy - 44}" width="120" height="88" fill="none" stroke="{K}" stroke-width="2"/>'
+        s += "".join(f'<line x1="{cx - 60}" y1="{cy - 28 + r * 18}" x2="{cx + 60}" y2="{cy - 28 + r * 18}" stroke="#C9CFD8" stroke-width="1.5"/>' for r in range(1, 4))
+        s += "".join(f'<line x1="{cx - 60 + c * 30}" y1="{cy - 28}" x2="{cx - 60 + c * 30}" y2="{cy + 44}" stroke="#C9CFD8" stroke-width="1.5"/>' for c in range(1, 4))
+        return s
+    if k == 2:
+        x = cx + 30
+        return (f'<rect x="{cx - 78}" y="{cy - 16}" width="58" height="32" rx="6" fill="{W}" stroke="{K}" stroke-width="2"/>'
+                + _t(cx - 49, cy + 1, "센서", "tn", extra='style="font-size:13px"')
+                + f'<path d="M{cx - 16} {cy} H{x - 34}" stroke="{O}" stroke-width="2.5" stroke-dasharray="5 4"/>'
+                + f'<path d="M{x - 30} {cy - 30} V{cy + 30} A30 9 0 0 0 {x + 30} {cy + 30} V{cy - 30}" fill="#EEF3FA" stroke="{K}" stroke-width="2"/>'
+                + f'<ellipse cx="{x}" cy="{cy - 30}" rx="30" ry="9" fill="#EEF3FA" stroke="{K}" stroke-width="2"/>'
+                + f'<path d="M{x - 30} {cy - 8} A30 9 0 0 0 {x + 30} {cy - 8} M{x - 30} {cy + 12} A30 9 0 0 0 {x + 30} {cy + 12}" fill="none" stroke="{K}" stroke-width="1.5"/>')
+    return (f'<g fill="#E3ECF8"><circle cx="{cx - 28}" cy="{cy + 6}" r="22"/><circle cx="{cx + 2}" cy="{cy - 10}" r="30"/><circle cx="{cx + 34}" cy="{cy + 6}" r="22"/>'
+            f'<rect x="{cx - 50}" y="{cy + 6}" width="106" height="22" rx="11"/></g>'
+            f'<rect x="{cx + 18}" y="{cy + 18}" width="46" height="28" rx="14" fill="{O}"/>' + _t(cx + 41, cy + 33, "AI", "tw", extra='style="font-size:14px"'))
+
+
+def data_mgmt():
+    """예전 → 지금 · 카드 네 장이 차례로(그림 · 기록 · 보관 · 사과 선별) · 쌓이는 양 막대가 길어짐. 10초."""
+    d = _D("pbm", 10)
+    pc = lambda t: t / 10 * 100  # noqa: E731
+    T, CW, GAP = 44, 262, 24
+    s = (_t(20, 12, "예전", "tn", "start", 'style="font-size:15px"') + _t(1140, 12, "지금", "tn", "end", 'style="font-size:15px"')
+         + f'<path d="M64 13 H1088" stroke="{N}" stroke-width="2" marker-end="url(#{d.id("k")})"/>')
+    grow = "transform-box:fill-box;transform-origin:0 50%"
+    for i, (name, rec, keep, apple) in enumerate(MGMT):
+        x, t = 20 + i * (CW + GAP), .5 + i * 2
+        cx, last = x + CW / 2, i == len(MGMT) - 1
+        s += (f'<g {d.show(pc(t))}><rect x="{x}" y="{T}" width="{CW}" height="376" rx="16" fill="{"#FFF8F0" if last else W}" '
+              f'stroke="{O if last else "#D9DDE3"}" stroke-width="{2.5 if last else 2}"/>'
+              + _t(cx, T + 36, name, "tt", extra=f'style="font-size:22px{";fill:" + O if last else ""}"') + _mg_glyph(i, cx, T + 106))
+        for k, (lab, val) in enumerate([("기록", rec), ("보관", keep), ("사과 선별", apple)]):
+            y = T + 182 + k * 50
+            s += _t(x + 20, y, lab, "ts", "start", 'style="font-size:13px"') + _t(x + 20, y + 22, val, "tn", "start", 'style="font-size:15px"')
+        s += _t(x + 20, T + 334, "쌓이는 양", "ts", "start", 'style="font-size:13px"') + "</g>"
+        st = [(0, "transform:scaleX(0)"), (pc(t), "transform:scaleX(0)"), (pc(t + 1), "transform:scaleX(1)"), (100, "transform:scaleX(1)")]
+        s += f'<rect x="{x + 20}" y="{T + 346}" width="{[16, 50, 130, 222][i]}" height="12" rx="6" fill="{O if last else K}" {d.a(st, "ease-out", grow)}/>'
+        if i:
+            s += f'<g {d.show(pc(t))}><path d="M{x - GAP + 4} {T + 106} H{x - 4}" stroke="{O}" stroke-width="3" marker-end="url(#{d.id("o")})"/></g>'
+    return d.svg(1160, 430, s)
+
 
 # ── 프로그래밍 언어의 발전 · 같은 계산(1부터 100까지 합) ──────────────
 LANGS = [  # (시기, 이름, 예, 특징, 요리 비유)
@@ -337,28 +357,6 @@ def orchard_zones():
     return d.svg(1160, 430, s)
 
 
-# ── 데이터 종류와 차트 · 실제 사과 데이터로 그린 작은 그림 세 장 ─────────────
-def chart_types():
-    """숫자 열 → 분포 · 글자 열 → 막대 · 위치 열 → 지도. 카드 셋이 2초 간격."""
-    df = sk.D07
-    w = df["무게"]
-    cnt = [int(((w >= lo) & (w < lo + 10)).sum()) for lo in range(200, 380, 10)]
-    hist = '<div class="pbgTh">' + "".join(f'<i style="height:{c / max(cnt) * 100:.0f}%"></i>' for c in cnt) + "</div>"
-    zr = sk.DN["area"]
-    bars = '<div class="pbgTb">' + "".join(
-        f'<div><span>{z}</span><b style="width:{zr[z]:.0f}%;background:{ZCOL[z]}"></b><em>{zr[z]:.2f}%</em></div>' for z in sk.AREA) + "</div>"
-    nx = int(df["가로칸"].max())
-    cells = sorted(((int(r["세로칸"]), int(r["가로칸"]), r["등급"]) for _, r in df.iterrows()), key=lambda t: (-t[0], t[1]))
-    grid = (f'<div class="pbgTg" style="grid-template-columns:repeat({nx},1fr)">'
-            + "".join(f'<i style="background:{"#2BA84A" if g == "상품" else "#E8344E"}"></i>' for *_, g in cells) + "</div>")
-    cards = [("숫자 열", "무게 · 당도 · 지름", hist, "분포 · 평균 · 퍼짐"),
-             ("글자 열", "위치 · 품종 · 등급", bars, "막대 · 개수 · 비율"),
-             ("위치 열", "가로칸 · 세로칸", grid, "지도 · 몰린 곳")]
-    c = "".join(f'<div class="pbgTc" style="--d:{.3 + i * 2:.1f}s"><b>{h}</b><span>{cols}</span><div class="m">{mock}</div>'
-                f'<div class="u"><i>→</i>{use}</div></div>' for i, (h, cols, mock, use) in enumerate(cards))
-    return f'<div class="pbgTs">{c}</div>'
-
-
 CSS = """
   @keyframes pbgIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
   .pbgA{font-style:normal; align-self:center; text-align:center; font-size:28px; font-weight:800; color:#F28C28; opacity:0; animation:pbgIn .5s var(--d) forwards;}
@@ -432,19 +430,6 @@ CSS = """
   .pbgHm{display:grid; grid-template-columns:auto auto 1fr; gap:6px 10px; align-items:baseline; border:1.5px solid #E1E5EB; border-left:5px solid #F28C28; border-radius:10px; background:#fff; padding:10px 14px; opacity:0; animation:pbgIn .45s var(--d) forwards;}
   .pbgHm b{font-size:19px; color:#16233A;} .pbgHm i{font-style:normal; color:#F28C28; font-weight:800;} .pbgHm span{font-size:19px; font-weight:800; color:#C25E00;}
   .pbgHm small{grid-column:1 / -1; font-size:14.5px; color:#4A5563;}
-  /* 데이터 종류와 차트 */
-  .pbgTs{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; margin-top:6px;}
-  .pbgTc{border:2px solid #D9DDE3; border-radius:16px; background:#fff; padding:18px 20px; display:flex; flex-direction:column; gap:6px; opacity:0; animation:pbgIn .6s var(--d) forwards;}
-  .pbgTc > b{font-size:24px; color:#16233A;} .pbgTc > span{font-size:15px; color:#6B7785;}
-  .pbgTc .m{height:170px; border:1.5px solid #E1E5EB; border-radius:12px; padding:14px; margin:8px 0; display:flex; align-items:center; justify-content:center;}
-  .pbgTc .u{font-size:19px; font-weight:800; color:#C25E00;} .pbgTc .u i{font-style:normal; margin-right:8px;}
-  .pbgTh{width:100%; height:100%; display:flex; align-items:flex-end; gap:2px; border-bottom:2px solid #9AA5B1;}
-  .pbgTh i{flex:1; background:#1F3A5F; opacity:.85; border-radius:2px 2px 0 0;}
-  .pbgTb{width:100%; display:flex; flex-direction:column; gap:12px;}
-  .pbgTb div{display:grid; grid-template-columns:64px 1fr 62px; gap:8px; align-items:center; font-size:13.5px; font-weight:700; color:#16233A;}
-  .pbgTb b{display:block; height:18px; border-radius:4px;} .pbgTb em{font-style:normal; font-size:13px; color:#3A4657; text-align:right;}
-  .pbgTg{display:grid; gap:1px; width:213px; height:142px;}
-  .pbgTg i{display:block; border-radius:1px;}
-  @media print{.pbgA,.pbgL,.pbgLine,.pbgE,.pbgR,.pbgF,.pbgP,.pbgPh,.pbgHm,.pbgTc{animation:none; opacity:1}
+  @media print{.pbgA,.pbgL,.pbgLine,.pbgE,.pbgR,.pbgF,.pbgP,.pbgPh,.pbgHm{animation:none; opacity:1}
     .pbgM.sim .num .a{animation:none; opacity:0} .pbgM.sim .num .b{animation:none; opacity:1} .pbgM.sim .sl b{animation:none; left:32%}}
 """

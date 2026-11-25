@@ -1,7 +1,7 @@
 """1교시 데이터 분석 첫걸음 · Claude Code 시작 (사과 데이터 · 실습 중심).
 
 개요(데이터 분석 → 바이브코딩)에서 본 그림을 Claude Code 로 직접 그려 본다.
-도입(Claude Code가 데이터를 다루는 순서) → 설명(요청 구성 · 데이터 종류와 차트)
+도입(Claude Code가 데이터를 다루는 순서) → 설명(요청 쓰는 법 · 차트 종류는 개요 「데이터 시각화 방법」)
 → 적용(실습 폴더 · 환경 · 실습 1-1 사과 데이터 읽기 → 1-2 사과 차트 세 장 · 결과 · 사과 차트에서 읽은 사실).
 """
 import p0
@@ -36,7 +36,6 @@ def slides():
             "한 줄 요청", [("요청", "「사과 엑셀 요약해 줘」"), ("무엇을", "Claude 가 추측"), ("저장", "대화창에만 · 파일 없음")],
             "네 칸을 채운 요청", [("목표", "몇 행 · 몇 열 · 열마다 뜻 · 상품 · 불량 수"), ("입력", "data/apple_A07.xlsx"),
                              ("산출물", "docs/사과_요약.md"), ("하지 말 것", "원본 수정")]), T),
-        light("데이터 종류와 차트", pbg.chart_types(), T),
         # ── 적용
         light("실습 폴더 sim-lab", viz2.maprows([
             ("data/", "apple_A07.xlsx · wafer_test_W07.xlsx", "읽기만"), ("templates/", "선별기준표 · 합격기준표 · 예시 HTML", "참고 자료"),
@@ -46,7 +45,7 @@ def slides():
             ("Python", "pandas · openpyxl"), ("sim-lab 폴더", "파일 → 폴더 열기")], 2)
               + src(("Claude Code 문서 · VS Code", "https://code.claude.com/docs/en/vs-code")), T),
         lab("1-1", "사과 데이터 읽기", T, "apple_A07.xlsx 를 Claude Code 로 읽고 몇 행 · 몇 열 · 열마다 뜻 · 상품 · 불량 수를 요약 문서로 받는다",
-            ["sim-lab 열기 · Claude Code 실행", "사과 엑셀 요약 요청", "숫자 열 · 글자 열 구분 요청", "엑셀 필터로 상품 수 대조"],
+            ["sim-lab 열기 · Claude Code 실행", "사과 엑셀 요약 요청", "수치형 · 범주형 열 구분 요청", "엑셀 필터로 상품 수 대조"],
             [f"{DN['rows']}행 × {DN['cols']}열", f"상품 {DN['pass']} · 불량 {DN['fail']} · {DN['rate']}%", "docs/사과_요약.md"],
             files="data/apple_A07.xlsx"),
         lab("1-2", "사과 차트 세 장", T, "무게 분포 · 위치별 상품률 · 과수원 지도를 Claude Code 로 그리고 차트마다 읽히는 사실을 한 줄씩 적는다",

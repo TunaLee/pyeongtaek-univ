@@ -54,6 +54,95 @@ def roadmap():
     return d.svg(1160, 290, s)
 
 
+# ── 수치형과 범주형 · 엑셀 시트의 열이 두 종류로 ─────────────────────
+def type_kinds(df):
+    """시트의 수치형 열(무게 · 지름 · 당도)이 파랗게 → 범주형 열(위치 · 품종 · 등급)이 주황으로 · 종류마다 하는 계산과 실제 값. 9초."""
+    d = _D("pky", 9)
+    pc = lambda t: t / 9 * 100  # noqa: E731
+    rows = _rows8(df)
+    scol = [("사과번호", 96, False), ("위치", 76, False), ("품종", 62, False), ("무게", 66, True), ("지름", 66, True), ("당도", 62, True), ("등급", 62, False)]
+    sh, cells, W_ = _sheet(d, rows, len(df), None, 0, scol)
+    Y, BH, BLUE_ = 34, 26 + 8 * _RH, "#4A86E8"
+    s = f'<g {d.show(pc(.3))}><g transform="translate(0,{Y})">{sh}</g></g>'
+    groups = [(["무게", "지름", "당도"], BLUE_, "수치형", 2), (["위치", "품종"], O, "범주형", 4.5), (["등급"], O, "범주형", 4.5)]
+    for cols, c, lab, t in groups:
+        x0 = cells[(0, cols[0])][0]
+        x1 = cells[(0, cols[-1])][0] + cells[(0, cols[-1])][2]
+        s += (f'<g {d.show(pc(t))}><rect x="{x0}" y="{Y + 44}" width="{x1 - x0}" height="{BH}" fill="{c}" fill-opacity=".13" stroke="{c}" stroke-width="2.5"/>'
+              + _t((x0 + x1) / 2, Y - 14, lab, "tn", extra=f'style="font-size:15px;fill:{c}"') + "</g>")
+    w = df["무게"]
+    zc = df["위치"].value_counts()
+    cards = [(BLUE_, "#EEF4FD", "수치형", "숫자 · 크기 비교", "무게 · 지름 · 당도", "평균 · 최솟값 · 최댓값",
+              f"무게 평균 {w.mean():.1f}g · 최소 {int(w.min())}g · 최대 {int(w.max())}g", 2, 40),
+             (O, "#FFF8F0", "범주형", "이름표 · 종류 구분", "위치 · 품종 · 등급", "개수 · 비율",
+              "위치 · " + " · ".join(f"{z} {int(zc[z])}개" for z in sk.AREA), 4.5, 214)]
+    for c, bg, name, sub, ex, calc, val, t, y in cards:
+        s += (f'<g {d.show(pc(t))}><rect x="{W_ + 40}" y="{y}" width="{1150 - W_ - 40}" height="156" rx="16" fill="{bg}" stroke="{c}" stroke-width="2.5"/>'
+              + _t(W_ + 64, y + 34, name, "tt", "start", f'style="font-size:24px;fill:{c}"') + _t(W_ + 150, y + 36, sub, "ts", "start", 'style="font-size:15px"')
+              + _t(W_ + 64, y + 72, f"예 · {ex}", "tn", "start", 'style="font-size:16px"')
+              + _t(W_ + 64, y + 102, f"계산 · {calc}", "tn", "start", 'style="font-size:16px"')
+              + _t(W_ + 64, y + 132, val, "ts", "start", 'style="font-size:15px"') + "</g>")
+    return d.svg(1160, 380, s)
+
+
+# ── 데이터 시각화 방법 · 차트 다섯 종류 (실제 사과 데이터 · 축 숫자 없이) ─────────
+def _cm_mini(k, df, x, y, w, h):
+    s = f'<line x1="{x}" y1="{y + h}" x2="{x + w}" y2="{y + h}" stroke="{N}" stroke-width="1.5"/>'
+    if k == 0:                                   # 히스토그램 · 무게 10g 구간
+        cnt = [int(((df["무게"] >= lo) & (df["무게"] < lo + 10)).sum()) for lo in range(200, 380, 10)]
+        bw = w / len(cnt)
+        s += "".join(f'<rect x="{x + i * bw + 1:.1f}" y="{y + h - c / max(cnt) * (h - 6):.1f}" width="{bw - 2:.1f}" height="{c / max(cnt) * (h - 6):.1f}" fill="{K}"/>'
+                     for i, c in enumerate(cnt))
+    elif k == 1:                                 # 산점도 · 무게 × 지름
+        xs, ys = df["무게"].to_numpy(float), df["지름"].to_numpy(float)
+        fx = lambda v: x + 4 + (v - xs.min()) / (xs.max() - xs.min()) * (w - 8)  # noqa: E731
+        fy = lambda v: y + h - 4 - (v - ys.min()) / (ys.max() - ys.min()) * (h - 8)  # noqa: E731
+        a, b = np.polyfit(xs, ys, 1)
+        s += f'<line x1="{x}" y1="{y}" x2="{x}" y2="{y + h}" stroke="{N}" stroke-width="1.5"/>'
+        s += "".join(f'<circle cx="{fx(p):.1f}" cy="{fy(q):.1f}" r="1.8" fill="{K}" fill-opacity=".4"/>' for p, q in zip(xs[::2], ys[::2]))
+        s += f'<line x1="{fx(xs.min()):.1f}" y1="{fy(a * xs.min() + b):.1f}" x2="{fx(xs.max()):.1f}" y2="{fy(a * xs.max() + b):.1f}" stroke="{O}" stroke-width="2.5"/>'
+    elif k == 2:                                 # 막대 · 위치별 상품률
+        import pbg
+        zr = sk.DN["area"]
+        for i, z in enumerate(sk.AREA):
+            bh = zr[z] / 100 * (h - 22)
+            bx = x + 18 + i * 54
+            s += (f'<rect x="{bx}" y="{y + h - bh:.1f}" width="38" height="{bh:.1f}" rx="3" fill="{pbg.ZCOL[z]}"/>'
+                  + _t(bx + 19, y + h + 14, z, "ts", extra='style="font-size:11px"'))
+    elif k == 3:                                 # 선 · 25일 상품률
+        days = REF["general"]["days"]
+        vals = [days[f"A{i:02d}"] for i in range(1, 26)]
+        fx = lambda i: x + 4 + i / 24 * (w - 8)  # noqa: E731
+        fy = lambda v: y + h - 6 - (v - min(vals)) / (max(vals) - min(vals)) * (h - 14)  # noqa: E731
+        s += f'<line x1="{x}" y1="{y}" x2="{x}" y2="{y + h}" stroke="{N}" stroke-width="1.5"/>'
+        s += f'<polyline points="{" ".join(f"{fx(i):.1f},{fy(v):.1f}" for i, v in enumerate(vals))}" fill="none" stroke="{K}" stroke-width="2.5"/>'
+        j = vals.index(min(vals))
+        s += f'<circle cx="{fx(j):.1f}" cy="{fy(vals[j]):.1f}" r="7" fill="none" stroke="{BAD}" stroke-width="2.5"/>'
+    else:                                        # 지도 · 과수원 칸마다 등급
+        nx, ny = int(df["가로칸"].max()), int(df["세로칸"].max())
+        cs = min(w / nx, h / ny)
+        ox = x + (w - cs * nx) / 2
+        s = "".join(f'<rect x="{ox + (r["가로칸"] - 1) * cs:.1f}" y="{y + (ny - r["세로칸"]) * cs:.1f}" width="{cs - 1:.1f}" height="{cs - 1:.1f}" '
+                    f'fill="{GOOD if r["등급"] == "상품" else BAD}"/>' for _, r in df.iterrows())
+    return s
+
+
+def chart_menu(df):
+    """히스토그램 · 산점도 · 막대 · 선 · 지도 카드가 차례로 — 데이터 종류와 보이는 것. 카드 1.6초 간격 · 9초."""
+    d = _D("pcm", 9)
+    pc = lambda t: t / 9 * 100  # noqa: E731
+    cards = [("히스토그램", "수치형 1개", "분포 · 퍼짐"), ("산점도", "수치형 2개", "관계 · 상관"), ("막대", "범주형", "개수 · 비율 비교"),
+             ("선", "시간 순서", "변화 · 추세"), ("지도", "위치 · 가로칸 · 세로칸", "몰린 곳")]
+    s = ""
+    for i, (name, kind, see) in enumerate(cards):
+        x, t = i * 236, .5 + i * 1.6
+        s += (f'<g {d.show(pc(t))}><rect x="{x}" y="0" width="216" height="330" rx="14" fill="{W}" stroke="#D9DDE3" stroke-width="2"/>'
+              + _t(x + 108, 34, name, "tt", extra='style="font-size:21px"') + _cm_mini(i, df, x + 18, 64, 180, 124)
+              + _t(x + 20, 230, "데이터", "ts", "start", 'style="font-size:13px"') + _t(x + 20, 252, kind, "tn", "start", 'style="font-size:16px"')
+              + _t(x + 20, 284, "보이는 것", "ts", "start", 'style="font-size:13px"') + _t(x + 20, 306, see, "to", "start", 'style="font-size:16px"') + "</g>")
+    return d.svg(1160, 334, s)
+
+
 # ── 2차원 · 무게와 당도 ───────────────────────────────────────
 def scatter_2d(df):
     """엑셀 두 열(무게 · 당도) → 8행이 평면 위 점으로 → 600개. 18초."""
