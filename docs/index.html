@@ -1987,7 +1987,26 @@ description: 엑셀 · CSV 파일을 요약 문서로 정리할 때
   <div class="eyebrow"><span class="tag">사과 분석</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
   <h2 class="s-title sm">실습 환경</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>VS Code</b><span>편집기 · 파일 탐색기 · 터미널</span></div><div class="v2tile" style="--d:0.03s"><b>Claude Code 확장</b><span>VS Code 확장 · 교육용 계정 로그인</span></div><div class="v2tile" style="--d:0.06s"><b>Python</b><span>pandas · openpyxl</span></div><div class="v2tile" style="--d:0.10s"><b>실습 데이터</b><span>sim-data.zip · 엑셀 4개 · 기준표 2장</span></div></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/vs-code" target="_blank" rel="noopener">Claude Code 문서 · VS Code</a></div></div></div>
+  <div class="body"><div class="mid"><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>VS Code</b><span>편집기 · 파일 탐색기 · 터미널</span></div><div class="v2tile" style="--d:0.03s"><b>Claude Code</b><span>CLI 설치 · VS Code 확장 · 교육용 계정 로그인</span></div><div class="v2tile" style="--d:0.06s"><b>Python</b><span>pandas · openpyxl</span></div><div class="v2tile" style="--d:0.10s"><b>실습 데이터</b><span>sim-data.zip · 엑셀 4개 · 기준표 2장</span></div></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/vs-code" target="_blank" rel="noopener">Claude Code 문서 · VS Code</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="Claude Code 설치 · Windows">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">사과 분석</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">Claude Code 설치 · Windows</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">PowerShell · 시작 → PowerShell · 줄 앞에 PS C:\ 표시</span></div><pre><code>irm https://claude.ai/install.ps1 | iex      # ① 설치 · 진행 표시 없음 · 관리자 권한 필요 없음
+claude --version                             # ② 새 창에서 · 버전 번호가 나오면 성공
+claude                                       # ③ 실습 폴더에서 · 처음엔 브라우저 로그인</code></pre></div><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>CMD 라면</b><span>curl -fsSL https://claude.ai/install.cmd -o install.cmd &amp;&amp; install.cmd &amp;&amp; del install.cmd</span></div><div class="v2tile" style="--d:0.03s"><b>조건</b><span>Windows 10 1809 이상 · 메모리 4GB 이상 · 무료 플랜 불가</span></div></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/setup" target="_blank" rel="noopener">Claude Code 문서 · Advanced setup</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="설치 문제 해결 · Windows">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">사과 분석</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">설치 문제 해결 · Windows</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>증상</span><i></i><span>해결</span></div><div class="v2m" style="--d:0.00s"><div class="a">「'claude' is not recognized」</div><i>→</i><div class="b"><b>새 PowerShell 창 · 그래도 안 되면 PATH 추가(아래) · VS Code 는 다시 열기</b></div></div><div class="v2m" style="--d:0.05s"><div class="a">「'irm' is not recognized」</div><i>→</i><div class="b"><b>CMD 에서 실행함 → PowerShell 에서 다시</b></div></div><div class="v2m" style="--d:0.10s"><div class="a">「'&amp;&amp;' is not a valid statement separator」</div><i>→</i><div class="b"><b>PowerShell 에서 CMD 명령 → CMD 에서 실행</b></div></div><div class="v2m" style="--d:0.14s"><div class="a">Git for Windows 없음</div><i>→</i><div class="b"><b>명령은 PowerShell 로 실행 · Bash 도구를 쓰려면 설치 (권장)</b></div></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">PowerShell · PATH 에 설치 폴더 추가 (한 번만)</span></div><pre><code>$currentPath = [Environment]::GetEnvironmentVariable('PATH', 'User')
+[Environment]::SetEnvironmentVariable('PATH', "$currentPath;$env:USERPROFILE\.local\bin", 'User')</code></pre></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/troubleshoot-install" target="_blank" rel="noopener">Claude Code 문서 · Troubleshoot installation</a> · <a href="https://code.claude.com/docs/en/setup" target="_blank" rel="noopener">Claude Code 문서 · Advanced setup</a></div></div></div>
 </section>
 
 <section class="slide lt" data-title="실습 폴더 만들기">

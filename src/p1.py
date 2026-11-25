@@ -7,10 +7,19 @@
 import sk
 import viz2
 from deck import lab, light
+from hx import code, esc
 from pkit import brief, tag
 from stats_hx import src
 
 DATA_URL = "tunalee.github.io/pyeongtaek-univ/sim-data.zip"   # labs/make_sim.py make_zip() 이 docs/ 에 만듦
+CC_SETUP = ("Claude Code 문서 · Advanced setup", "https://code.claude.com/docs/en/setup")
+CC_TROUBLE = ("Claude Code 문서 · Troubleshoot installation", "https://code.claude.com/docs/en/troubleshoot-install")
+# Windows 설치 · 확인 · 로그인 — 공식 문서(2026-11-26 확인) 명령 그대로
+WIN_INSTALL = ("irm https://claude.ai/install.ps1 | iex      # ① 설치 · 진행 표시 없음 · 관리자 권한 필요 없음\n"
+               "claude --version                             # ② 새 창에서 · 버전 번호가 나오면 성공\n"
+               "claude                                       # ③ 실습 폴더에서 · 처음엔 브라우저 로그인")
+WIN_PATH = ("$currentPath = [Environment]::GetEnvironmentVariable('PATH', 'User')\n"
+            "[Environment]::SetEnvironmentVariable('PATH', \"$currentPath;$env:USERPROFILE\\.local\\bin\", 'User')")
 
 T = tag("1")
 DN = sk.DN
@@ -29,9 +38,20 @@ def slides():
     return [
         # ── 도입
         light("실습 환경", viz2.tiles([
-            ("VS Code", "편집기 · 파일 탐색기 · 터미널"), ("Claude Code 확장", "VS Code 확장 · 교육용 계정 로그인"),
+            ("VS Code", "편집기 · 파일 탐색기 · 터미널"), ("Claude Code", "CLI 설치 · VS Code 확장 · 교육용 계정 로그인"),
             ("Python", "pandas · openpyxl"), ("실습 데이터", "sim-data.zip · 엑셀 4개 · 기준표 2장")], 2)
               + src(("Claude Code 문서 · VS Code", "https://code.claude.com/docs/en/vs-code")), T),
+        light("Claude Code 설치 · Windows", code("PowerShell · 시작 → PowerShell · 줄 앞에 PS C:\\ 표시", esc(WIN_INSTALL))
+              + viz2.tiles([("CMD 라면", "curl -fsSL https://claude.ai/install.cmd -o install.cmd &amp;&amp; install.cmd &amp;&amp; del install.cmd"),
+                            ("조건", "Windows 10 1809 이상 · 메모리 4GB 이상 · 무료 플랜 불가")], 2)
+              + src(CC_SETUP), T),
+        light("설치 문제 해결 · Windows", viz2.maprows([
+            ("「'claude' is not recognized」", "새 PowerShell 창 · 그래도 안 되면 PATH 추가(아래) · VS Code 는 다시 열기", ""),
+            ("「'irm' is not recognized」", "CMD 에서 실행함 → PowerShell 에서 다시", ""),
+            ("「'&amp;&amp;' is not a valid statement separator」", "PowerShell 에서 CMD 명령 → CMD 에서 실행", ""),
+            ("Git for Windows 없음", "명령은 PowerShell 로 실행 · Bash 도구를 쓰려면 설치 (권장)", "")], "증상", "해결")
+              + code("PowerShell · PATH 에 설치 폴더 추가 (한 번만)", esc(WIN_PATH))
+              + src(CC_TROUBLE, CC_SETUP), T),
         light("실습 폴더 만들기", viz2.tiles([("실습 데이터 받기", f'<a href="https://{DATA_URL}" download target="_blank" rel="noopener" '
                                                    f'style="color:#1F5FBF;text-decoration:underline">{DATA_URL}</a>')], 1) + viz2.maprows([
             ("sim-lab/", "새 폴더 · VS Code 로 열기", "직접 만듦"),
