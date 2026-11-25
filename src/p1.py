@@ -32,7 +32,7 @@ def slides():
               + src(("Claude Code 문서 · VS Code", "https://code.claude.com/docs/en/vs-code")), T),
         light("실습 폴더 sim-lab", viz2.maprows([
             ("data/", "apple_A07.xlsx · wafer_test_W07.xlsx", "읽기만"), ("templates/", "선별기준표 · 합격기준표 · 예시 HTML", "참고 자료"),
-            ("docs/", "데이터 요약 · 실험 기록", "문서"), ("output/", "차트 · apple_sim.html · simulator.html", "교시마다 추가")], "폴더", "내용"), T),
+            ("docs/", "사과 · 웨이퍼 요약", "문서"), ("output/", "차트 · 집계 엑셀 · simulator.html · index.html", "실습마다 추가")], "폴더", "내용"), T),
         # ── 설명
         light("요청 쓰는 법", viz2.pair(
             "한 줄 요청", [("요청", "「사과 엑셀 요약해 줘」"), ("무엇을", "Claude 가 추측"), ("저장", "대화창에만 · 파일 없음")],

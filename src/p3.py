@@ -112,7 +112,7 @@ document.getElementById("rate")
             ("+ JS", "계산 · 조절 바 동작", page(True), code_j)]
     return '<div class="p3w">' + "".join(
         f'<div class="p3wc{" p3wOn" if i == 2 else ""}" style="--d:{.3 + i * 2:.1f}s"><div class="p3wh"><b>{h}</b><span>{sub}</span></div>'
-        f'<div class="p3wb"><div class="p3wBar"><i></i><i></i><i></i><span>apple_sim.html</span></div>{pg}</div>'
+        f'<div class="p3wb"><div class="p3wBar"><i></i><i></i><i></i><span>예시.html</span></div>{pg}</div>'
         f'<pre class="sksn">{esc(code)}</pre></div>'
         for i, (h, sub, pg, code) in enumerate(cols)) + "</div>"
 

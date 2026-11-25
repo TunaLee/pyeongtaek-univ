@@ -273,7 +273,7 @@ def vibe_part():
         light("바이브코딩 사례", viz2.tiles([
             ("브라우저 3D 비행 게임", "fly.pieter.com · 개발자 1명 + AI"),
             ("메뉴판 사진 → 음식 그림", "MenuGen · Karpathy"),
-            ("수율 시뮬레이터", "엑셀 데이터 → 조절 바 화면 · 이 과정 8교시")], 3)
+            ("수율 시뮬레이터", "엑셀 데이터 → 조절 바 화면 · 이 과정 실습")], 3)
               + src(("levelsio · X", "https://x.com/levelsio/status/1899596115210891751"),
                     ("Karpathy · MenuGen", "https://karpathy.bearblog.dev/vibe-coding-menugen/")), TAG),
         light("바이브코딩의 흐름", pana.vibe_flow(), TAG),

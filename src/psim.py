@@ -131,19 +131,19 @@ def agent_loop():
 
 
 def context_fill():
-    return _swap(anim.context_fill(), [("한도 가까우면 자동으로", "한도 근처 · 자동"), ("회의록 11-03", "W07 엑셀"), ("회의록 11-10", "simulator.html"), ("회의록 11-05", "기준표.md")])
+    return _swap(anim.context_fill(), [("한도 가까우면 자동으로", "한도 근처 · 자동"), ("회의록 11-03", "apple_A07.xlsx"), ("회의록 11-10", "사과_요약.md"), ("회의록 11-05", "선별기준표.md")])
 
 
 def skill_trigger():
     return _swap(anim.skill_trigger(), [
-        ("weekly-report · 주간 보고서를 쓸 때", "excel-summary · 엑셀 요약 문서를 쓸 때"),
-        ("meeting-notes · 회의록을 할 일 · 결정으로 정리할 때", "sim-check · 시뮬레이터 숫자를 점검할 때"),
+        ("weekly-report · 주간 보고서를 쓸 때", "slide-make · 발표 자료 초안을 만들 때"),
+        ("meeting-notes · 회의록을 할 일 · 결정으로 정리할 때", "excel-summary · 엑셀 · CSV 를 요약 문서로 정리할 때"),
         ("mail-draft · 고객 메일 답장 초안을 쓸 때", "chart-style · 차트 색 · 글자를 맞출 때"),
-        ("「11/10 회의록 정리해 줘」", "「조절 바 숫자 점검해 줘」"),
-        ("SKILL.md 본문 · meeting-notes", "SKILL.md 본문 · sim-check"),
-        ("1. 결정 · 할 일 · 열린 질문으로 나누기", "1. 조절 바 네 가지를 움직여 숫자 기록"),
-        ("2. 형식은 양식.md · 다 쓰면 check.py 로 확인", "2. 기대 숫자는 정답표.md · check.py 로 대조"),
-        ("양식.md · 읽어서 올림", "정답표.md · 읽어서 올림"), ("부속: 양식.md · check.py", "부속: 정답표.md · check.py")])
+        ("「11/10 회의록 정리해 줘」", "「사과 엑셀 요약해 줘」"),
+        ("SKILL.md 본문 · meeting-notes", "SKILL.md 본문 · excel-summary"),
+        ("1. 결정 · 할 일 · 열린 질문으로 나누기", "1. 행 · 열 · 열마다 뜻 · 수치형 · 범주형"),
+        ("2. 형식은 양식.md · 다 쓰면 check.py 로 확인", "2. 형식은 양식.md · 다 쓰면 check.py 로 숫자 대조"),
+        ])
 
 
 def hook_gate():
