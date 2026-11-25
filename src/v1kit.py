@@ -79,9 +79,14 @@ def chat(turns, label="대화 예"):
     return f'<div class="v1chat"><div class="v1ch">{label}</div>{b}</div>'
 
 
+SKIP = set()   # 이 번호의 실습은 다른 모듈(plab)이 「순서」 장을 만든다 — build.py 가 채움
+
+
 def brief(no, u, steps, slots, keys, checks, stuck, folder="내 프로젝트 폴더", example=FOLDER, slot_title="요청 항목"):
     """실습 진행 — 두 장으로 나눈다. ① 순서 + 확인 ② 요청에 들어갈 것.
     keys · stuck · folder · example 은 화면에 내지 않는다(호출부 호환용)."""
+    if no in SKIP:
+        return ""
     st = "".join(f'<li style="--d:{i * .25:.2f}s"><em>{i + 1}</em><span>{x}</span></li>' for i, x in enumerate(steps))
     ck = "".join(f"<li>{x}</li>" for x in checks)
     a = light(f"실습 {no} 순서", f'<ol class="v1st">{st}</ol><div class="qk2"><b>확인</b><ul>{ck}</ul></div>', u)

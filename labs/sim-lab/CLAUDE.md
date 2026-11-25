@@ -4,7 +4,7 @@
 엑셀 파일을 읽어, 합격 기준을 조절 바로 바꾸면 수율이 바로 바뀌는 HTML 화면을 만든다.
 - 웨이퍼: `data/wafer_test_W07.xlsx` → `output/simulator.html`
 - 사과(연습): `data/apple_A07.xlsx` → `output/apple_sim.html`
-교시마다 사과로 먼저 같은 기능을 만들고, 이어서 웨이퍼로 만든다.
+사과로 먼저 분석하고, 같은 순서를 웨이퍼에 적용한다.
 
 ## 폴더
 - `data/` 원본 엑셀. 읽기만 하고 고치지 않는다.
