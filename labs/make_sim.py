@@ -482,11 +482,11 @@ def make_lab(ref):
     shutil.copy(SRC / "html_css_js_예시.html", LAB / "templates" / "html_css_js_예시.html")
 
 
-ZIP_TEMPLATES = ("합격기준표.md", "선별기준표.md", "html_css_js_예시.html")
+ZIP_TEMPLATES = ("합격기준표.md", "선별기준표.md")
 
 
 def make_zip():
-    """수강생이 받는 실습 데이터 — docs/sim-data.zip (data/ 엑셀 4개 · templates/ 기준표 2장 · 예시 HTML).
+    """수강생이 받는 실습 데이터 — docs/sim-data.zip (data/ 엑셀 4개 · templates/ 기준표 2장).
     sim-lab 폴더 · CLAUDE.md 는 수강생이 직접 만든다. .git · 숨김 파일 · CLAUDE.md · 완성본은 넣지 않는다.
     날짜를 고정해 다시 만들어도 같은 파일이 나온다."""
     import zipfile

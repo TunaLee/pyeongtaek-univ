@@ -30,12 +30,12 @@ def slides():
         # ── 도입
         light("실습 환경", viz2.tiles([
             ("VS Code", "편집기 · 파일 탐색기 · 터미널"), ("Claude Code 확장", "VS Code 확장 · 교육용 계정 로그인"),
-            ("Python 3.10 이상", "pandas · openpyxl"), ("실습 데이터", "sim-data.zip · 엑셀 4개 · 기준표 2장 · 예시 HTML")], 2)
+            ("Python 3.10 이상", "pandas · openpyxl"), ("실습 데이터", "sim-data.zip · 엑셀 4개 · 기준표 2장")], 2)
               + src(("Claude Code 문서 · VS Code", "https://code.claude.com/docs/en/vs-code")), T),
         light("실습 폴더 만들기", viz2.tiles([("실습 데이터 받기", DATA_URL)], 1) + viz2.maprows([
             ("sim-lab/", "새 폴더 · VS Code 로 열기", "직접 만듦"),
             ("data/", "엑셀 4개 · 사과 A07 · A25 · 웨이퍼 W07 · W21", "sim-data.zip · 읽기만"),
-            ("templates/", "선별기준표 · 합격기준표 · 예시 HTML", "sim-data.zip · 참고 자료"),
+            ("templates/", "선별기준표 · 합격기준표", "sim-data.zip · 판정 기준"),
             ("CLAUDE.md", "폴더 규칙 · 계산 방법", "Claude 가 만듦"),
             ("docs/ · output/", "요약 · 집계 엑셀 · simulator.html · index.html", "실습마다 추가")], "폴더", "내용"), T),
         # ── 설명
@@ -47,7 +47,7 @@ def slides():
         lab("1-1", "사과 데이터 읽기", T, "sim-lab 폴더를 만들고 데이터를 풀어 apple_A07.xlsx 를 요약 문서로 받는다",
             ["sim-lab 폴더 만들기 · sim-data.zip 받기", "압축 풀기 · CLAUDE.md 만들기", "사과 엑셀 요약 요청",
              "수치형 · 범주형 열 구분 요청", "엑셀 필터로 상품 수 대조"],
-            ["data/ 엑셀 4개 · templates/ 3개 · CLAUDE.md", f"{DN['rows']}행 × {DN['cols']}열",
+            ["data/ 엑셀 4개 · templates/ 기준표 2장 · CLAUDE.md", f"{DN['rows']}행 × {DN['cols']}열",
              f"상품 {DN['pass']} · 불량 {DN['fail']} · {DN['rate']}%", "docs/사과_요약.md"],
             files="sim-data.zip · data/apple_A07.xlsx"),
         lab("1-2", "사과 차트 세 장", T, "무게 분포 · 위치별 상품률 · 과수원 지도를 Claude Code 로 그리고 차트마다 읽히는 사실을 한 줄씩 적는다",

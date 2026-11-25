@@ -1,6 +1,6 @@
 """3교시 HTML 첫 화면 · Plan Mode.
 
-도입(완성 시뮬레이터 · 엑셀 화면과 웹 화면 · 웹의 3요소 — HTML만 → + CSS → + JS 화면) → 설명(3요소가 들어가는 곳 · 예시 파일 고쳐 보기 · 바로 실행과 계획 먼저 · Plan Mode · 권한 모드)
+도입(완성 시뮬레이터 · 엑셀 화면과 웹 화면 · 웹의 3요소 — HTML만 → + CSS → + JS 화면) → 설명(3요소가 들어가는 곳 · 바로 실행과 계획 먼저 · Plan Mode · 권한 모드)
 → 적용(실습 3-1 사과 숫자 카드 → 3-2 웨이퍼 숫자 카드 · 꾸밈 전후).
 """
 import sk
@@ -150,12 +150,12 @@ def slides():
             ["Plan Mode 로 계획 받기", "꾸밈 없이 숫자 4개 화면", "CSS 로 카드 4장", "말로 색 · 크기 바꾸기 · 되돌리기"],
             [f"{DN['rows']} · {DN['pass']} · {DN['fail']} · {DN['rate']}%", "output/apple_sim.html"], files="output/apple_A07.csv"),
         light("사과 카드 전후", sk.duo("sim/apple_s3a.webp", "sim/apple_s3b.webp", "꾸밈 전", "꾸밈 후"), T),
-        lab("3-2", "웨이퍼 숫자 카드", T, "W07 CSV 로 숫자 카드 4개 simulator.html 을 만들고 꾸밈을 넣는다",
+        lab("3-2", "웨이퍼 숫자 카드", T, "W07 엑셀로 숫자 카드 4개 화면 simulator.html 을 처음부터 만들고 꾸민다",
             ["Plan Mode 로 계획 받기", "꾸밈 없이 숫자 4개 화면", "CSS 로 카드 4장", "말로 색 · 크기 바꾸기 · 되돌리기"],
-            [f"{WN['rows']} · {WN['pass']} · {WN['fail']} · {WN['yield']}%", "output/simulator.html"], files="output/wafer_test_W07.csv"),
+            [f"{WN['rows']} · {WN['pass']} · {WN['fail']} · {WN['yield']}%", "output/simulator.html"], files="data/wafer_test_W07.xlsx"),
         brief("3-2", T,
               ["Plan Mode 로 계획 받기", "뼈대 · 계산 요청", "꾸밈 요청", "색 · 크기 바꾸기"],
-              [("목표", "제목 + 숫자 카드 4개"), ("입력", "output/wafer_test_W07.csv"),
+              [("목표", "제목 + 숫자 카드 4개"), ("입력", "data/wafer_test_W07.xlsx"),
                ("산출물", "output/simulator.html 한 파일"), ("하지 말 것", "외부 라이브러리 · 파일 여러 개")],
               [], [f"수율 {WN['yield']}%", "브라우저 새로 고침으로 확인"], ""),
         light("웨이퍼 카드 전후", sk.duo("sim/wafer_s3a.webp", "sim/wafer_s3b.webp", "꾸밈 전", "꾸밈 후"), T),

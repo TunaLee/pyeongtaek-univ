@@ -331,7 +331,7 @@ def slides():
         lab("31-1", "보고서 템플릿", T, "simulator.html 에 엑셀 올리기 · 결과 내려받기를 넣어 어떤 웨이퍼 파일이든 분석하는 보고서로 만든다",
             ["엑셀 · CSV 올리기 요청", "다른 웨이퍼 파일로 확인", "결과 내려받기 요청", "index.html 한 파일로 정리"],
             [f"W07 을 올리면 수율 {WN['yield']}%", "다른 파일을 올리면 카드 · 맵 · 차트 · 조절 바가 다시 계산", "판정 결과 CSV 내려받기"],
-            files="output/simulator.html · data/new/"),
+            files="output/simulator.html · data/wafer_test_W21.xlsx"),
         brief("31-1", T,
               ["엑셀 · CSV 올리기", "다른 웨이퍼 파일로 확인", "결과 내려받기", "index.html 한 파일"],
               [("목표", "엑셀을 올리면 다시 분석하는 보고서"), ("입력", "simulator.html · data/new/ 의 웨이퍼 파일"),
