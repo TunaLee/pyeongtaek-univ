@@ -190,13 +190,13 @@ def _steps(items, cols, step=2.0):
 
 
 def data_part():
-    """개요 1 · 데이터 분석 — 배경(빅데이터의 등장 · 3V · 하루 간편결제 건수 · 일상 속 데이터) → 큰 흐름 → 사과 데이터 한 줄 → 값 하나(분포) → 두 값(산점도) → 등급 색(3차원) → 위치(지도) → 묶어 보기(막대)
-    → 여러 날(선) → 특이한 날 · 원인 짐작 → 추세선 예측 → 지도학습 · 비지도학습(정답 열 · 경계 · 무리 · 활용 예) → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
+    """개요 1 · 데이터 분석 — 배경(빅데이터의 등장 · 전 세계 데이터 양 · 하루 간편결제 건수 · 일상 속 데이터) → 큰 흐름 → 사과 데이터 한 줄 → 값 하나(분포) → 두 값(산점도) → 등급 색(3차원) → 위치(지도) → 묶어 보기(막대)
+    → 여러 날(선) → 특이한 날 · 원인 짐작 → 상관관계 · 인과관계(숨은 원인 위치) → 추세선 예측 → 지도학습 · 비지도학습(정답 열 · 경계 · 무리 · 활용 예) → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
     import pana                      # pana 가 p0 의 시트 그림을 쓰므로 함수 안에서 불러옴
     df = _d07()
     dd = [
         light("빅데이터의 등장", pbg.bigdata_timeline() + src(*pbg.BIG_SRC), TAG),
-        light("빅데이터의 3V", pbg.three_v() + src(pbg.LANEY), TAG),
+        light("전 세계 데이터 양", pbg.data_growth() + src(*pbg.GROWTH_SRC), TAG),
         light("하루 간편결제 건수", pbg.payments() + src(pbg.PAY["src"], pbg.EXCEL_SRC), TAG),
         light("일상 속 데이터", viz2.maprows([
             ("간편결제", "결제 시각 · 가맹점 · 금액", "결제 1건 = 한 줄"), ("출석", "날짜 · 이름 · 출결", "출석부 한 칸"),
@@ -214,6 +214,8 @@ def data_part():
         light("위치별 상품률", cat_anim(df), TAG),
         light("25일치 상품률", pana.daily_line(), TAG),
         light("특이한 날 들여다보기", pana.odd_day(), TAG),
+        light("상관관계", pana.correlation(df), TAG),
+        light("상관관계와 인과관계", pana.causation(), TAG),
         light("추세선과 예측", pana.trend_predict(df), TAG),
         light("지도학습과 비지도학습", pana.label_or_not(df), TAG),
         light("지도학습", pana.supervised(df), TAG),

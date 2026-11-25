@@ -160,6 +160,98 @@ def odd_day():
     return d.svg(1160, 370, s)
 
 
+# ── 상관관계 · 두 값이 같이 움직이는 정도 ─────────────────────────
+def _r(a, b):
+    return float(np.corrcoef(np.asarray(a, float), np.asarray(b, float))[0, 1])
+
+
+def _strength(r):
+    """|r| 0.7 이상 강한 · 0.3 이상 보통 · 그 밑은 거의 없음."""
+    if abs(r) < .3:
+        return "상관 거의 없음"
+    return ("강한 " if abs(r) >= .7 else "보통 ") + ("양의 상관" if r > 0 else "음의 상관")
+
+
+def _days():
+    """25일치 — 하루 평균 당도 · 당도 미달 수."""
+    rows = []
+    for k in range(1, 26):
+        a = sk.apple(f"A{k:02d}")
+        rows.append({"당도": float(a["당도"].mean()), "미달": int((a["불량사유"] == "당도 미달").sum())})
+    return pd.DataFrame(rows)
+
+
+def correlation(df):
+    """세 쌍의 산점도가 차례로(점 → 추세선 · r) → 아래 −1 ~ +1 눈금에 세 r 이 찍힘. 10초."""
+    d = _D("pac", 10)
+    pc = lambda t: t / 10 * 100  # noqa: E731
+    dy = _days()
+    sets = [("무게 × 지름", f"사과 {len(df)}개", df["무게"], df["지름"], "무게", "지름", 2.2),
+            ("무게 × 당도", f"사과 {len(df)}개", df["무게"], df["당도"], "무게", "당도", 2.2),
+            ("하루 평균 당도 × 당도 미달 수", f"{len(dy)}일", dy["당도"], dy["미달"], "평균 당도", "당도 미달 수", 5)]
+    s, rs = "", []
+    for i, (name, sub, xs, ys, xl, yl, rad) in enumerate(sets):
+        x0, t = i * 395, .5 + i * 2
+        px, py, pw, ph = x0 + 34, 74, 310, 196
+        xs, ys = np.asarray(xs, float), np.asarray(ys, float)
+        (xa, xb), (ya, yb) = (xs.min(), xs.max()), (ys.min(), ys.max())
+        gx = lambda v: px + 8 + (v - xa) / (xb - xa) * (pw - 16)  # noqa: E731
+        gy = lambda v: py + ph - 8 - (v - ya) / (yb - ya) * (ph - 16)  # noqa: E731
+        r = _r(xs, ys)
+        rs.append((name, r))
+        a, b = np.polyfit(xs, ys, 1)
+        s += (f'<g {d.show(pc(t))}>' + _t(x0 + 34, 22, name, "tn", "start", 'style="font-size:17px"') + _t(px + pw, 22, sub, "ts", "end", 'style="font-size:14px"')
+              + f'<line x1="{px}" y1="{py + ph}" x2="{px + pw}" y2="{py + ph}" stroke="{N}" stroke-width="1.8"/>'
+              + f'<line x1="{px}" y1="{py}" x2="{px}" y2="{py + ph}" stroke="{N}" stroke-width="1.8"/>'
+              + _t(px + pw, py + ph + 18, xl, "ts", "end", 'style="font-size:13px"') + _t(px + 6, py - 10, yl, "ts", "start", 'style="font-size:13px"')
+              + "".join(f'<circle cx="{gx(p):.1f}" cy="{gy(q):.1f}" r="{rad}" fill="{K}" fill-opacity="{.35 if rad < 3 else .8}"/>' for p, q in zip(xs, ys)) + "</g>")
+        s += (f'<g {d.show(pc(t + 1))}><line x1="{gx(xa):.1f}" y1="{gy(a * xa + b):.1f}" x2="{gx(xb):.1f}" y2="{gy(a * xb + b):.1f}" stroke="{O}" stroke-width="3.5"/>'
+              + _t(x0 + 34, 316, f"r = {r:.2f}".replace("-", "−"), "tt", "start", 'style="font-size:24px"')
+              + _t(x0 + 160, 317, _strength(r), "to" if abs(r) >= .3 else "tn", "start", 'style="font-size:16px"') + "</g>")
+    L0, L1, Y = 100, 1000, 396
+    fr = lambda r: L0 + (r + 1) / 2 * (L1 - L0)  # noqa: E731
+    s += (f'<g {d.show(pc(7))}><line x1="{L0}" y1="{Y}" x2="{L1}" y2="{Y}" stroke="{N}" stroke-width="2"/>'
+          + "".join(f'<line x1="{fr(v)}" y1="{Y - 6}" x2="{fr(v)}" y2="{Y + 6}" stroke="{N}" stroke-width="2"/>' + _t(fr(v), Y + 22, lab, "ts", extra='style="font-size:14px"')
+                    for v, lab in [(-1, "−1"), (0, "0"), (1, "+1")])
+          + _t(L1 + 16, Y, "상관계수 r", "tn", "start", 'style="font-size:15px"')
+          + "".join(f'<circle cx="{fr(r):.1f}" cy="{Y}" r="7" fill="{O}"/>' + _t(fr(r), Y - 20, name.replace("하루 평균 ", ""), "ts", extra='style="font-size:13px"')
+                    for name, r in rs) + "</g>")
+    return d.svg(1160, 440, s)
+
+
+def causation():
+    """나무별 25일 평균 무게 × 당도 — 전체로는 강한 양의 상관 → 위치(가장자리 · 나머지)로 나누면 거의 없음 → 숨은 원인. 12초."""
+    d = _D("pai", 12)
+    pc = lambda t: t / 12 * 100  # noqa: E731
+    g = _trees()
+    edge = (g["위치"] == "가장자리").to_numpy()
+    w, b = g["무게"].to_numpy(float), g["당도"].to_numpy(float)
+    ax, fx, fy = _axes(100, 50, 500, 300, (255, 315), (10.8, 13.4), range(260, 311, 10), [11, 12, 13],
+                       "25일 평균 무게 (g)", "25일 평균 당도 (brix)", d.show(0))
+    s = ax + (f'<g {d.show(pc(.5))}>' + "".join(f'<circle cx="{fx(p):.1f}" cy="{fy(q):.1f}" r="3.2" fill="{GRAY}" fill-opacity=".75"/>' for p, q in zip(w, b))
+              + _t(100, 12, f"점 하나 = 나무 한 그루 · 25일 평균 · {len(g)}그루", "to", "start", 'style="font-size:16px"') + "</g>")
+    a1, b1 = np.polyfit(w, b, 1)
+    xa, xb = w.min(), w.max()
+    s += (f'<g {d.show(pc(2.5))}><line x1="{fx(xa):.1f}" y1="{fy(a1 * xa + b1):.1f}" x2="{fx(xb):.1f}" y2="{fy(a1 * xb + b1):.1f}" stroke="{N}" stroke-width="3" stroke-dasharray="8 5"/>'
+          + _t(fx(xb) - 4, fy(a1 * xb + b1) - 18, f"전체 r = {_r(w, b):.2f}", "tn", "end", 'style="font-size:17px"') + "</g>")
+    s += f'<g {d.show(pc(5))}>' + "".join(f'<circle cx="{fx(p):.1f}" cy="{fy(q):.1f}" r="3.4" fill="{O if e else BLUE}"/>' for p, q, e in zip(w, b, edge))
+    for m, c, lab in [(edge, O, "가장자리"), (~edge, BLUE, "나머지")]:
+        ww, bb = w[m], b[m]
+        aa, cc = np.polyfit(ww, bb, 1)
+        s += f'<line x1="{fx(ww.min()):.1f}" y1="{fy(aa * ww.min() + cc):.1f}" x2="{fx(ww.max()):.1f}" y2="{fy(aa * ww.max() + cc):.1f}" stroke="{c}" stroke-width="3.5"/>'
+        lx, ly = (ww.mean() - 6, bb.max() + .3) if lab == "가장자리" else (ww.mean() + 8, bb.min() - .3)
+        s += _t(fx(lx), fy(ly), f"{lab} r = {_r(ww, bb):.2f}", "tn", extra=f'style="font-size:16px;fill:{c}"')
+    s += "</g>"
+    s += (f'<g {d.show(pc(8))}><rect x="680" y="60" width="460" height="150" rx="16" fill="#FFF8F0" stroke="{O}" stroke-width="2.5"/>'
+          + _t(910, 96, "상관관계 ≠ 인과관계", "to", extra='style="font-size:21px"')
+          + _t(910, 138, "숨은 원인 · 위치", "tt", extra='style="font-size:20px"')
+          + _t(910, 178, "가장자리 → 무게 ↓ · 당도 ↓", "tn", extra='style="font-size:17px"') + "</g>")
+    s += (f'<g {d.show(pc(10))}><rect x="680" y="230" width="460" height="110" rx="16" fill="{W}" stroke="{K}" stroke-width="2.5"/>'
+          + _t(910, 266, "예 · 아이스크림 판매 ↔ 물놀이 사고", "tn", extra='style="font-size:17px"')
+          + _t(910, 304, "숨은 원인 · 더위", "ts", extra='style="font-size:16px"') + "</g>")
+    return d.svg(1160, 410, s)
+
+
 # ── 추세선과 예측 · 무게로 지름 짐작 ────────────────────────────
 def trend_predict(df):
     """무게 × 지름 점 → 추세선 → 무게 320g 사과의 지름 예측. 12초."""

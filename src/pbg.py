@@ -1,4 +1,4 @@
-"""배경 장 그림 — 빅데이터의 등장 · 3V · 하루 간편결제 건수(한국은행) · 바이브코딩까지의 변화 · 데이터 분석과 엔지니어링의 변화 · Git 이전의 버전 관리.
+"""배경 장 그림 — 빅데이터의 등장 · 전 세계 데이터 양(IDC) · 하루 간편결제 건수(한국은행) · 바이브코딩까지의 변화 · 데이터 분석과 엔지니어링의 변화 · Git 이전의 버전 관리.
 
 언어 발전 · AI 코딩 도구 변화 · 파일 이름 버전 관리는 vibe-coding 강의(1-1 · 1-5)의 구성을 이 과정 예시로 옮긴 것.
 장면 간격 2초 이상 · 한 번 재생 후 마지막 장면에 멈춤. CSS 접두어 pbg.
@@ -53,74 +53,49 @@ def bigdata_timeline():
     return d.svg(1160, 320, s)
 
 
-# ── 빅데이터의 3V · 양 · 속도 · 다양성 (Laney 2001) ─────────────────────
-V3 = [("양", "Volume", "기존 도구로 다루기 어려운 크기", "예 · 전국 결제 기록 · 검색 기록"),
-      ("속도", "Velocity", "실시간으로 쉬지 않고 생김", "예 · 카드 결제 · 공장 센서"),
-      ("다양성", "Variety", "형식이 서로 다른 데이터", "예 · 상품 리뷰 · 검사 사진")]
+# ── 전 세계 데이터 양 · 해마다 발표된 IDC 추정치 (원문에서 확인한 값만) ───────────
+# 2011 1.8 ZB — EMC 보도자료(2011-06-28 · IDC Digital Universe 조사) 「1.8 zettabytes … created and replicated in 2011」
+# 2018 33 ZB — IDC 백서 「Data Age 2025」(2018-11 · #US44413318) 「grow from 33 Zettabytes (ZB) in 2018」
+# 2020 64.2 ZB — IDC 보도자료(2021-03-24) 「In 2020, 64.2ZB of data was created or replicated」
+# 2026 274.4 ZB — IDC 블로그(2026-11-09) 「more than 274.4 zettabytes (ZB) of data in 2026」
+GROWTH = [(2011, 1.8), (2018, 33.0), (2020, 64.2), (2026, 274.4)]
+GROWTH_SRC = [("EMC · IDC 2011", "https://prnewswire.com/news-releases/worlds-data-more-than-doubling-every-two-years---driving-big-data-opportunity-new-it-roles-124640433.html"),
+              ("IDC 2018", "https://www.seagate.com/files/www-content/our-story/trends/files/idc-seagate-dataage-whitepaper.pdf"),
+              ("IDC 2021", "https://www.businesswire.com/news/home/20210324005175/en/"),
+              ("IDC 2026", "https://www.idc.com/?p=123020")]
 
 
-def _v_volume(d, pc, cx, t0):
-    """엑셀 한 시트 틀 안을 줄이 채움 → 틀 위로 넘침."""
-    s = (f'<g {d.show(pc(t0))}><rect x="{cx - 110}" y="150" width="220" height="130" rx="6" fill="none" stroke="{N}" stroke-width="2" stroke-dasharray="7 5"/>'
-         + _t(cx, 298, "엑셀 한 시트", "ts", extra='style="font-size:14px"') + "</g>")
-    s += f'<g {d.show(pc(t0 + 1))}>' + "".join(f'<rect x="{cx - 98}" y="{158 + k * 17}" width="196" height="10" rx="3" fill="{K}" fill-opacity=".75"/>' for k in range(7)) + "</g>"
-    s += f'<g {d.show(pc(t0 + 2))}>' + "".join(f'<rect x="{cx - 98 + (k % 2) * 8}" y="{133 - k * 17}" width="196" height="10" rx="3" fill="{O}"/>' for k in range(3)) + "</g>"
-    return s
-
-
-def _v_velocity(d, pc, cx, t0):
-    """시간 축 위로 기록 눈금이 왼쪽부터 차례로 촘촘히 찍힘."""
-    s = (f'<g {d.show(pc(t0))}><line x1="{cx - 140}" y1="250" x2="{cx + 140}" y2="250" stroke="{N}" stroke-width="2" marker-end="url(#{d.id("k")})"/>'
-         + _t(cx + 140, 274, "시간", "ts", "end", 'style="font-size:14px"') + "</g>")
-    xs = [cx - 132 + k * 9.4 for k in range(29)]
-    for g in range(4):
-        grp = xs[g * 8:(g + 1) * 8]
-        s += f'<g {d.show(pc(t0 + 1 + g * .6))}>' + "".join(
-            f'<rect x="{x:.1f}" y="{208 + (k * 7) % 20}" width="4" height="{36 - (k * 7) % 20}" rx="2" fill="{O if g == 3 else K}"/>'
-            for k, x in enumerate(grp)) + "</g>"
-    return s
-
-
-def _v_variety(d, pc, cx, t0):
-    """표 · 글 · 사진 · 영상 · 센서 기록 — 모양이 다른 다섯 칸."""
-    tw, th = 92, 66
-    pos = [(cx - 150, 112), (cx - 46, 112), (cx + 58, 112), (cx - 98, 214), (cx + 6, 214)]
-    def tile(k, x, y):
-        g = f'<rect x="{x}" y="{y}" width="{tw}" height="{th}" rx="8" fill="{W}" stroke="{K}" stroke-width="2"/>'
-        if k == 0:    # 표
-            g += "".join(f'<line x1="{x + 10}" y1="{y + 14 + r * 13}" x2="{x + tw - 10}" y2="{y + 14 + r * 13}" stroke="{K}" stroke-width="1.5"/>' for r in range(4))
-            g += "".join(f'<line x1="{x + 10 + c * 24}" y1="{y + 14}" x2="{x + 10 + c * 24}" y2="{y + 53}" stroke="{K}" stroke-width="1.5"/>' for c in range(4))
-        elif k == 1:  # 글
-            g += "".join(f'<rect x="{x + 12}" y="{y + 14 + r * 12}" width="{tw - 24 - (r == 3) * 26}" height="5" rx="2" fill="{GRAY}"/>' for r in range(4))
-        elif k == 2:  # 사진
-            g += (f'<circle cx="{x + 66}" cy="{y + 20}" r="7" fill="{O}"/>'
-                  f'<path d="M{x + 10} {y + 56} L{x + 36} {y + 28} L{x + 54} {y + 46} L{x + 64} {y + 38} L{x + 82} {y + 56} Z" fill="{K}" fill-opacity=".7"/>')
-        elif k == 3:  # 영상
-            g += f'<path d="M{x + 38} {y + 20} L{x + 60} {y + 33} L{x + 38} {y + 46} Z" fill="{K}"/>'
-        else:         # 센서 기록
-            g += f'<polyline points="{x + 10},{y + 40} {x + 24},{y + 22} {x + 36},{y + 48} {x + 50},{y + 18} {x + 62},{y + 44} {x + 82},{y + 30}" fill="none" stroke="{O}" stroke-width="3"/>'
-        return g
-    names = ["표", "글", "사진", "영상", "센서 기록"]
-    s = ""
-    for k, (x, y) in enumerate(pos):
-        s += f'<g {d.show(pc(t0 + 1 + (k > 2) * .8))}>' + tile(k, x, y) + _t(x + tw / 2, y + th + 15, names[k], "ts", extra='style="font-size:13px"') + "</g>"
-    return s
-
-
-def three_v():
-    """양(엑셀 시트가 넘침) → 속도(시간 축에 기록이 촘촘히) → 다양성(표 · 글 · 사진 · 영상 · 센서). 카드 3.5초 간격 · 12초."""
-    d = _D("pbv", 12)
+def data_growth():
+    """2011 → 2018 → 2020 → 2026 막대가 차례로 자람(가로축은 실제 연도 간격) → 몇 배 · 몇 년마다 2배 → 1 ZB 크기. 12초."""
+    d = _D("pbz", 12)
     pc = lambda t: t / 12 * 100  # noqa: E731
-    draw = [_v_volume, _v_velocity, _v_variety]
-    s = ""
-    for i, (ko, en, mean, ex) in enumerate(V3):
-        x0, t0 = i * 395, .5 + i * 3.5
-        cx = x0 + 182
-        s += (f'<g {d.show(pc(t0))}><rect x="{x0}" y="0" width="365" height="372" rx="18" fill="{W}" stroke="#D9DDE3" stroke-width="2"/>'
-              + _t(x0 + 24, 38, ko, "tt", "start", 'style="font-size:28px"') + _t(x0 + 24 + len(ko) * 28 + 10, 40, en, "ts", "start", 'style="font-size:16px"')
-              + _t(x0 + 24, 76, mean, "tn", "start", 'style="font-size:17px"') + _t(x0 + 24, 344, ex, "ts", "start", 'style="font-size:15px"') + "</g>")
-        s += draw[i](d, pc, cx, t0)
-    return d.svg(1160, 376, s)
+    X0, X1, Y0, B, H, VMAX = 90, 730, 2010, 340, 260, 300
+    fx = lambda y: X0 + (y - Y0) / 17 * (X1 - X0)  # noqa: E731
+    fy = lambda v: B - v / VMAX * H  # noqa: E731
+    s = _t(40, 20, "전 세계에서 1년 동안 생기는 데이터 (ZB)", "tn", "start", 'style="font-size:16px"')
+    for v in range(0, VMAX + 1, 100):
+        s += (f'<line x1="{X0 - 30}" y1="{fy(v):.1f}" x2="{X1 + 20}" y2="{fy(v):.1f}" stroke="{"#16233A" if v == 0 else "#E6E9EE"}" stroke-width="{2 if v == 0 else 1}"/>'
+              + _t(X0 - 38, fy(v), f"{v}", "ts", "end", 'style="font-size:13px"'))
+    grow = "transform-box:fill-box;transform-origin:50% 100%"
+    for i, (y, v) in enumerate(GROWTH):
+        t, x, h = .5 + i * 1.6, fx(y), max(B - fy(v), 2)
+        last = i == len(GROWTH) - 1
+        st = [(0, "transform:scaleY(0)"), (pc(t), "transform:scaleY(0)"), (pc(t + 1), "transform:scaleY(1)"), (100, "transform:scaleY(1)")]
+        s += f'<rect x="{x - 24:.1f}" y="{B - h:.1f}" width="48" height="{h:.1f}" rx="4" fill="{O if last else K}" {d.a(st, "ease-out", grow)}/>'
+        s += (f'<g {d.show(pc(t + 1))}>' + _t(x, B - h - 16, f"{v:g} ZB", "tn", extra=f'style="font-size:{18 if last else 16}px{";fill:" + O if last else ""}"')
+              + _t(x, B + 22, y, "ts", extra='style="font-size:15px"') + "</g>")
+    (y0, v0), (y1, v1) = GROWTH[0], GROWTH[-1]
+    times = v1 / v0
+    dbl = (y1 - y0) / math.log2(times)
+    s += (f'<g {d.show(pc(7.5))}><rect x="790" y="40" width="350" height="120" rx="16" fill="#FFF8F0" stroke="{O}" stroke-width="2.5"/>'
+          + _t(965, 74, f"{y0} → {y1}", "ts", extra='style="font-size:15px"')
+          + _t(965, 116, f"약 {times:,.0f}배", "tt", extra=f'style="font-size:34px;fill:{O}"') + "</g>")
+    s += (f'<g {d.show(pc(9))}><rect x="790" y="176" width="350" height="76" rx="16" fill="{W}" stroke="{K}" stroke-width="2.5"/>'
+          + _t(965, 214, f"약 {dbl:.0f}년마다 2배", "tt", extra='style="font-size:24px"') + "</g>")
+    s += (f'<g {d.show(pc(10.5))}><rect x="790" y="268" width="350" height="76" rx="16" fill="{W}" stroke="#D9DDE3" stroke-width="2"/>'
+          + _t(965, 296, "1 ZB = 1조 GB", "tn", extra='style="font-size:18px"')
+          + _t(965, 324, f"{v1:g} ZB = 1TB 하드 약 {v1 * 10:,.0f}억 개", "ts", extra='style="font-size:14px"') + "</g>")
+    return d.svg(1160, 380, s)
 
 
 # ── 하루 간편결제 건수 · 한국은행 ─────────────────────────────────────
