@@ -79,7 +79,7 @@ def anatomy():
     s += (f'<g {d.show(12)}><rect x="60" y="56" width="1040" height="346" rx="18" fill="#EEF2F7" stroke="{K}" stroke-width="2.5"/>'
           + _t(1080, 80, "하네스 · 모델을 감싼 나머지 전부", "tn", "end", f'style="fill:{K}"') + "</g>")
     parts = [(110, 110, "내장 도구", "파일 읽기 · 실행 · 저장"), (110, 210, "규칙", "CLAUDE.md"), (110, 310, "절차", "Skill"),
-             (820, 110, "컨텍스트 관리", "자동 요약 · /clear"), (820, 210, "통제", "권한 · Hook"), (820, 310, "확인", "정답 숫자 · Sub Agent")]
+             (820, 110, "컨텍스트 관리", "자동 요약 · /clear"), (820, 210, "통제", "권한 · Hook"), (820, 310, "확인", "검산 · Sub Agent")]
     for i, (x, y, h, sub) in enumerate(parts):
         t = 22 + i * 8
         ex = x + 230 if x < 500 else x
@@ -185,7 +185,7 @@ def arch():
 
 
 TREE = ("sim-lab/\n"
-        "├── CLAUDE.md                        규칙 · 정답 숫자\n"
+        "├── CLAUDE.md                        규칙 · 계산 방법\n"
         "├── data/ · output/                  원본(읽기만) · 결과\n"
         "└── .claude/\n"
         "    ├── settings.json                권한 · Hook 등록 · 팀 공유\n"
@@ -252,7 +252,7 @@ def slides():
         # ── Ⅱ 도입 · AI 활용 방식의 변화
         light("AI 활용 방식의 변화", shift(), T),
         light("프롬프트 엔지니어링", two(code("채팅창에 보내는 요청 한 번", esc(prompt)), code("채팅 답 예", esc(answer)))
-              + viz2.tiles([("손대는 곳", "질문 문장 · 역할 · 형식"), ("효과", "이번 답 한 번")], 2), T),
+              + viz2.tiles([("대상", "질문 문장 · 역할 · 형식"), ("효과", "이번 답 한 번")], 2), T),
         light("프롬프트만의 한계", viz2.tiles([
             ("매번 붙여 넣기", "엑셀을 열어 복사 · 대화창에 붙임"), ("매번 같은 설명", "기준 · 형식을 대화마다 다시"),
             ("빠진 자료는 모름", "붙이지 않은 기준은 추측")], 3)
@@ -314,7 +314,7 @@ def slides():
                   "  ~/.claude/skills/gstack && cd ~/.claude/skills/gstack && ./setup   # gstack"))
               + src(GH_SP, GH_GS, CC_MKT), T),
         light("설치 전 점검", viz2.tiles([
-            ("실행하는 것", "Hook · MCP 서버가 내 PC 에서 실행"), ("컨텍스트 비용", "매 요청 · 호출 때 늘어나는 토큰"),
+            ("실행 항목", "Hook · MCP 서버가 내 PC 에서 실행"), ("컨텍스트 비용", "매 요청 · 호출 때 늘어나는 토큰"),
             ("출처", "공식 · 커뮤니티 · 개인 저장소 · 개인 저장소는 검토 없음"), ("필요한 것만", "안 쓰는 플러그인은 끄기 · 지우기")], 2)
               + src(CC_PLUG, CC_MKT), T),
     ]

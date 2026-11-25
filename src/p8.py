@@ -48,12 +48,12 @@ def slides():
                     C_OAI_HE), T),
         light("마구와 하네스", pbg.harness_photo() + src(PH_WILD, PH_HARNESS), T),
         light("지금까지 쓴 하네스", viz2.tiles([
-            ("CLAUDE.md · 2교시", "프로젝트 규칙 · 정답 숫자"), ("Plan Mode · 권한 · 3교시", "계획 먼저 · 확인 받기"),
+            ("CLAUDE.md · 2교시", "프로젝트 규칙 · 계산 방법"), ("Plan Mode · 권한 · 3교시", "계획 먼저 · 확인 받기"),
             ("Git · 체크포인트 · 5교시", "되돌릴 지점"), ("검증 · 6교시", "기대 숫자 · 화면 증거"),
             ("Skill · 7교시", "반복 절차 · sim-check"), ("Hook · 8교시", "원본 보호 · 자동 차단")], 3), T),
         light("부탁과 Hook", viz2.pair(
-            "CLAUDE.md 부탁", [("규칙", "「data/ 는 수정 금지」"), ("지킴", "대부분"), ("어길 때", "막을 장치 없음")],
-            "Hook", [("규칙", "data/ 쓰기 직전 검사"), ("지킴", "매번 · 자동"), ("어길 때", "실행 전에 차단 · 이유를 Claude 에게")]), T),
+            "CLAUDE.md 부탁", [("규칙", "「data/ 는 수정 금지」"), ("지킴", "대부분"), ("위반 시", "막을 장치 없음")],
+            "Hook", [("규칙", "data/ 쓰기 직전 검사"), ("지킴", "매번 · 자동"), ("위반 시", "실행 전에 차단 · 이유를 Claude 에게")]), T),
         light("Hook 이 끼어드는 시점", psim.hook_gate()
               + src(("Claude Code 문서 · Hooks", "https://code.claude.com/docs/en/hooks")), T),
         # ── 적용

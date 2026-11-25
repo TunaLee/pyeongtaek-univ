@@ -59,10 +59,10 @@ def _zones(df, col, ok, keys, ko=None):
 
 
 def _claude_md():
-    """sim-lab/CLAUDE.md 에서 10줄 — 제목 · 만드는 것 · 작업 규칙 셋 · 정답 숫자."""
+    """sim-lab/CLAUDE.md 에서 10줄 — 제목 · 만드는 것 · 작업 규칙 셋 · 숫자 계산(정답 숫자는 넣지 않음 · Claude 가 계산 대신 베낌)."""
     t = [x for x in (LAB / "sim-lab" / "CLAUDE.md").read_text(encoding="utf-8").split("\n") if x.strip()]
     i = t.index("## 작업 규칙")
-    j = t.index(next(x for x in t if x.startswith("## 정답 숫자")))
+    j = t.index(next(x for x in t if x.startswith("## 숫자 계산")))
     return "\n".join([t[0], t[1], t[2], t[i], t[i + 1], t[i + 3], t[i + 5], t[j], t[j + 1], t[j + 2]])
 
 
@@ -88,17 +88,17 @@ def slides():
             ("위치별", ["위치", "전체", "합격", "합격률"], *_zones(sk.W07, "zone", ("pass_fail", "PASS"), ("center", "mid", "edge"), sk.ZONE_KO))]), T),
         # ── 설명 · CLAUDE.md
         light("새 대화의 시작", viz2.pair(
-            "CLAUDE.md 없음", [("새 대화", "폴더 · 규칙 · 정답 숫자를 모름"), ("사람", "대화마다 같은 설명 반복"),
+            "CLAUDE.md 없음", [("새 대화", "폴더 · 규칙 · 계산 방법을 모름"), ("사람", "대화마다 같은 설명 반복"),
                               ("결과", "원본 수정 · 낯선 용어 · 다른 숫자")],
             "CLAUDE.md 있음", [("새 대화", "CLAUDE.md 부터 읽고 시작"), ("사람", "한 번 적어 두고 필요할 때 고침"),
-                              ("결과", "같은 규칙 · 같은 정답 숫자")]), T),
+                              ("결과", "같은 규칙 · 같은 계산 방법")]), T),
         light("CLAUDE.md", '<div class="twocol w"><div>' + code("sim-lab/CLAUDE.md", esc(_claude_md())) + "</div><div>"
-              + viz2.tiles([("위치", "sim-lab/CLAUDE.md · 폴더 맨 위"), ("내용", "만드는 것 · 폴더 · 데이터 · 작업 규칙 · 정답 숫자"),
-                            ("고치는 때", "같은 말을 두 번 하게 될 때")], 1) + "</div></div>", T),
+              + viz2.tiles([("위치", "sim-lab/CLAUDE.md · 폴더 맨 위"), ("내용", "만드는 것 · 폴더 · 데이터 · 작업 규칙 · 숫자 계산"),
+                            ("수정 시점", "같은 말을 두 번 하게 될 때")], 1) + "</div></div>", T),
         light("확인할 수 있는 문장", viz2.pair(
             "흐린 규칙", [("말투", "「친절하게 답해」"), ("결과", "「깔끔하게 만들어」"), ("숫자", "「정확하게 계산해」")],
             "확인할 수 있는 규칙", [("말투", "「반도체 용어를 새로 꺼내지 않는다」"), ("결과", "「output/simulator.html 한 파일」"),
-                              ("숫자", f"「정답은 {WN['rows']} · {WN['pass']} · {WN['fail']} · {WN['yield']}%」")]), T),
+                              ("숫자", "「수율 = 합격 ÷ 전체 · 소수 둘째 자리」")]), T),
         light("숫자 맞춰 보기", viz2.maprows([
             ("Claude 보고", f"합격 {WN['pass']}", "요청 결과"), ("엑셀 필터", f"pass_fail = PASS · {WN['pass']}행", "사람이 직접"),
             ("다르면", "어느 쪽이 맞는지 행 단위로 확인 요청", "그대로 넘어가지 않음")], "확인", "W07"), T),
@@ -114,11 +114,11 @@ def slides():
             ("사유별 불합격", f"{sk.KO[WTOP]} {WN['reason'][WTOP]}개 · 불합격 {WN['fail']}개의 {WN['reason'][WTOP] / WN['fail'] * 100:.0f}%"),
             ("웨이퍼 맵", f"{sk.KO[WTOP]} 칸이 대각선 한 줄로 이어짐")], 3), T),
         lab("2-2", "집계 엑셀 · CSV", T, "사과 · 웨이퍼를 사유별 · 위치별로 집계해 엑셀 시트 세 장과 CSV 로 저장한다",
-            ["CLAUDE.md 정답 숫자 확인", "사과 집계 · CSV 요청", "웨이퍼 집계 · CSV 요청", "엑셀 필터로 대조"],
+            ["사과 집계 · CSV 요청", "웨이퍼 집계 · CSV 요청", "엑셀 필터로 대조"],
             [f"사과 상품률 {DN['rate']}% · 웨이퍼 수율 {WN['yield']}%", "apple_summary.xlsx · yield_summary.xlsx (시트 3장)",
              "apple_A07.csv · wafer_test_W07.csv"], files="data/apple_A07.xlsx · data/wafer_test_W07.xlsx"),
         brief("2-2", T,
-              ["CLAUDE.md 정답 숫자 확인", "사과 집계 · CSV", "웨이퍼 집계 · CSV", "엑셀 필터로 대조"],
+              ["사과 집계 · CSV", "웨이퍼 집계 · CSV", "엑셀 필터로 대조"],
               [("목표", "요약 · 사유별 · 위치별 집계"), ("입력", "apple_A07.xlsx · wafer_test_W07.xlsx"),
                ("산출물", "집계 엑셀 2개(시트 3장) · CSV 2개"), ("하지 말 것", "data/ 원본 수정")],
               [], [f"상품 {DN['pass']} · 합격 {WN['pass']}", "사유별 합 = 불량 · 불합격 수"], ""),

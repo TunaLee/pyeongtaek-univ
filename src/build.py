@@ -142,7 +142,7 @@ def lab_map():
 def closing():
     return """<section class="slide dk" data-title="과정 이후">
   <div class="coord"><b></b> / <span class="tot"></span></div>
-  <div class="v1end"><div class="v1got"><span>오늘 만든 것</span><b>data-report Skill · 보고서 템플릿 · 배포 주소</b></div>
+  <div class="v1end"><div class="v1got"><span>오늘 만든 결과물</span><b>data-report Skill · 보고서 템플릿 · 배포 주소</b></div>
   <div class="v1next"><span>과정 이후</span><b>내 엑셀로 같은 순서</b><small>→ 분석 · Skill · 보고서 · 배포</small></div></div>
 </section>"""
 

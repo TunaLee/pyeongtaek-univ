@@ -41,6 +41,7 @@ bash ~/.claude/skills/lecture-deck/scripts/capture_anim.sh $PWD/docs/index.html 
 - 공통 모듈(deck · hx · viz2 · v1kit · v3kit · anim …)은 vibe-coding 저장소에서 복사한 것.
 - `labs/make_data.py` 웨이퍼 25장 합성(시드 2611 · ETCH_03 가장자리 · W05 중복 · W11 mV · W19 결측 · W26 은 data/new) · `labs/make_apple.py` 사과 선별 25일치(A01~A25 · 시드 1007 · 판정 멍 → 벌레 → 무게 250g → 당도 11 · 18일 특이점 ODD_DAY · **열 이름 한글**, 웨이퍼는 영어 열 이름) · `labs/make_secom.py` UCI SECOM(CC BY 4.0)
 - `labs/wafer-lab/data` 원본 합성 데이터(sk.py · make_sim.py 가 읽음) · `labs/solution/` 은 이전 분석 과정 완성본(덱에서 안 씀)
+- **실습 폴더 CLAUDE.md · 기준표에 정답 숫자를 적지 않는다** — Claude 가 계산 대신 그 숫자를 가져다 쓴다. 계산 방법(수율 = 합격 ÷ 전체) · 보고 형식(계산한 코드 · 행 수)만 적고, 확인 숫자는 덱의 「실습 N 순서」 확인 줄(수강생이 보는 곳)에만.
 - **화면 숫자는 손으로 적지 않는다** — ref.json · 완성본 출력 · CSV 에서 코드로 계산해 넣는다.
 
 ## 화면 문구 (사용자 반복 지적)
@@ -53,3 +54,4 @@ bash ~/.claude/skills/lecture-deck/scripts/capture_anim.sh $PWD/docs/index.html 
 - 실습 장: 「[실습 N]」(목표 · 단계 · 완료 기준) + 「실습 N 순서」(단계마다 **그대로 입력할 한 줄 프롬프트** · 확인 숫자 · `plab.PROMPTS`). 프롬프트는 개념 수준으로 짧게. 「요청 항목」 장(목표 · 입력 · 산출물 · 하지 말 것)은 쓰지 않는다(2026-11-26 「뭐하라는 건지 직관적이지 않아」).
 - 장 번호는 docs/index.html 전체 기준으로 말한다.
 - 「~하는 것 · 남는 것」 꼴 제목 · 라벨 금지 → 「커밋 구성」 「요청 항목」 「산출물」
+- 「읽는 때 · 담는 것 · 켜는 법 · 필요한 것」 꼴 라벨도 금지 → 「불러오는 시점 · 내용 · 켜기 · 필요 요소」

@@ -140,7 +140,7 @@ def chart_menu(df):
         s += (f'<g {d.show(pc(t))}><rect x="{x}" y="0" width="216" height="330" rx="14" fill="{W}" stroke="#D9DDE3" stroke-width="2"/>'
               + _t(x + 108, 34, name, "tt", extra='style="font-size:21px"') + _cm_mini(mk, df, x + 18, 64, 180, 124)
               + _t(x + 20, 230, "데이터", "ts", "start", 'style="font-size:13px"') + _t(x + 20, 252, kind, "tn", "start", 'style="font-size:16px"')
-              + _t(x + 20, 284, "보이는 것", "ts", "start", 'style="font-size:13px"') + _t(x + 20, 306, see, "to", "start", 'style="font-size:16px"') + "</g>")
+              + _t(x + 20, 284, "용도", "ts", "start", 'style="font-size:13px"') + _t(x + 20, 306, see, "to", "start", 'style="font-size:16px"') + "</g>")
     return d.svg(1160, 334, s)
 
 

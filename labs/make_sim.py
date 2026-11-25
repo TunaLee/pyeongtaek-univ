@@ -365,7 +365,7 @@ def rule_cond(rule):
 
 
 def criteria_md(key, ref):
-    cfg, r = DOMAINS[key]["cfg"], ref[key]
+    cfg = DOMAINS[key]["cfg"]
     L = cfg["labels"]
     reason = dict(cfg["reasons"])
     title = "합격 기준표" if key == "wafer" else "선별 기준표"
@@ -392,14 +392,12 @@ def criteria_md(key, ref):
     lines += ["", "## 집계 범위", "", "| 열 이름 | 화면 이름 | 단위 | 처음 값 |", "|---|---|---|---|"]
     for sc in cfg["scopes"]:
         lines.append(f"| {sc['col']} | {sc['name']} | {sc['unit']} | 데이터 최댓값 (모두 집계) |")
-    lines += ["", "## 확인용 숫자", "",
-              f"이 기준표로 `{cfg['dataName']}` 를 다시 판정하면 엑셀의 `{cfg['judgeCol']}` 열과 {r['rows']}줄 모두 같다.",
-              f"{L['total']} {r['total']}, {L['pass']} {r['pass']}, {L['fail']} {r['fail']}, {L['rate']} {r['rate']:.2f}%."]
+    lines += ["", "## 확인 방법", "",
+              f"이 기준표로 `{cfg['dataName']}` 를 다시 판정하면 엑셀의 `{cfg['judgeCol']}` 열과 모든 줄이 같아야 한다."]
     return "\n".join(lines) + "\n"
 
 
 def claude_md(ref):
-    w, d = ref["wafer"], ref["apple"]
     a = DOMAINS["apple"]["cfg"]           # 사과 열 이름은 CSV 머리 행 · CFG 에서 그대로
     acols = " · ".join(read_rows(DOMAINS["apple"]["src"])[0])
     azones = " · ".join(k for k, _ in a["zones"])
@@ -438,9 +436,9 @@ def claude_md(ref):
 - 파이썬은 pandas · openpyxl 만 쓴다.
 - 작업이 끝나면 화면에 보이는 숫자(전체 · 합격 · 불합격 · 수율)를 보고한다.
 
-## 정답 숫자 (교육용 합성 데이터 기준)
-- 웨이퍼 W07: 전체 {w['total']} · 합격 {w['pass']} · 불합격 {w['fail']} · 수율 {w['rate']:.2f}%
-- 사과 A07: 전체 {d['total']} · 상품 {d['pass']} · 불량 {d['fail']} · 상품률 {d['rate']:.2f}%
+## 숫자 계산
+- 수율 = 합격 ÷ 전체 × 100, 사과 상품률 = 상품 ÷ 전체 × 100 (소수 둘째 자리).
+- 숫자는 매번 엑셀에서 새로 계산하고, 보고할 때 계산한 코드와 행 수를 함께 보인다.
 """
 
 
