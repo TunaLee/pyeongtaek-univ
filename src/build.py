@@ -8,6 +8,7 @@ import importlib
 import os
 import re
 
+import anim
 import art
 import deck
 import deck_gas
@@ -109,7 +110,8 @@ def main():
         parts += phased(u, m.slides())
     parts.append(pkit.nextup("8"))
     out = ROOT / "docs" / "index.html"
-    out.write_text(_tpl(css).replace("{{DECK_TITLE}}", "엑셀 데이터로 만드는 수율 시뮬레이터").replace("{{SLIDES}}", "\n\n".join(parts)))
+    body = re.sub(r"--d:([\d.]+)s", lambda m: f"--d:{float(m.group(1)) * anim.SPEED:.2f}s", "\n\n".join(parts))   # 카드 지연도 같은 속도
+    out.write_text(_tpl(css).replace("{{DECK_TITLE}}", "엑셀 데이터로 만드는 수율 시뮬레이터").replace("{{SLIDES}}", body))
     print(out.name, len(parts) - 1, "장")
 
 

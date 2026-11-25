@@ -11,11 +11,14 @@ N, G, O, W, S = "#16233A", "#D9DDE3", "#F28C28", "#FFFFFF", "#6B7785"
 K, R, OK, BG = "#1F3A5F", "#C62828", "#2E7D32", "#F4F6F9"
 
 
+SPEED = .6   # 덱 전체 애니메이션 속도 — 길이에 곱한다 · build.py 가 카드 지연(--d)에도 같이 곱함 (2026-11-26 「전반적으로 느리다」 → 장면 간격 약 1.2초)
+
+
 class _D:
-    """도해 하나: 접두어 · 길이(초) · keyframes 모음."""
+    """도해 하나: 접두어 · 길이(초) · keyframes 모음. 실제 재생 길이 = 길이 × SPEED."""
 
     def __init__(self, p, dur, once=True):
-        self.p, self.dur, self.kfs, self.n = p, dur, [], 0
+        self.p, self.dur, self.kfs, self.n = p, round(dur * SPEED, 2), [], 0
         self.rep = "1 both" if once else "infinite both"
 
     def a(self, stops, ease="linear", extra=""):
