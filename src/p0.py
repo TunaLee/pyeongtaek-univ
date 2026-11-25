@@ -191,7 +191,7 @@ def _steps(items, cols, step=2.0):
 
 def data_part():
     """개요 1 · 데이터 분석 — 배경(빅데이터의 등장 · 전 세계 데이터 양 · 일상 속 데이터) → 큰 흐름 → 데이터 관리의 변화(수기 → 엑셀 → 시스템 · 센서 → 클라우드 · AI) → 엑셀과 CSV → 행과 열 → 사과 데이터 한 줄 → 수치형과 범주형 → 데이터 시각화 방법(차트 다섯 종류) → 값 하나(분포) → 두 값(산점도) → 등급 색(3차원) → 위치(지도) → 묶어 보기(막대)
-    → 여러 날(선) → 특이한 날 · 원인 짐작 → 상관관계 · 인과관계(숨은 원인 위치) → 추세선 예측 → 지도학습 · 비지도학습(정답 열 · 경계 · 무리 · 활용 예) → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
+    → 여러 날(선그래프) → 10월 18일 불량 사유 · 원인 후보 → 상관관계 · 인과관계(숨은 원인 위치) → 추세선 예측 → 지도학습 · 비지도학습(정답 열 · 경계 · 무리 · 활용 예) → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
     import pana                      # pana 가 p0 의 시트 그림을 쓰므로 함수 안에서 불러옴
     df = _d07()
     dd = [
@@ -211,13 +211,13 @@ def data_part():
         light("사과 선별 데이터", pbg.orchard_zones(), TAG),
         light("수치형과 범주형", pana.type_kinds(df), TAG),
         light("데이터 시각화 방법", pana.chart_menu(df), TAG),
-        light("무게 분포", num_anim(df), TAG),
-        light("무게와 당도", pana.scatter_2d(df), TAG),
+        light("무게 분포 히스토그램", num_anim(df), TAG),
+        light("무게와 당도 산점도", pana.scatter_2d(df), TAG),
         light("무게 · 당도 · 등급", pana.scatter_3d(df), TAG),
-        light("과수원 위치와 불량", map_anim(df), TAG),
-        light("위치별 상품률", cat_anim(df), TAG),
-        light("25일치 상품률", pana.daily_line(), TAG),
-        light("특이한 날 들여다보기", pana.odd_day(), TAG),
+        light("과수원 불량 지도", map_anim(df), TAG),
+        light("위치별 상품률 막대그래프", cat_anim(df), TAG),
+        light("25일치 상품률 선그래프", pana.daily_line(), TAG),
+        light(f"{pana.odd_label()} 불량 사유", pana.odd_day(), TAG),
         light("상관관계", pana.correlation(df), TAG),
         light("상관관계와 인과관계", pana.causation(), TAG),
         light("추세선과 예측", pana.trend_predict(df), TAG),
@@ -235,7 +235,7 @@ def data_part():
             ("AI 에이전트", "<span>말로 묻고 바로 확인</span><span>담당자가 요청 · 결과 판단</span>")], 4), TAG),
         light("AI와 함께하는 분석 흐름", pbg.analysis_flow(), TAG),
         light("분석과 엔지니어링", viz2.pair(
-            "데이터 분석", [("질문", "「18일에는 왜 불량이 많았나」"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
+            "데이터 분석", [("질문", f"「{pana.odd_label()}에는 왜 불량이 많았나」"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
             "데이터 엔지니어링", [("질문", "「매일 수확 파일을 같은 기준으로 집계」"), ("결과", "읽기 · 정리 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), TAG),
         light("AI와 함께하는 엔지니어링", viz2.pair(
             "AI 이전", [("작성", "엔지니어가 스크립트 코드 작성"), ("오류", "로그를 읽고 사람이 수정"), ("반복", "같은 코드를 정해진 시각에 실행"),

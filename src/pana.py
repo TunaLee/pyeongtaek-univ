@@ -128,16 +128,16 @@ def _cm_mini(k, df, x, y, w, h):
 
 
 def chart_menu(df):
-    """히스토그램 · 산점도 · 막대 · 선 · 지도 카드가 차례로 — 데이터 종류와 보이는 것. 카드 1.6초 간격 · 9초."""
+    """히스토그램 · 산점도 · 지도 · 막대그래프 · 선그래프 카드가 차례로(뒤의 사과 장 순서) — 데이터 종류와 보이는 것. 카드 1.6초 간격 · 9초."""
     d = _D("pcm", 9)
     pc = lambda t: t / 9 * 100  # noqa: E731
-    cards = [("히스토그램", "수치형 1개", "분포 · 퍼짐"), ("산점도", "수치형 2개", "관계 · 상관"), ("막대", "범주형", "개수 · 비율 비교"),
-             ("선", "시간 순서", "변화 · 추세"), ("지도", "위치 · 가로칸 · 세로칸", "몰린 곳")]
+    cards = [("히스토그램", "수치형 1개", "분포 · 퍼짐", 0), ("산점도", "수치형 2개", "관계 · 상관", 1), ("지도", "위치 · 가로칸 · 세로칸", "몰린 곳", 4),
+             ("막대그래프", "범주형", "개수 · 비율 비교", 2), ("선그래프", "시간 순서", "변화 · 추세", 3)]
     s = ""
-    for i, (name, kind, see) in enumerate(cards):
+    for i, (name, kind, see, mk) in enumerate(cards):
         x, t = i * 236, .5 + i * 1.6
         s += (f'<g {d.show(pc(t))}><rect x="{x}" y="0" width="216" height="330" rx="14" fill="{W}" stroke="#D9DDE3" stroke-width="2"/>'
-              + _t(x + 108, 34, name, "tt", extra='style="font-size:21px"') + _cm_mini(i, df, x + 18, 64, 180, 124)
+              + _t(x + 108, 34, name, "tt", extra='style="font-size:21px"') + _cm_mini(mk, df, x + 18, 64, 180, 124)
               + _t(x + 20, 230, "데이터", "ts", "start", 'style="font-size:13px"') + _t(x + 20, 252, kind, "tn", "start", 'style="font-size:16px"')
               + _t(x + 20, 284, "보이는 것", "ts", "start", 'style="font-size:13px"') + _t(x + 20, 306, see, "to", "start", 'style="font-size:16px"') + "</g>")
     return d.svg(1160, 334, s)
@@ -210,21 +210,38 @@ def daily_line():
           + _t(1022, fy(avg) - 10, "25일 평균", "ts", "start", 'style="font-size:14px"') + _t(1022, fy(avg) + 12, f"{avg:.2f}%", "tn", "start", 'style="font-size:15px"') + "</g>")
     k = min(range(25), key=lambda i: vals[i])
     s += (f'<g {d.show(pc(8))}><circle cx="{fx(k + 1):.1f}" cy="{fy(vals[k]):.1f}" r="16" fill="none" stroke="{BAD}" stroke-width="3"/>'
-          + _t(fx(k + 1), fy(vals[k]) + 34, f"{k + 1}일 · {vals[k]:.2f}%", "to", extra=f'style="font-size:17px;fill:{BAD}"') + "</g>")
+          + _t(fx(k + 1), fy(vals[k]) + 34, f"{odd_label() if k + 1 == int(REF['general']['odd_day']['day'][1:]) else str(k + 1) + '일'} · {vals[k]:.2f}%", "to", extra=f'style="font-size:17px;fill:{BAD}"') + "</g>")
     return d.svg(1160, 400, s)
 
 
-# ── 특이한 날 · 불량 사유 비교 ───────────────────────────────
+# ── 10월 18일 · 불량 사유 비교 (날짜는 데이터의 날짜 열에서) ─────────────────
+def odd_date():
+    """튀는 날의 날짜 — (월, 일, 'YYYY-MM-DD', 파일 이름). make_apple.ODD_DAY · ref.json odd_day."""
+    key = REF["general"]["odd_day"]["day"]
+    ymd = str(sk.apple(key)["날짜"].iloc[0])
+    _, m, dd = ymd.split("-")
+    return int(m), int(dd), ymd, f"apple_{key}.csv"
+
+
+def odd_label():
+    m, dd, *_ = odd_date()
+    return f"{m}월 {dd}일"
+
+
 def odd_day():
-    """평소 하루 평균과 특이한 날의 불량 사유별 개수 → 멍이 크게 늘어남 → 원인 짐작. 12초."""
+    """나머지 24일 평균과 10월 18일의 불량 사유별 개수 → 멍이 크게 늘어남 → 원인 후보 · 확인할 기록. 12초."""
     d = _D("pao", 12)
     pc = lambda t: t / 12 * 100  # noqa: E731
     od = REF["general"]["odd_day"]
     reasons = sk.D_ORDER
     usual, odd = od["reason_avg_other"], od["reason"]
+    nd = len(REF["general"]["days"]) - 1
+    lab = odd_label()
+    _, _, ymd, fname = odd_date()
     mx = max(max(usual.values()), max(odd.values())) * 1.1
-    X0, Y0, H, GW = 120, 50, 280, 150
-    s = f'<line x1="{X0 - 20}" y1="{Y0 + H}" x2="{X0 + 4 * GW + 10}" y2="{Y0 + H}" stroke="{N}" stroke-width="2"/>'
+    X0, Y0, H, GW = 120, 60, 270, 150
+    s = (_t(X0 - 20, 14, f"날짜 {ymd} · {fname}", "to", "start", 'style="font-size:16px"')
+         + f'<line x1="{X0 - 20}" y1="{Y0 + H}" x2="{X0 + 4 * GW + 10}" y2="{Y0 + H}" stroke="{N}" stroke-width="2"/>')
     grow = "transform-box:fill-box;transform-origin:50% 100%"
     for i, r in enumerate(reasons):
         gx = X0 + i * GW
@@ -235,17 +252,17 @@ def odd_day():
             s += f'<rect x="{x}" y="{Y0 + H - h:.1f}" width="46" height="{h:.1f}" rx="4" fill="{col}" {d.a(st, "ease-out", grow)}/>'
             s += f'<g {d.show(pc(t0 + 1))}>' + _t(x + 23, Y0 + H - h - 12, f"{v:g}", "tn", extra='style="font-size:14px"') + "</g>"
         s += _t(gx + 50, Y0 + H + 22, sk.D_KO[r], "tn")
-    day = int(od["day"][1:])
-    s += (f'<g {d.show(pc(1))}><rect x="{X0}" y="8" width="14" height="14" rx="3" fill="{GRAY}"/>' + _t(X0 + 20, 15, "평소 하루 평균", "ts", "start")
-          + "</g>" + f'<g {d.show(pc(4))}><rect x="{X0 + 160}" y="8" width="14" height="14" rx="3" fill="{BAD}"/>'
-          + _t(X0 + 180, 15, f"{day}일", "ts", "start") + "</g>")
+    s += (f'<g {d.show(pc(1))}><rect x="{X0 + 330}" y="7" width="14" height="14" rx="3" fill="{GRAY}"/>' + _t(X0 + 350, 14, f"나머지 {nd}일 평균", "ts", "start")
+          + "</g>" + f'<g {d.show(pc(4))}><rect x="{X0 + 490}" y="7" width="14" height="14" rx="3" fill="{BAD}"/>'
+          + _t(X0 + 510, 14, lab, "ts", "start") + "</g>")
     ratio = odd["멍"] / usual["멍"]
-    s += (f'<g {d.show(pc(7))}><rect x="780" y="70" width="360" height="96" rx="14" fill="#FDECEA" stroke="{BAD}" stroke-width="2.5"/>'
-          + _t(960, 104, f"멍 {odd['멍']}개 · 평소 {usual['멍']:g}개", "tt", extra=f'style="fill:{BAD};font-size:19px"')
-          + _t(960, 136, f"약 {ratio:.0f}배 · 상품률 {od['rate']:.2f}%", "ts") + "</g>")
-    s += (f'<g {d.show(pc(9.5))}><rect x="780" y="190" width="360" height="110" rx="14" fill="{W}" stroke="{N}" stroke-width="2" stroke-dasharray="7 5"/>'
-          + _t(800, 222, "원인 짐작", "to", "start", 'style="font-size:16px"') + _t(800, 252, "수확 · 운반 중 충격?", "tn", "start", 'style="font-size:16px"')
-          + _t(800, 280, "그날 작업 기록으로 확인", "ts", "start") + "</g>")
+    s += (f'<g {d.show(pc(7))}><rect x="780" y="60" width="360" height="124" rx="14" fill="#FDECEA" stroke="{BAD}" stroke-width="2.5"/>'
+          + _t(960, 92, f"{lab} · 멍 {odd['멍']}개", "tt", extra=f'style="fill:{BAD};font-size:20px"')
+          + _t(960, 124, f"나머지 {nd}일 평균 {usual['멍']:g}개 · 약 {ratio:.0f}배", "tn", extra='style="font-size:15px"')
+          + _t(960, 156, f"상품률 {od['rate']:.2f}%", "ts", extra='style="font-size:15px"') + "</g>")
+    s += (f'<g {d.show(pc(9.5))}><rect x="780" y="204" width="360" height="110" rx="14" fill="{W}" stroke="{N}" stroke-width="2" stroke-dasharray="7 5"/>'
+          + _t(800, 234, "원인 후보", "to", "start", 'style="font-size:16px"') + _t(800, 264, "수확 · 운반 중 충격", "tn", "start", 'style="font-size:17px"')
+          + _t(800, 294, f"확인 · {lab} 수확 · 운반 기록", "ts", "start", 'style="font-size:15px"') + "</g>")
     return d.svg(1160, 370, s)
 
 
@@ -541,7 +558,7 @@ def ml_uses(df):
     cards = [("분류", "정답이 범주", ["스팸 메일 거르기", "사과 상품 · 불량 예측"]),
              ("회귀", "정답이 숫자", ["집값 예측", "무게로 지름 예측"]),
              ("군집", "비슷한 데이터끼리 묶기", ["고객 그룹 나누기", "가장자리 나무 무리"]),
-             ("이상 탐지", "무리에서 튀는 값 찾기", ["카드 이상 결제 찾기", f"특이한 날 {day}일"])]
+             ("이상 탐지", "무리에서 튀는 값 찾기", ["카드 이상 결제 찾기", f"튀는 날 · {odd_label()}"])]
     s = ""
     for x0, h, sub, t in [(0, "지도학습", "정답 있음", .5), (596, "비지도학습", "정답 없음", 4.5)]:
         s += f'<g {d.show(pc(t))}>' + _t(x0, 20, h, "tt", "start", 'style="font-size:20px"') + _t(x0 + len(h) * 20 + 12, 20, sub, "ts", "start") + "</g>"
