@@ -249,25 +249,25 @@ def slides():
                    + " · ".join(f"{sk.D_KO[k]} {v}" for k, v in DN["reason"].items()))], "확인 대화 예"), T),
 
         # ── 실습 · Skill 로 반도체 분석
-        light("분석 Skill 흐름", flow([("사과로 한 번", "요약 · 차트 · 집계"), ("Skill 만들기", "data-report · SKILL.md"),
-                                    ("웨이퍼에 적용", "「data-report 로 W07 분석해 줘」"), ("같은 형식의 결과", "요약 · 차트 세 장 · 집계 엑셀")], hl=1)
+        light("분석 Skill 흐름", flow([("사과로 한 번", "요약 · 집계 · 대조"), ("Skill 만들기", "data-report · SKILL.md"),
+                                    ("웨이퍼에 적용", "「data-report 로 W07 분석해 줘」"), ("같은 형식의 결과", "요약 문서 · 집계 엑셀")], hl=1)
               + viz2.pair("사과 · apple_A07", [("한 행", "사과 한 개"), ("판정", "상품 · 불량"), ("결과", a07)],
                           "웨이퍼 · W07", [("한 행", "칩 한 개"), ("판정", "합격 · 불합격"), ("결과", w07)]), T),
-        lab("21-1", "사과 분석 Skill 만들기", T, "사과 분석에서 한 순서(요약 · 차트 · 집계 · 대조)를 data-report Skill 하나로 만든다",
+        lab("21-1", "사과 분석 Skill 만들기", T, "사과 분석에서 한 순서(요약 · 집계 · 대조)를 data-report Skill 하나로 만든다",
             ["지금까지 한 요청 · 결과 정리 요청", "SKILL.md 초안 요청", "설명 · 절차 · 산출물 확인", "사과 파일로 다시 돌려 보기"],
             [".claude/skills/data-report/SKILL.md", f"다시 돌린 사과 결과 · {a07}", "결과 형식이 앞 실습과 같음"], files="docs/ · output/"),
         brief("21-1", T,
               ["지금까지 한 요청 · 결과 정리", "SKILL.md 초안", "설명 · 절차 · 산출물 확인", "사과로 다시 돌려 보기"],
-              [("목표", "앞 실습 순서를 Skill 하나로"), ("입력", "사과 요약 · 차트 · 집계 결과"),
+              [("목표", "앞 실습 순서를 Skill 하나로"), ("입력", "사과 요약 · 집계 결과"),
                ("산출물", ".claude/skills/data-report/SKILL.md"), ("하지 말 것", "사과 열 이름을 절차에 박아 넣기")],
               [], ["설명(description)에 「엑셀 분석」", "사과로 다시 돌려 같은 숫자"], ""),
         lab("21-2", "Skill 로 웨이퍼 분석", T, "data-report Skill 로 W07 을 사과와 같은 형식으로 분석하고 숫자를 대조한다",
-            ["「data-report 로 W07 분석해 줘」", "요약 · 차트 세 장 · 집계 확인", "엑셀 필터로 숫자 대조", "Skill 에 빠진 단계 보완"],
-            [w07, "output/charts/ 웨이퍼 차트 세 장", "yield_summary.xlsx (시트 3장)"], files="data/wafer_test_W07.xlsx"),
+            ["「data-report 로 W07 분석해 줘」", "요약 · 집계 확인", "엑셀 필터로 숫자 대조", "Skill 에 빠진 단계 보완"],
+            [w07, "웨이퍼 요약 문서", "yield_summary.xlsx (시트 3장)"], files="data/wafer_test_W07.xlsx"),
         brief("21-2", T,
-              ["data-report 로 W07 분석", "요약 · 차트 · 집계 확인", "엑셀 필터로 대조", "Skill 보완"],
+              ["data-report 로 W07 분석", "요약 · 집계 확인", "엑셀 필터로 대조", "Skill 보완"],
               [("목표", "같은 Skill · 다른 데이터"), ("입력", "wafer_test_W07.xlsx · data-report Skill"),
-               ("산출물", "웨이퍼 요약 · 차트 세 장 · 집계 엑셀"), ("하지 말 것", "Skill 없이 처음부터 다시 설명")],
+               ("산출물", "웨이퍼 요약 · 집계 엑셀"), ("하지 말 것", "Skill 없이 처음부터 다시 설명")],
               [], [f"수율 {WN['yield']}%", f"사유별 합 = 불합격 {WN['fail']}"], ""),
 
         # ── 실습 · 화면

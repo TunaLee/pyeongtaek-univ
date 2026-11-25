@@ -482,6 +482,24 @@ def make_lab(ref):
     shutil.copy(SRC / "html_css_js_예시.html", LAB / "templates" / "html_css_js_예시.html")
 
 
+ZIP_TEMPLATES = ("합격기준표.md", "선별기준표.md", "html_css_js_예시.html")
+
+
+def make_zip():
+    """수강생이 받는 실습 데이터 — docs/sim-data.zip (data/ 엑셀 4개 · templates/ 기준표 2장 · 예시 HTML).
+    sim-lab 폴더 · CLAUDE.md 는 수강생이 직접 만든다. .git · 숨김 파일 · CLAUDE.md · 완성본은 넣지 않는다.
+    날짜를 고정해 다시 만들어도 같은 파일이 나온다."""
+    import zipfile
+    out = ROOT.parent / "docs" / "sim-data.zip"
+    names = [f"data/{p.name}" for p in sorted((LAB / "data").glob("*.xlsx"))] + [f"templates/{n}" for n in ZIP_TEMPLATES]
+    with zipfile.ZipFile(out, "w") as z:
+        for n in names:
+            zi = zipfile.ZipInfo(n, date_time=(2026, 11, 26, 0, 0, 0))
+            zi.compress_type = zipfile.ZIP_DEFLATED
+            z.writestr(zi, (LAB / n).read_bytes())
+    return out, names
+
+
 # ───────────────────────── 완성본 ─────────────────────────
 STAGES = ["1", "2", "3a", "3b", "4", "5", "6", "7", "8"]
 HTML_TPL = {"3a": "s3a.html", "3b": "s3b.html", "4": "s4.html", "5": "s5.html", "6": "s6.html", "7": "s78.html", "8": "s78.html"}
@@ -869,6 +887,7 @@ def main():
             c["label"] = names[c["col"]] + {"lo": " 하한", "hi": " 상한", "on": " 판정"}[c["side"]]
             c["display"] = ("켜기" if c["value"] else "끄기") if c["side"] == "on" else fmtnum(c["value"])
     make_lab(ref)
+    make_zip()
     # 차트: 실습 엑셀을 CSV 글자로 바꿔 HTML 에 넣고, 같은 글자로 화면 숫자를 계산한다
     chart_csv = {key: xlsx_csv(LAB / "data" / dom["xlsx"]) for key, dom in DOMAINS.items()}
     ref["charts"] = {key: chart_numbers(key, chart_csv[key]) for key in ("apple", "wafer")}
