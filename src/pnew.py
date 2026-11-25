@@ -205,7 +205,7 @@ def slides():
                             ("연결 ② GitHub → Vercel", "한 번 연결하면 이후 자동")], 2), T),
         light("GitHub · Vercel 준비", viz2.tiles([
             ("GitHub", "github.com · 이메일로 가입 · 저장소 보관"), ("Vercel", "vercel.com · GitHub 계정으로 가입 · Hobby 무료"),
-            ("gh", "GitHub 공식 명령 도구 · 설치는 Claude Code 에 요청"), ("Git", "버전 기록 도구 · 설치 확인 요청")], 2)
+            ("Git", "버전 기록 도구 · 「Git 설치돼 있는지 확인해 줘」")], 3)
               + src(("GitHub", "https://github.com/signup"), ("Vercel", "https://vercel.com/signup"), ("GitHub CLI", "https://cli.github.com/")), T),
         light("수정과 재배포", '<div class="twocol"><div>'
               + chat([("me", "판정 결과 버튼 색을 주황으로 바꿔 줘"), ("ai", "index.html 의 버튼 색 변경 완료"),

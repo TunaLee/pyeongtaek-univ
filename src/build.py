@@ -92,7 +92,10 @@ CHAPTERS = [  # (제목, 꼬리표, 산출물, 도입, 설명, 적용)
      ["보고서 템플릿"], ["다른 파일 불러오기", "판정 결과 내려받기"],
      ["[실습 31-1] 보고서 템플릿", "실습 31-1 순서", "웨이퍼 시뮬레이터 완성"]),
     ("GitHub · Vercel 배포", "배포", "저장소 주소 · 배포 주소",
-     ["배포 흐름"], ["파일 이름 버전 관리", "Git 커밋", "체크포인트", "GitHub · Vercel 준비", "수정과 재배포", "배포 전 점검"],
+     ["배포", "문서 파일과 공유 링크", "주소별 접속 범위", "배포 흐름"],
+     ["파일 이름 버전 관리", "Git 커밋", "커밋 구성", "커밋 기록 쌓기", "Git 작업 흐름", "Git 작업 요청", "커밋 시점",
+      "Git으로 되돌리기", "체크포인트와 Git", "GitHub", "공개 · 비공개 저장소", "GitHub · Vercel 준비", "GitHub CLI (gh)",
+      "GitHub 업로드 요청", "업로드한 저장소 확인", "Vercel 프로젝트 가져오기", "배포 주소", "수정과 재배포", "배포 전 점검"],
      ["[실습 31-2] GitHub · Vercel 배포", "실습 31-2 순서"]),
     ("마지막 프로젝트", "프로젝트", "내 웹 · 배포 주소",
      ["프로젝트 주제"], ["프로젝트 진행 순서"],
@@ -148,10 +151,11 @@ def main():
     """한 파일 docs/index.html — 표지 · Ⅰ 데이터 분석 · Ⅱ AI와 바이브코딩 · 실습 장 열 개(장마다 도입 · 설명 · 적용) · 마지막 장. 교시 없음."""
     import pai
     import pana
+    import pgit
     import plab
     import pnew
     v1kit.SKIP.update(plab.PROMPTS)          # 실습 순서는 plab(단계마다 입력할 프롬프트)이 만든다
-    mods = [importlib.import_module(f"p{u}") for u, *_ in pkit.UNITS] + [pnew, pai, plab]
+    mods = [importlib.import_module(f"p{u}") for u, *_ in pkit.UNITS] + [pnew, pai, plab, pgit]
     css = (BASE_CSS + "".join(getattr(m, "CSS", "") for m in mods)
            + ".v1shot figcaption,.ph figcaption,.v3ph figcaption{display:none}")  # 그림 밑 설명 줄은 내지 않는다
     pool = {}

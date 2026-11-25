@@ -1230,6 +1230,64 @@
   .plbk span{background:#E8F5E9; color:#2E7D32; border-radius:999px; padding:6px 16px; font-size:17px; font-weight:700;}
   @keyframes plbIn{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
   @media print{.plbr{opacity:1; animation:none}}
+
+  /* 배포 · 문서 파일과 공유 링크 (pgsh) */
+  .pgsh{display:grid; grid-template-columns:1fr 50px 1fr; gap:12px; align-items:stretch; margin:4px 0 16px;}
+  .pgshc{border:2px solid #C9D6E6; border-radius:16px; background:#fff; padding:18px 22px; display:flex; flex-direction:column; gap:12px;
+    opacity:0; animation:pgIn .6s var(--d) forwards;}
+  .pgshc.on{border-color:#F28C28; background:#FFF8F0;}
+  .pgshh{font-size:22px; font-weight:800; color:#16233A;}
+  .pgshf{display:flex; flex-direction:column; gap:2px; border-left:6px solid #2B579A; background:#F4F6F9; border-radius:8px; padding:10px 14px;}
+  .pgshf b{font-size:19px; color:#16233A;} .pgshf small{font-size:14px; color:#6B7785;}
+  .pgshl{font-family:var(--mono); font-size:16px; font-weight:700; color:#1F3A5F; background:#EAF0F7; border-radius:20px; padding:9px 16px;}
+  .pgshw{font-size:17px; color:#3A4657; font-weight:600;}
+  .pgshps{display:flex; gap:10px;}
+  .pgshp{font-size:15px; font-weight:700; color:#fff; background:#1F3A5F; border-radius:16px; padding:6px 14px; opacity:0; animation:pgIn .5s var(--d) forwards;}
+  .pgshm{margin-top:auto; font-size:17px; font-weight:800; color:#E07A12;}
+  .pgsha{font-style:normal; align-self:center; text-align:center; font-size:34px; font-weight:800; color:#F28C28; opacity:0; animation:pgIn .5s var(--d) forwards;}
+  .pgshu{display:flex; gap:16px; align-items:baseline; border:2px dashed #F28C28; border-radius:14px; padding:14px 22px; opacity:0; animation:pgIn .6s var(--d) forwards;}
+  .pgshu b{font-size:20px; color:#16233A;} .pgshu span{font-size:18px; color:#3A4657;} .pgshu em{margin-left:auto; font-style:normal; font-size:17px; font-weight:800; color:#E07A12;}
+  @keyframes pgIn{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+  /* Git 작업 흐름 (pgg) */
+  .pggtop{display:grid; grid-template-columns:3fr 1fr; gap:10px; margin-bottom:8px;}
+  .pggtop span{font-size:14px; font-weight:800; text-align:center; padding:5px 0; border-radius:8px;}
+  .pggtop .me{background:#EAF0F7; color:#16233A;} .pggtop .net{background:#16233A; color:#fff;}
+  .pggrow{display:grid; grid-template-columns:1fr 86px 1fr 96px 1fr 86px 1fr; align-items:stretch;}
+  .pggz{border:2px solid #C9D6E6; border-radius:14px; background:#F7F8FA; display:flex; flex-direction:column; min-height:300px;}
+  .pggz.rm{border-color:#16233A;}
+  .pggzh{padding:10px 10px 8px; border-bottom:1.5px solid #D9DDE3; text-align:center;}
+  .pggzh b{display:block; font-size:19px; color:#16233A;} .pggzh small{font-size:12px; color:#6B7785;}
+  .pggzb{flex:1; display:flex; flex-direction:column-reverse; justify-content:flex-end; gap:7px; padding:10px;}
+  .pggc{background:#FFF1E2; border:2px solid #F28C28; border-radius:9px; padding:8px 9px; font-size:15px; font-weight:700; color:#16233A; text-align:center;
+    opacity:0; animation:pggIn .6s var(--d) forwards;}
+  .pggc.o{animation:pggIn .6s var(--d) forwards, pggOut .6s var(--o) forwards;}
+  .pggk{background:#fff; border:2px solid #1F3A5F; border-radius:9px; padding:7px 9px; opacity:0; animation:pggIn .4s var(--d) forwards;}
+  .pggk tt{display:block; font-family:var(--mono); font-size:12.5px; color:#6B7785; background:none; padding:0;}
+  .pggk b{font-size:15px; color:#16233A;}
+  .pggk.pl,.pggc.pl{border-color:#2E7D5B; background:#EAF6EF;}
+  .pggp{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;}
+  .pggp tt{font-family:var(--mono); font-size:13.5px; font-weight:700; color:#16233A; background:#EAF0F7; border-radius:14px; padding:5px 8px; white-space:nowrap;
+    animation:pggHi 2.4s var(--d1), pggHi 2.4s var(--d2);}
+  .pggp i{font-style:normal; font-size:26px; font-weight:800; color:#F28C28;}
+  .pggpull{margin-top:12px; display:flex; align-items:center; gap:12px; justify-content:center; border:2px dashed #2E7D5B; border-radius:12px; padding:9px;
+    opacity:0; animation:pggIn .4s var(--d1) forwards;}
+  .pggpull i{font-style:normal; font-size:24px; font-weight:800; color:#2E7D5B;}
+  .pggpull tt{font-family:var(--mono); font-size:15px; font-weight:700; color:#fff; background:#2E7D5B; border-radius:14px; padding:5px 12px;}
+  .pggpull span{font-size:16px; color:#16233A; font-weight:600;}
+  @keyframes pggIn{from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:none}}
+  @keyframes pggOut{from{opacity:1} to{opacity:0; height:0; padding:0; margin:0; border-width:0}}
+  @keyframes pggHi{0%,100%{background:#EAF0F7; color:#16233A} 15%,75%{background:#F28C28; color:#fff}}
+  /* 커밋 기록 쌓기 (pgcm) */
+  .pgcmw{display:grid; grid-template-columns:1.1fr 1fr; gap:26px; align-items:center;}
+  .pgcms{display:flex; flex-direction:column-reverse; gap:10px; border:2px dashed #D9DDE3; border-radius:16px; padding:18px 18px 14px; background:#F7F8FA; min-height:280px; justify-content:flex-start;}
+  .pgcmh{order:-1; font-size:14px; font-weight:800; color:#6B7785; text-align:center; margin-top:6px;}
+  .pgcm{display:grid; grid-template-columns:44px 84px 1fr; align-items:baseline; gap:8px; padding:12px 16px; border-radius:12px; background:#fff; border:2px solid #1F3A5F;
+        opacity:0; animation:pgcmIn .5s ease-out var(--d) forwards;}
+  .pgcm:last-of-type{border-color:#F28C28; background:#FFF8F0;}
+  .pgcm .v{font-weight:900; color:#F28C28; font-size:18px;} .pgcm code{font-family:var(--mono); font-size:15px; color:#6B7785; background:none;}
+  .pgcm b{font-size:19px; color:#16233A;} .pgcm small{grid-column:3; font-size:14.5px; color:#6B7785;}
+  @keyframes pgcmIn{from{opacity:0; transform:translateY(-24px)} to{opacity:1; transform:none}}
+  @media print{.pgshc,.pgshp,.pgsha,.pgshu,.pggc,.pggk,.pggpull,.pgcm{opacity:1; animation:none} .pggc.o{display:none} .pggp tt{animation:none}}
 .v1shot figcaption,.ph figcaption,.v3ph figcaption{display:none}</style>
 </head>
 <body>
@@ -2716,6 +2774,30 @@ document.getElementById("rate")
   <h2 class="big">GitHub · Vercel 배포</h2>
 </section>
 
+<section class="slide lt" data-title="배포">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i class="on">도입</i><i>설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">배포</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">배포 전</div><div class="v2pc" style="--d:0.00s"><b>주소</b><span>file:///…/index.html · 내 컴퓨터 안</span></div><div class="v2pc" style="--d:0.03s"><b>열 수 있는 사람</b><span>나 혼자</span></div><div class="v2pc" style="--d:0.06s"><b>컴퓨터를 끄면</b><span>못 엶</span></div></div><div class="v2p on"><div class="v2ph">배포 후</div><div class="v2pc" style="--d:0.00s"><b>주소</b><span>wafer-report.vercel.app 형식</span></div><div class="v2pc" style="--d:0.03s"><b>열 수 있는 사람</b><span>주소를 받은 누구나</span></div><div class="v2pc" style="--d:0.06s"><b>컴퓨터를 끄면</b><span>그대로 열림</span></div></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="문서 파일과 공유 링크">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i class="on">도입</i><i>설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">문서 파일과 공유 링크</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="pgsh"><div class="pgshc" style="--d:0.12s"><div class="pgshh">내 컴퓨터의 문서 파일</div><div class="pgshf"><b>회의록.docx</b><small>내 컴퓨터 · 바탕화면</small></div><div class="pgshw">열 수 있는 사람 · 나</div><div class="pgshm">= 파일 주소 · file://</div></div><i class="pgsha" style="--d:0.56s">→</i><div class="pgshc on" style="--d:0.72s"><div class="pgshh">공유 링크</div><div class="pgshl">https://… /회의록</div><div class="pgshps"><span class="pgshp" style="--d:1.04s">팀장</span><span class="pgshp" style="--d:1.24s">팀원</span><span class="pgshp" style="--d:1.44s">휴대폰</span></div><div class="pgshm">= 배포 주소 · *.vercel.app</div></div></div><div class="pgshu" style="--d:1.76s"><b>문서를 고치면</b><span>링크로 보는 사람에게 바로 반영</span><em>= 재배포 · push 하면 자동</em></div></div></div>
+</section>
+
+<section class="slide lt" data-title="주소별 접속 범위">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i class="on">도입</i><i>설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">주소별 접속 범위</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>주소</span><i></i><span>열리는 범위</span></div><div class="v2m" style="--d:0.00s"><div class="a">file:///…/index.html</div><i>→</i><div class="b"><b>이 컴퓨터만</b><small>만들며 확인 · 파일을 두 번 클릭</small></div></div><div class="v2m" style="--d:0.05s"><div class="a">wafer-report.vercel.app</div><i>→</i><div class="b"><b>인터넷의 누구나</b><small>공유 · PC · 휴대폰</small></div></div></div></div></div>
+</section>
+
 <section class="slide lt" data-title="배포 흐름">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i class="on">도입</i><i>설명</i><i>적용</i></span></div>
@@ -2740,12 +2822,78 @@ document.getElementById("rate")
   <div class="body"><div class="mid"><div class="phmap v3ph"><figure class="ph"><img src="img/savepoint.webp" alt="세이브 포인트"><figcaption><b>세이브 포인트</b></figcaption></figure><div class="v2ms"><div class="v2mh"><span>게임</span><i></i><span>Git · 요청 예</span></div><div class="v2m" style="--d:0.00s"><div class="a">세이브 포인트에서 저장</div><i>→</i><div class="b"><b>커밋 · 지금 상태를 기록</b><small>「지금 상태 커밋해 줘」</small></div></div><div class="v2m" style="--d:0.05s"><div class="a">저장 슬롯 이름</div><i>→</i><div class="b"><b>커밋 메시지 · 무엇을 바꿨나</b><small>「사유별 막대 추가」</small></div></div><div class="v2m" style="--d:0.10s"><div class="a">저장 목록</div><i>→</i><div class="b"><b>기록 · 언제 · 무엇을</b><small>「커밋 기록 보여 줘」</small></div></div><div class="v2m" style="--d:0.14s"><div class="a">불러오기</div><i>→</i><div class="b"><b>되돌리기 · 저장 시점 복원</b><small>「직전 커밋으로 되돌려 줘」</small></div></div></div></div></div></div>
 </section>
 
-<section class="slide lt" data-title="체크포인트">
+<section class="slide lt" data-title="커밋 구성">
   <div class="coord"><b></b> / <span class="tot"></span></div>
   <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
-  <h2 class="s-title sm">체크포인트</h2>
+  <h2 class="s-title sm">커밋 구성</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>자동 저장</b><span>Claude 가 파일을 고치기 전 상태</span></div><div class="v2tile" style="--d:0.03s"><b>되감기</b><span>Esc 두 번 · /rewind</span></div><div class="v2tile" style="--d:0.06s"><b>Git 과 차이</b><span>체크포인트는 이 대화 안 · Git 은 계속 남음</span></div></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/checkpointing" target="_blank" rel="noopener">Claude Code 문서 · Checkpointing</a></div></div></div>
+  <div class="body"><div class="mid"><div class="v2tiles c4"><div class="v2tile" style="--d:0.00s"><b>바뀐 내용</b><span>어느 파일의 어느 줄</span></div><div class="v2tile" style="--d:0.03s"><b>메시지</b><span>「웨이퍼 맵 추가」</span></div><div class="v2tile" style="--d:0.06s"><b>시각 · 작성자</b><span>언제 · 누가</span></div><div class="v2tile" style="--d:0.10s"><b>고유 번호</b><span>17ea423 같은 해시</span></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="커밋 기록 쌓기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">커밋 기록 쌓기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="pgcmw"><div class="pgcms"><div class="pgcmh">기록 저장소</div><div class="pgcm" style="--d:0.16s"><span class="v">v1</span><code>8ceced8</code><b>숫자 카드 4개</b><small>index.html 생성</small></div><div class="pgcm" style="--d:0.52s"><span class="v">v2</span><code>17ea423</code><b>웨이퍼 맵 추가</b><small>칩 616칸</small></div><div class="pgcm" style="--d:0.88s"><span class="v">v3</span><code>bfb3038</code><b>불합격 차트 추가</b><small>사유별 막대</small></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">터미널 · git log --oneline</span></div><pre><code>bfb3038 불합격 차트 추가
+17ea423 웨이퍼 맵 추가
+8ceced8 숫자 카드 4개</code></pre></div></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="Git 작업 흐름">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">Git 작업 흐름</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="pgg"><div class="pggtop"><span class="me">내 컴퓨터</span><span class="net">인터넷</span></div><div class="pggrow"><div class="pggz "><div class="pggzh"><b>작업 폴더</b><small>working directory · 파일 수정</small></div><div class="pggzb"><div class="pggc  o" style="--d:0.88s; --o:1.76s">index.html · 맵 추가</div><div class="pggc  o" style="--d:5.28s; --o:5.98s">index.html · 차트 추가</div><div class="pggc pl" style="--d:10.21s">index.html · 문구 바뀜</div></div></div><div class="pggp" style="--d1:1.58s; --d2:5.81s"><tt>git add</tt><i>→</i></div><div class="pggz "><div class="pggzh"><b>스테이징 영역</b><small>staging area · 커밋할 파일</small></div><div class="pggzb"><div class="pggc  o" style="--d:1.94s; --o:2.99s">index.html</div><div class="pggc  o" style="--d:6.16s; --o:6.86s">index.html</div></div></div><div class="pggp" style="--d1:2.82s; --d2:6.69s"><tt>git commit</tt><i>→</i></div><div class="pggz "><div class="pggzh"><b>로컬 저장소</b><small>repository · 커밋 기록</small></div><div class="pggzb"><div class="pggk " style="--d:0.18s"><tt>8ceced8</tt><b>숫자 카드 4개</b></div><div class="pggk " style="--d:3.17s"><tt>17ea423</tt><b>웨이퍼 맵 추가</b></div><div class="pggk " style="--d:7.04s"><tt>bfb3038</tt><b>불합격 차트 추가</b></div><div class="pggk pl" style="--d:9.86s"><b>문구 수정 · 받아 옴</b></div></div></div><div class="pggp" style="--d1:4.05s; --d2:7.57s"><tt>git push</tt><i>→</i></div><div class="pggz rm"><div class="pggzh"><b>GitHub</b><small>remote · 원격 저장소</small></div><div class="pggzb"><div class="pggk " style="--d:0.18s"><tt>8ceced8</tt><b>숫자 카드 4개</b></div><div class="pggk " style="--d:4.40s"><tt>17ea423</tt><b>웨이퍼 맵 추가</b></div><div class="pggk " style="--d:7.92s"><tt>bfb3038</tt><b>불합격 차트 추가</b></div><div class="pggk pl" style="--d:8.80s"><b>문구 수정 · 다른 컴퓨터</b></div></div></div></div><div class="pggpull" style="--d1:9.50s; --d2:9.50s"><i>←</i><tt>git pull</tt><span>원격의 새 커밋을 받아 내 폴더에 합침</span></div></div><div class="src">출처 · <a href="https://git-scm.com/book/en/v2/Getting-Started-What-is-Git%3F" target="_blank" rel="noopener">Pro Git · What is Git?</a> · <a href="https://docs.github.com/en/get-started/using-git/about-git" target="_blank" rel="noopener">GitHub Docs · About Git</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="Git 작업 요청">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">Git 작업 요청</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2ms"><div class="v2mh"><span>Claude Code 에 하는 말</span><i></i><span>실행되는 명령</span></div><div class="v2m" style="--d:0.00s"><div class="a">「지금 상태 커밋해 줘」</div><i>→</i><div class="b"><b>git add · git commit</b><small>메시지도 Claude 가 씀</small></div></div><div class="v2m" style="--d:0.05s"><div class="a">「커밋 기록 보여 줘」</div><i>→</i><div class="b"><b>git log</b><small>시점 · 메시지 목록</small></div></div><div class="v2m" style="--d:0.10s"><div class="a">「방금 고친 거 취소해 줘」</div><i>→</i><div class="b"><b>git restore</b><small>커밋 전 수정 버림</small></div></div><div class="v2m" style="--d:0.14s"><div class="a">「마지막 커밋 되돌려 줘」</div><i>→</i><div class="b"><b>git revert</b><small>되돌리는 새 커밋</small></div></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="커밋 시점">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">커밋 시점</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>기능 하나가 됐을 때</b><span>「웨이퍼 맵 동작」</span></div><div class="v2tile" style="--d:0.03s"><b>크게 바꾸기 전</b><span>화면 배치를 갈아엎기 전</span></div><div class="v2tile" style="--d:0.06s"><b>확인이 끝났을 때</b><span>브라우저로 보고 숫자 맞음</span></div></div><div class="flow"><div class="fs"><b>요청</b><span>기능 하나</span></div><div class="fa">→</div><div class="fs"><b>확인</b><span>브라우저 · 숫자</span></div><div class="fa">→</div><div class="fs hl"><b>커밋</b><span>세이브</span></div><div class="fa">→</div><div class="fs"><b>다음 요청</b></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="Git으로 되돌리기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">Git으로 되돌리기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="flow"><div class="fs"><b>수정 요청</b><span>화면 배치 변경</span></div><div class="fa">→</div><div class="fs"><b>확인</b><span>전보다 나빠짐</span></div><div class="fa">→</div><div class="fs hl"><b>「마지막 커밋 상태로 되돌려 줘」</b></div><div class="fa">→</div><div class="fs"><b>다시 요청</b><span>더 작게 나눠서</span></div></div><div class="v1chat"><div class="v1ch">되돌리기 대화 예</div><div class="v1b me"><span>나</span><p>방금 바꾼 배치가 전보다 별로야. 마지막 커밋 상태로 되돌려 줘.</p></div><div class="v1b ai"><span>Claude</span><p>마지막 커밋(「불합격 차트 추가」) 뒤에 고친 index.html 을 되돌렸다.</p></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="체크포인트와 Git">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">체크포인트와 Git</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">체크포인트 (/rewind · Esc 두 번)</div><div class="v2pc" style="--d:0.00s"><b>남는 때</b><span>요청마다 자동</span></div><div class="v2pc" style="--d:0.03s"><b>되감기</b><span>코드 · 대화 · 둘 다</span></div><div class="v2pc" style="--d:0.06s"><b>못 잡는 것</b><span>Bash 명령으로 바뀐 파일 · Claude Code 밖에서 고친 파일</span></div></div><div class="v2p on"><div class="v2ph">Git 커밋</div><div class="v2pc" style="--d:0.00s"><b>남는 때</b><span>내가 「커밋해 줘」 한 시점</span></div><div class="v2pc" style="--d:0.03s"><b>보관</b><span>지우기 전까지 · GitHub 에도</span></div><div class="v2pc" style="--d:0.06s"><b>배포</b><span>커밋을 가져가 공개</span></div></div></div><div class="src">출처 · <a href="https://code.claude.com/docs/en/checkpointing" target="_blank" rel="noopener">Claude Code · Checkpointing</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="GitHub">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">GitHub</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">Git</div><div class="v2pc" style="--d:0.00s"><b>어디에</b><span>내 컴퓨터</span></div><div class="v2pc" style="--d:0.03s"><b>하는 일</b><span>저장 시점 기록 · 되돌리기</span></div><div class="v2pc" style="--d:0.06s"><b>없으면</b><span>기록이 이 컴퓨터에만</span></div></div><div class="v2p on"><div class="v2ph">GitHub</div><div class="v2pc" style="--d:0.00s"><b>어디에</b><span>인터넷 · 원격 저장소</span></div><div class="v2pc" style="--d:0.03s"><b>하는 일</b><span>기록 보관 · 공유 · 다른 컴퓨터에서 받기</span></div><div class="v2pc" style="--d:0.06s"><b>배포</b><span>Vercel 과 연결</span></div></div></div><div class="src">출처 · <a href="https://docs.github.com/en/get-started/learning-about-github/githubs-plans" target="_blank" rel="noopener">GitHub plans</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="공개 · 비공개 저장소">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">공개 · 비공개 저장소</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2pair"><div class="v2p"><div class="v2ph">공개 (public)</div><div class="v2pc" style="--d:0.00s"><b>누가 보나</b><span>인터넷의 누구나 코드를 봄</span></div><div class="v2pc" style="--d:0.03s"><b>맞는 경우</b><span>공개해도 되는 연습 코드</span></div></div><div class="v2p on"><div class="v2ph">비공개 (private)</div><div class="v2pc" style="--d:0.00s"><b>누가 보나</b><span>나와 초대한 사람만</span></div><div class="v2pc" style="--d:0.03s"><b>맞는 경우</b><span>회사 업무 · 이 실습</span></div></div></div><div class="v2tiles c1"><div class="v2tile" style="--d:0.00s"><b>GitHub Free</b><span>비공개 저장소도 개수 제한 없음 · 일부 기능만 유료</span></div></div><div class="src">출처 · <a href="https://docs.github.com/en/get-started/learning-about-github/githubs-plans" target="_blank" rel="noopener">GitHub plans</a></div></div></div>
 </section>
 
 <section class="slide lt" data-title="GitHub · Vercel 준비">
@@ -2753,7 +2901,52 @@ document.getElementById("rate")
   <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
   <h2 class="s-title sm">GitHub · Vercel 준비</h2>
   <div class="rule"></div>
-  <div class="body"><div class="mid"><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>GitHub</b><span>github.com · 이메일로 가입 · 저장소 보관</span></div><div class="v2tile" style="--d:0.03s"><b>Vercel</b><span>vercel.com · GitHub 계정으로 가입 · Hobby 무료</span></div><div class="v2tile" style="--d:0.06s"><b>gh</b><span>GitHub 공식 명령 도구 · 설치는 Claude Code 에 요청</span></div><div class="v2tile" style="--d:0.10s"><b>Git</b><span>버전 기록 도구 · 설치 확인 요청</span></div></div><div class="src">출처 · <a href="https://github.com/signup" target="_blank" rel="noopener">GitHub</a> · <a href="https://vercel.com/signup" target="_blank" rel="noopener">Vercel</a> · <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a></div></div></div>
+  <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>GitHub</b><span>github.com · 이메일로 가입 · 저장소 보관</span></div><div class="v2tile" style="--d:0.03s"><b>Vercel</b><span>vercel.com · GitHub 계정으로 가입 · Hobby 무료</span></div><div class="v2tile" style="--d:0.06s"><b>Git</b><span>버전 기록 도구 · 「Git 설치돼 있는지 확인해 줘」</span></div></div><div class="src">출처 · <a href="https://github.com/signup" target="_blank" rel="noopener">GitHub</a> · <a href="https://vercel.com/signup" target="_blank" rel="noopener">Vercel</a> · <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="GitHub CLI (gh)">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">GitHub CLI (gh)</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2tiles c3"><div class="v2tile" style="--d:0.00s"><b>gh</b><span>GitHub 공식 명령 도구 · 저장소 만들기 · 올리기</span></div><div class="v2tile" style="--d:0.03s"><b>설치</b><span>Claude Code 에 「GitHub CLI 설치해 줘」</span></div><div class="v2tile" style="--d:0.06s"><b>명령 암기</b><span>필요 없음 · 실행은 Claude Code</span></div></div><div class="twocol"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Claude Code 가 실행 · macOS 예</span></div><pre><code>brew install gh</code></pre></div></div><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">Claude Code 가 실행 · Windows 예</span></div><pre><code>winget install --id GitHub.cli --source winget</code></pre></div></div></div><div class="src">출처 · <a href="https://cli.github.com/" target="_blank" rel="noopener">GitHub CLI</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="GitHub 업로드 요청">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">GitHub 업로드 요청</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v1chat"><div class="v1ch">Claude Code 대화</div><div class="v1b me"><span>나</span><p>이 폴더를 GitHub 비공개 저장소 wafer-report 로 올려 줘</p></div><div class="v1b ai"><span>Claude</span><p>gh repo create wafer-report --private --source=. --push 를 실행해도 될까요?</p></div><div class="v1b me"><span>나</span><p>응</p></div><div class="v1b ai"><span>Claude</span><p>완료 · https://github.com/내계정/wafer-report</p></div></div><div class="v2tiles c1"><div class="v2tile" style="--d:0.00s"><b>Claude 가 쓰는 명령</b><span>gh repo create · 원격 저장소 만들기 + 지금까지의 커밋 올리기</span></div></div><div class="src">출처 · <a href="https://cli.github.com/manual/gh_repo_create" target="_blank" rel="noopener">gh repo create</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="업로드한 저장소 확인">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">업로드한 저장소 확인</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="twocol"><div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">github.com/내계정/wafer-report · 예</span></div><pre><code>wafer-report/
+├── index.html
+├── CLAUDE.md
+├── .claude/
+└── .gitignore      data/ 는 올리지 않음</code></pre></div></div><div><div class="v2tiles c1"><div class="v2tile" style="--d:0.00s"><b>파일 목록</b><span>내 폴더와 같음 · data/ 제외</span></div><div class="v2tile" style="--d:0.03s"><b>커밋 기록</b><span>기능마다 남긴 커밋</span></div><div class="v2tile" style="--d:0.06s"><b>자물쇠 표시</b><span>비공개 저장소</span></div></div></div></div></div></div>
+</section>
+
+<section class="slide lt" data-title="Vercel 프로젝트 가져오기">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">Vercel 프로젝트 가져오기</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="flow"><div class="fs"><b>Vercel 로그인</b><span>GitHub 계정</span></div><div class="fa">→</div><div class="fs"><b>새 프로젝트</b><span>Git 저장소 가져오기</span></div><div class="fa">→</div><div class="fs hl"><b>wafer-report 선택</b><span>저장소 접근 허용</span></div><div class="fa">→</div><div class="fs"><b>Deploy</b><span>설정은 기본값</span></div><div class="fa">→</div><div class="fs"><b>주소 발급</b><span>1분 안팎</span></div></div><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>저장소가 안 보이면</b><span>GitHub 쪽에서 Vercel 에 그 저장소 접근 허용</span></div><div class="v2tile" style="--d:0.03s"><b>설정</b><span>HTML 한 파일 · 빌드 설정을 바꿀 것 없음</span></div></div><div class="src">출처 · <a href="https://vercel.com/docs/git" target="_blank" rel="noopener">Vercel · Git</a></div></div></div>
+</section>
+
+<section class="slide lt" data-title="배포 주소">
+  <div class="coord"><b></b> / <span class="tot"></span></div>
+  <div class="eyebrow"><span class="tag">배포</span><span class="p0ph"><i>도입</i><i class="on">설명</i><i>적용</i></span></div>
+  <h2 class="s-title sm">배포 주소</h2>
+  <div class="rule"></div>
+  <div class="body"><div class="mid"><div class="v2tiles c2"><div class="v2tile" style="--d:0.00s"><b>프로젝트 기본 주소</b><span>프로젝트명.vercel.app · 다시 배포해도 같음</span></div><div class="v2tile" style="--d:0.03s"><b>배포마다 고유 주소</b><span>버전마다 따로 생김</span></div></div><div class="code sm"><div class="bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fn">배포 완료 · 예</span></div><pre><code>✓ Production   https://wafer-report.vercel.app
+  이번 배포     https://wafer-report-a1b2c3.vercel.app</code></pre></div><div class="src">출처 · <a href="https://vercel.com/docs/deployments/generated-urls" target="_blank" rel="noopener">Vercel · Generated URLs</a></div></div></div>
 </section>
 
 <section class="slide lt" data-title="수정과 재배포">
