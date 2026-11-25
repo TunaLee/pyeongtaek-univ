@@ -1,4 +1,4 @@
-"""배경 장 그림 — 바이브코딩까지의 변화 · 데이터 분석과 엔지니어링의 변화 · Git 이전의 버전 관리.
+"""배경 장 그림 — 쌓이는 데이터(전 세계 · 국내 공식 통계) · 바이브코딩까지의 변화 · 데이터 분석과 엔지니어링의 변화 · Git 이전의 버전 관리.
 
 언어 발전 · AI 코딩 도구 변화 · 파일 이름 버전 관리는 vibe-coding 강의(1-1 · 1-5)의 구성을 이 과정 예시로 옮긴 것.
 장면 간격 2초 이상 · 한 번 재생 후 마지막 장면에 멈춤. CSS 접두어 pbg.
@@ -6,6 +6,92 @@
 from anim import K, N, O, W, _D, _t
 from hx import esc
 import sk
+
+GRAY = "#9AA5B1"
+
+# ── 전 세계 데이터 양 · IDC Global DataSphere ─────────────────────────
+# IDC 블로그 「Beyond the Prompt: The Hidden Data and Storage Implications of Generative AI」(2026-11-09)
+# 「generate more than 274.4 zettabytes (ZB) of data in 2026」 · 「718.5 ZB in 2030, a CAGR of 26.9%」
+# 「Enterprise data … 31.1% CAGR versus 13.5%」 — 페이지에서 직접 확인한 숫자만
+DATASPHERE = {"src": ("IDC · Global DataSphere 2026–2030 (2026.11)", "https://www.idc.com/?p=123020"),
+              "zb": {2026: 274.4, 2030: 718.5}, "enterprise": 31.1, "consumer": 13.5}
+
+
+def datasphere():
+    """2026 막대 → 2030 막대가 자람 · 약 몇 배 → 1 ZB 크기 → 기업 · 개인 데이터 연평균 증가율. 12초."""
+    d = _D("pbd", 12)
+    pc = lambda t: t / 12 * 100  # noqa: E731
+    (y0, v0), (y1, v1) = sorted(DATASPHERE["zb"].items())
+    base, top, bw = 350, 270, 160
+    grow = "transform-box:fill-box;transform-origin:50% 100%"
+    s = (_t(40, 20, "전 세계에서 1년 동안 생기는 데이터", "tn", "start", 'style="font-size:16px"')
+         + f'<line x1="40" y1="{base}" x2="640" y2="{base}" stroke="{N}" stroke-width="2"/>')
+    bars = [(y0, v0, 120, .5, GRAY), (y1, v1, 400, 3, O)]
+    for y, v, x, t, c in bars:
+        h = top * v / v1
+        st = [(0, "transform:scaleY(0)"), (pc(t), "transform:scaleY(0)"), (pc(t + 1.2), "transform:scaleY(1)"), (100, "transform:scaleY(1)")]
+        s += f'<rect x="{x}" y="{base - h:.1f}" width="{bw}" height="{h:.1f}" rx="6" fill="{c}" {d.a(st, "ease-out", grow)}/>'
+        s += (f'<g {d.show(pc(t + 1.2))}>' + _t(x + bw / 2, base - h - 22, f"{v:g} ZB", "tt", extra='style="font-size:26px"')
+              + _t(x + bw / 2, base + 24, f"{y}" if y == y0 else f"{y} 예측", "tn", extra='style="font-size:17px"') + "</g>")
+    h0, h1 = top * v0 / v1, top * v1 / v1
+    s += (f'<g {d.show(pc(4.5))}><path d="M{120 + bw / 2} {base - h0 - 52:.1f} C {200 + bw / 2} {base - h1 - 40:.1f}, {300} {base - h1 - 40:.1f}, {392} {base - h1 + 6:.1f}" '
+          f'fill="none" stroke="{O}" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#{d.id("o")})"/>'
+          + _t(250, base - h1 - 26, f"약 {v1 / v0:.1f}배", "to", extra='style="font-size:21px"') + "</g>")
+    s += (f'<g {d.show(pc(6.5))}><rect x="700" y="60" width="440" height="120" rx="16" fill="{W}" stroke="{K}" stroke-width="2.5"/>'
+          + _t(920, 100, "1 ZB = 1조 GB", "tt", extra='style="font-size:24px"')
+          + _t(920, 144, f"{v0:g} ZB = 1TB 하드 약 {v0 * 1e9 / 1e8:,.0f}억 개", "ts", extra='style="font-size:16px"') + "</g>")
+    ent, con = DATASPHERE["enterprise"], DATASPHERE["consumer"]
+    s += (f'<g {d.show(pc(9))}><rect x="700" y="200" width="440" height="150" rx="16" fill="#FFF8F0" stroke="{O}" stroke-width="2.5"/>'
+          + _t(720, 228, f"{y0} → {y1} 연평균 증가율", "ts", "start", 'style="font-size:15px"'))
+    for i, (name, v, c) in enumerate([("기업 데이터", ent, O), ("개인 데이터", con, GRAY)]):
+        yy = 268 + i * 46
+        s += (_t(720, yy, name, "tn", "start", 'style="font-size:16px"')
+              + f'<rect x="830" y="{yy - 12}" width="{220 * v / ent:.1f}" height="24" rx="5" fill="{c}"/>'
+              + _t(830 + 220 * v / ent + 10, yy, f"{v:g}%", "tn", "start", 'style="font-size:16px"'))
+    s += "</g>"
+    return d.svg(1160, 400, s)
+
+
+# ── 하루 간편결제 건수 · 한국은행 ─────────────────────────────────────
+# 한국은행 보도자료 「2026년 상반기중 전자지급서비스 이용현황」(2026-09-18) 부록 「간편지급 서비스 이용 현황」 표
+# (일평균 · 만 건 · 이용건수 합계 행) · 이용금액 1조 2,263.9억원 · 원문 PDF 에서 직접 확인
+PAY = {"src": ("한국은행 · 2026년 상반기중 전자지급서비스 이용현황 (2026.9)",
+               "https://www.bok.or.kr/portal/bbs/B0000502/view.do?nttId=11064870&menuNo=201265"),
+       "count": [("24년 상", 2973.5), ("24년 하", 3177.8), ("25년 상", 3388.1), ("25년 하", 3758.3), ("26년 상", 3822.1)],
+       "amount": {"25년 상": 10497.0, "26년 상": 12263.9}}
+
+
+def payments():
+    """반기별 간편결제 하루 평균 건수 막대가 자람 → 마지막 막대 강조 · 1년 전 대비 → 하루 결제 금액. 12초."""
+    d = _D("pbp", 12)
+    pc = lambda t: t / 12 * 100  # noqa: E731
+    cnt = PAY["count"]
+    mx = max(v for _, v in cnt)
+    base, top, bw, gap, x0 = 340, 250, 84, 44, 60
+    grow = "transform-box:fill-box;transform-origin:50% 100%"
+    s = (_t(40, 20, "간편결제 · 하루 평균 건수", "tn", "start", 'style="font-size:16px"')
+         + f'<line x1="40" y1="{base}" x2="{x0 + len(cnt) * (bw + gap)}" y2="{base}" stroke="{N}" stroke-width="2"/>')
+    st = [(0, "transform:scaleY(0)"), (pc(.5), "transform:scaleY(0)"), (pc(2), "transform:scaleY(1)"), (100, "transform:scaleY(1)")]
+    for i, (lab, v) in enumerate(cnt):
+        x, h = x0 + i * (bw + gap), top * v / mx
+        last = i == len(cnt) - 1
+        s += f'<rect x="{x}" y="{base - h:.1f}" width="{bw}" height="{h:.1f}" rx="5" fill="{K}" {d.a(st, "ease-out", grow)}/>'
+        if last:
+            s += f'<rect x="{x}" y="{base - h:.1f}" width="{bw}" height="{h:.1f}" rx="5" fill="{O}" {d.show(pc(4))}/>'
+        s += (f'<g {d.show(pc(2))}>' + _t(x + bw / 2, base - h - 16, f"{v:,.0f}만", "tn", extra='style="font-size:15px"')
+              + _t(x + bw / 2, base + 22, lab, "ts", extra='style="font-size:15px"') + "</g>")
+    (pl, pv), (ll, lv) = cnt[-3], cnt[-1]                               # 1년 전 같은 반기와 비교
+    s += (f'<g {d.show(pc(4))}><rect x="720" y="50" width="420" height="140" rx="16" fill="#FFF8F0" stroke="{O}" stroke-width="2.5"/>'
+          + _t(930, 82, f"20{ll[:2]}년 상반기 · 하루 평균", "ts", extra='style="font-size:15px"')
+          + _t(930, 122, f"{lv:,.0f}만 건", "tt", extra=f'style="font-size:30px;fill:{O}"')
+          + _t(930, 162, f"1년 전보다 {(lv / pv - 1) * 100:.1f}% 증가", "tn", extra='style="font-size:16px"') + "</g>")
+    a0, a1 = PAY["amount"][pl], PAY["amount"][ll]
+    jo, eok = divmod(round(a1), 10000)
+    s += (f'<g {d.show(pc(7))}><rect x="720" y="210" width="420" height="130" rx="16" fill="{W}" stroke="{K}" stroke-width="2.5"/>'
+          + _t(930, 242, "하루 결제 금액", "ts", extra='style="font-size:15px"')
+          + _t(930, 280, f"{jo}조 {eok:,}억 원", "tt", extra='style="font-size:26px"')
+          + _t(930, 316, f"1년 전보다 {(a1 / a0 - 1) * 100:.1f}% 증가", "tn", extra='style="font-size:16px"') + "</g>")
+    return d.svg(1160, 400, s)
 
 # ── 프로그래밍 언어의 발전 · 같은 계산(1부터 100까지 합) ──────────────
 LANGS = [  # (시기, 이름, 예, 특징, 요리 비유)
