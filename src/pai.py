@@ -21,6 +21,7 @@ METR_11 = ("METR · Time Horizon 1.1 (2026.1)", "https://metr.org/blog/2026-1-29
 METR_TH = ("METR · Time Horizons (2026.9)", "https://metr.org/time-horizons/")
 OAI_FC = ("OpenAI · Function calling (2023.6)", "https://openai.com/index/function-calling-and-other-api-updates/")
 ANT_MCP = ("Anthropic · MCP (2024.11)", "https://www.anthropic.com/news/model-context-protocol")
+ANT_CE = ("Anthropic · Effective context engineering (2025.9)", "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents")
 OAI_HE = ("OpenAI · Harness engineering (2026.2)", "https://openai.com/index/harness-engineering/")
 CC_HOW = ("Claude Code 문서 · How Claude Code works", "https://code.claude.com/docs/en/how-claude-code-works")
 CC_BP = ("Claude Code 문서 · Best practices", "https://code.claude.com/docs/en/best-practices")
@@ -66,6 +67,129 @@ def shift():
               + _t(556, y + 28, name, "tt", "start", f'style="font-size:20px;fill:{"#EF6C00" if hl else N}"')
               + _t(556, y + 60, what, "ts", "start", 'style="font-size:15px"')
               + _t(1130, y + 42, ex, "tn", "end", f'style="font-size:14.5px;fill:{"#EF6C00" if hl else K}"') + "</g>")
+    return d.svg(1160, 430, s)
+
+
+# ── 1-2. 컨텍스트 엔지니어링 · 컨텍스트만의 한계 ─────────────────────
+# 종류별 색 — 공식 도해의 지시 · 도구 · 문서 · 기억 · 대화 기록
+CAT = {"지시": ("#4A86E8", "#EEF4FD"), "도구": (O, "#FFF3E6"), "자료": (OK, "#EAF5EB"),
+       "기억": ("#7E57C2", "#F1ECFA"), "대화": ("#8A94A3", "#F4F6F9")}
+
+
+def _cw(txt, fs=14):
+    """카드 폭 — 한글 · 영문 · 숫자 · 빈칸 대략 폭."""
+    return 26 + sum(fs if ord(c) > 0x3000 else fs * .6 for c in txt)
+
+
+def ctx_eng():
+    """컨텍스트 엔지니어링 — Anthropic 「Prompt engineering vs. context engineering」 도해 구조.
+    가운데 컨텍스트 창에 지시 · 질문(프롬프트)만 있음 → 왼쪽 「줄 수 있는 것」(도구 · 자료 · 기억 · 대화 기록) →
+    고른 것만 창으로(도구 목록 · 사과 엑셀 · 기준표 · 요약 형식 · 사과 대화) · 나머지는 뺌 → 모델이 창을 읽고 답.
+    13초 · 한 번."""
+    D = 13
+    d = _D("pqe", D)
+    pc = lambda t: t / D * 100  # noqa: E731
+    s = (_t(14, 24, "줄 수 있는 것", "tn", "start", 'style="font-size:15px"')
+         + _t(645, 24, "컨텍스트 창 · 모델이 읽는 것", "tn", "middle", 'style="font-size:15px"'))
+    # 왼쪽 · 줄 수 있는 것 (종류별 줄) — (종류, y, [(이름, 고름 여부)])
+    pile = [("도구", 66, [("파일 읽기", 1), ("코드 실행", 1), ("웹 검색", 0)]), ("도구", 108, [("메일 보내기", 0)]),
+            ("자료", 164, [("사과 엑셀 A07", 1), ("선별 기준표", 1)]), ("자료", 206, [("다른 날 엑셀 24개", 0)]),
+            ("기억", 262, [("지난 요약 형식", 1)]), ("대화", 318, [("사과 대화", 1), ("웨이퍼 대화", 0)])]
+    label = {66: "도구", 164: "자료", 262: "기억", 318: "대화 기록"}
+    pos, body, dim = {}, "", ""
+    for cat, y, items in pile:
+        x = 92
+        st, fill = CAT[cat]
+        for name, keep in items:
+            w = _cw(name)
+            pos[name] = (x, y, w)
+            body += (f'<rect x="{x}" y="{y}" width="{w:.0f}" height="34" rx="8" fill="{fill}" stroke="{st}" stroke-width="2"/>'
+                     + _t(x + 13, y + 17, name, "tn", "start", 'style="font-size:14px"'))
+            if not keep:
+                dim += (f'<rect x="{x - 3}" y="{y - 3}" width="{w + 6:.0f}" height="40" rx="9" fill="#FFFFFF" opacity=".72"/>'
+                        + _t(x + w + 8, y + 17, "뺌", "ts", "start", 'style="font-size:12.5px"'))
+            x += w + 10
+        if y in label:
+            body += _t(14, y + 17, label[y], "ts", "start", 'style="font-size:13.5px;font-weight:700"')
+    s += (f'<g {d.show(pc(1.8))}><rect x="0" y="40" width="404" height="330" rx="16" fill="none" stroke="#C9CFD8" '
+          f'stroke-width="2" stroke-dasharray="7 6"/>{body}</g>')
+    s += (f'<g {d.show(pc(4.2))}><path d="M410 214 H462" stroke="{N}" stroke-width="3" marker-end="url(#{d.id("k")})"/>'
+          + _t(436, 196, "고르기", "to", "middle", 'style="font-size:14px"') + "</g>")
+    # 가운데 · 컨텍스트 창
+    s += f'<rect x="470" y="40" width="350" height="340" rx="16" fill="#FBFCFE" stroke="{N}" stroke-width="2.5" stroke-dasharray="9 6"/>'
+    blocks = [(f"지시 · 역할 · 표 형식", "지시", .8, [], 1),
+              ("도구 목록 · 파일 읽기 · 코드 실행", "도구", 4.6, ["파일 읽기", "코드 실행"], 0),
+              (f"사과 엑셀 A07 · {DN['rows']}행", "자료", 5.4, ["사과 엑셀 A07"], 0),
+              (f"선별 기준표 · 무게 {sk.MIN_W}g · 당도 {sk.MIN_SUGAR:g}", "자료", 6.2, ["선별 기준표"], 0),
+              ("지난 요약 형식 · 표 · 숫자 자리", "기억", 7.0, ["지난 요약 형식"], 0),
+              ("대화 기록 · 사과 대화", "대화", 7.8, ["사과 대화"], 0),
+              ("질문 「A07 상품률 정리해 줘」", "지시", .8, [], 1)]
+    for i, (txt, cat, t, srcs, prompt) in enumerate(blocks):
+        y = 56 + i * 46
+        st, fill = CAT[cat]
+        s += (f'<g {d.show(pc(t))}><rect x="484" y="{y}" width="322" height="38" rx="9" fill="{fill}" stroke="{st}" stroke-width="2.2"/>'
+              + _t(498, y + 19, txt, "tn", "start", 'style="font-size:14px"')
+              + (_t(796, y + 19, "프롬프트", "ts", "end", f'style="font-size:12.5px;font-weight:800;fill:{st}"') if prompt else "")
+              + "</g>")
+        for nm in srcs:   # 고른 카드에 주황 테두리
+            x, yy, w = pos[nm]
+            s += (f'<rect x="{x - 3}" y="{yy - 3}" width="{w + 6:.0f}" height="40" rx="9" fill="none" stroke="{O}" '
+                  f'stroke-width="3" {d.show(pc(t))}/>')
+    s += f'<g {d.show(pc(8.6))}>{dim}</g>'
+    # 오른쪽 · 모델 → 답
+    s += (f'<g {d.show(pc(9.6))}><path d="M824 100 H958" stroke="{N}" stroke-width="3" marker-end="url(#{d.id("k")})"/>'
+          + _t(890, 84, "창 전체를 읽음", "ts", "middle", 'style="font-size:13px"')
+          + f'<circle cx="1000" cy="100" r="36" fill="{N}"/>' + _t(1000, 100, "모델", "tw", "middle", 'style="font-size:17px"') + "</g>")
+    s += (f'<g {d.show(pc(10.4))}><path d="M1000 138 V164" stroke="{N}" stroke-width="3" marker-end="url(#{d.id("k")})"/>'
+          f'<rect x="866" y="170" width="290" height="136" rx="14" fill="{W}" stroke="{K}" stroke-width="2.2"/>'
+          + _t(886, 196, "답", "tn", "start", 'style="font-size:15px"')
+          + _t(886, 226, f"상품 {DN['pass']} · 불량 {DN['fail']}", "tn", "start", 'style="font-size:15px"')
+          + _t(886, 254, f"상품률 {DN['rate']}%", "tn", "start", 'style="font-size:15px"')
+          + _t(886, 282, "기준표 · 요약 형식대로", "ts", "start", 'style="font-size:14px"') + "</g>")
+    # 프롬프트 · 컨텍스트가 가리키는 범위
+    s += (f'<g {d.show(pc(11.4))}><rect x="866" y="326" width="290" height="38" rx="19" fill="#EEF4FD" stroke="#4A86E8" stroke-width="2"/>'
+          + _t(1011, 345, "프롬프트 · 지시 · 질문 두 칸", "tn", "middle", 'style="font-size:14px;fill:#2F5FB3"')
+          + f'<rect x="866" y="374" width="290" height="38" rx="19" fill="{N}"/>'
+          + _t(1011, 393, "컨텍스트 · 창 전체 · 넣을 것과 뺄 것", "tw", "middle", 'style="font-size:14px"') + "</g>")
+    return d.svg(1160, 430, s)
+
+
+def ctx_limit():
+    """컨텍스트만의 한계 — 자료 · 기준표가 창에 있어도 요청 한 번에 모델은 한 단계만 하고 멈춤 → 다음 단계 · 확인은 사람이
+    다시 요청(다섯 번). 다음 장 「에이전틱 AI」의 「스스로 반복」과 짝. 14초 · 한 번."""
+    D = 14
+    d = _D("pql", D)
+    pc = lambda t: t / D * 100  # noqa: E731
+    steps = [("엑셀 읽기", "「엑셀 읽어 줘」"), ("상품률 계산", "「상품률 계산해 줘」"), ("표로 저장", "「표로 저장해 줘」"),
+             ("숫자 확인", "「숫자 맞는지 봐 줘」"), ("틀린 곳 고치기", "「틀린 곳 고쳐 줘」")]
+    xs = [28 + i * 226 for i in range(len(steps))]
+    ts_ = [.8 + i * 2.3 for i in range(len(steps))]
+    s = (_t(28, 30, "목표 · 사과 A07 상품률 보고서", "tn", "start", 'style="font-size:16px"')
+         + _t(1132, 30, "컨텍스트 · 사과 엑셀 · 기준표 · 요약 형식 준비됨", "ts", "end", 'style="font-size:13.5px"'))
+    for i, ((name, req), x, t) in enumerate(zip(steps, xs, ts_)):
+        s += (f'<rect x="{x}" y="186" width="200" height="70" rx="12" fill="none" stroke="#C9CFD8" stroke-width="2" stroke-dasharray="6 5"/>'
+              + _t(x + 100, 221, f"{i + 1}. {name}", "ts", "middle", 'style="font-size:15px"'))
+        s += (f'<g {d.show(pc(t))}><rect x="{x}" y="66" width="200" height="64" rx="12" fill="#EEF4FD" stroke="#4A86E8" stroke-width="2"/>'
+              + _t(x + 14, 86, "사람 요청", "ts", "start", 'style="font-size:12.5px;font-weight:700;fill:#2F5FB3"')
+              + _t(x + 14, 112, req, "tn", "start", 'style="font-size:15px"') + "</g>")
+        s += (f'<g {d.show(pc(t + .5))}><path d="M{x + 100} 134 V178" stroke="{N}" stroke-width="2.5" '
+              f'marker-end="url(#{d.id("k")})"/></g>')
+        s += (f'<g {d.show(pc(t + .9))}><rect x="{x}" y="186" width="200" height="70" rx="12" fill="{W}" stroke="{K}" stroke-width="2.5"/>'
+              + _t(x + 100, 211, f"{i + 1}. {name}", "tn", "middle", 'style="font-size:16px"')
+              + _t(x + 100, 237, "모델 · 한 단계", "ts", "middle", 'style="font-size:13px"') + "</g>")
+        s += f'<g {d.show(pc(t + 1.5))}>' + _t(x + 100, 280, "멈춤 · 다음 요청 기다림", "ts", "middle", f'style="font-size:13px;fill:{R}"') + "</g>"
+    # 아래 · 사람 요청 횟수 → 끝에 정리 두 칸
+    s += f'<rect x="28" y="318" width="352" height="84" rx="14" fill="#EEF4FD" stroke="#4A86E8" stroke-width="2"/>'
+    s += _t(52, 344, "사람 요청", "tn", "start", 'style="font-size:15px;fill:#2F5FB3"')
+    for i, t in enumerate(ts_):
+        end = ts_[i + 1] if i + 1 < len(ts_) else None
+        s += f'<g {d.show(pc(t), pc(end) if end else None)}>' + _t(52, 378, f"{i + 1}번", "tt", "start", 'style="font-size:26px;fill:#2F5FB3"') + "</g>"
+    s += (f'<g {d.show(pc(12.4))}><rect x="404" y="318" width="352" height="84" rx="14" fill="{W}" stroke="{K}" stroke-width="2"/>'
+          + _t(428, 344, "모델", "tn", "start", 'style="font-size:15px"')
+          + _t(428, 376, "요청 한 번에 한 단계 · 멈춤", "tn", "start", 'style="font-size:17px"') + "</g>")
+    s += (f'<g {d.show(pc(12.9))}><rect x="780" y="318" width="352" height="84" rx="14" fill="#FDECEC" stroke="{R}" stroke-width="2"/>'
+          + _t(804, 344, "사람", "tn", "start", f'style="font-size:15px;fill:{R}"')
+          + _t(804, 376, "다음 단계 · 확인 · 다시 요청", "tn", "start", 'style="font-size:17px"') + "</g>")
     return d.svg(1160, 430, s)
 
 
@@ -258,16 +382,8 @@ def slides():
             ("빠진 자료는 모름", "붙이지 않은 기준은 추측")], 3)
               + flow([("엑셀 열기", "사람"), ("복사 · 붙여 넣기", "사람"), ("기준 다시 설명", "사람"), ("답 받기", "모델"),
                       ("표 옮겨 저장", "사람")], hl=3), T),
-        light("컨텍스트 엔지니어링", viz2.pair(
-            "보여 줄 것", [("사과 엑셀", f"apple_A07.xlsx · {DN['rows']}행"), ("선별 기준표", f"멍 · 벌레 · 무게 {sk.MIN_W}g · 당도 {sk.MIN_SUGAR:g}"),
-                         ("지난 요약", "형식 · 숫자 예")],
-            "뺄 것", [("다른 날 파일", "A01 ~ A25 중 24개"), ("관계없는 대화", "앞서 한 다른 일")], hl="l")
-              + viz2.tiles([("손대는 곳", "모델이 읽는 자료 · 넣을 것과 뺄 것")], 1), T),
-        light("컨텍스트만의 한계", viz2.tiles([
-            ("글로만 답함", "파일 저장 · 코드 실행은 사람"), ("긴 일은 나눠서", "단계마다 사람이 다음 요청"),
-            ("확인도 사람", "숫자 대조 · 빠진 것 찾기")], 3)
-              + flow([("자료 고르기", "사람"), ("답 · 코드", "모델"), ("코드 실행 · 저장", "사람"), ("결과 확인", "사람"),
-                      ("다음 요청", "사람")], hl=1), T),
+        light("컨텍스트 엔지니어링", ctx_eng() + src(ANT_CE), T),
+        light("컨텍스트만의 한계", ctx_limit(), T),
         light("에이전틱 AI", flow([("도구 호출", "2023.06 · 부를 함수 · 값을 모델이 고름"), ("긴 작업", "작업 길이 · 89일마다 2배"),
                                   ("연결 표준", "2024.11 · MCP"), ("에이전틱 AI", "목표를 받아 직접 실행 · 확인 반복")], hl=3)
               + viz2.tiles([("목표", "「사과 엑셀 요약해 줘」"), ("스스로 고름", "읽을 파일 · 쓸 도구"), ("반복", "결과를 보고 다음 행동")], 3)
