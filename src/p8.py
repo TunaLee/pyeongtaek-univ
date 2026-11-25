@@ -47,7 +47,7 @@ def slides():
               + src(("Anthropic · Effective context engineering 2025.9", "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents"),
                     C_OAI_HE), T),
         light("마구와 하네스", pbg.harness_photo() + src(PH_WILD, PH_HARNESS), T),
-        light("교시별 하네스 부품", viz2.tiles([
+        light("지금까지 쓴 하네스", viz2.tiles([
             ("CLAUDE.md · 2교시", "프로젝트 규칙 · 정답 숫자"), ("Plan Mode · 권한 · 3교시", "계획 먼저 · 확인 받기"),
             ("Git · 체크포인트 · 5교시", "되돌릴 지점"), ("검증 · 6교시", "기대 숫자 · 화면 증거"),
             ("Skill · 7교시", "반복 절차 · sim-check"), ("Hook · 8교시", "원본 보호 · 자동 차단")], 3), T),

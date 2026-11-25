@@ -1,10 +1,8 @@
-"""1교시 데이터 분석 첫걸음 · Claude Code 시작 (사과 데이터).
+"""1교시 데이터 분석 첫걸음 · Claude Code 시작 (사과 데이터 · 실습 중심).
 
-도입(사과 선별 데이터 · 데이터 분석의 흐름)
-→ 설명(채팅과 에이전트 · 에이전트 루프 · 데이터 작업 고리 · 요청 구성
-       · 테이블의 행과 열 · 수치형 변수와 분포 · 범주형 변수와 막대 · 위치 데이터와 지도 · 데이터 종류와 차트)
-→ 적용(실습 폴더 · 환경 · 실습 1-1 사과 데이터 읽기 → 1-2 사과 차트 세 장 · 사과 차트에서 읽은 사실).
-열 목록 · 열 묶음 표는 쓰지 않는다 — 데이터는 지도 · 차트로 직접 보며 이해한다. 웨이퍼는 2교시에 같은 순서로.
+개요(데이터 분석 → 바이브코딩)에서 본 그림을 Claude Code 로 직접 그려 본다.
+도입(Claude Code가 데이터를 다루는 순서) → 설명(요청 구성 · 데이터 종류와 차트)
+→ 적용(실습 폴더 · 환경 · 실습 1-1 사과 데이터 읽기 → 1-2 사과 차트 세 장 · 결과 · 사과 차트에서 읽은 사실).
 """
 import p0
 import pbg
@@ -32,22 +30,12 @@ def slides():
     e_bad, e_n = int((edge["등급"] != "상품").sum()), len(edge)
     return [
         # ── 도입
-        light("사과 선별 데이터", pbg.orchard_zones(), T),
-        light("데이터 분석의 흐름", pbg.analysis_flow(), T),
-        # ── 설명 · Claude Code 로 데이터 다루기
-        light("채팅과 에이전트", psim.chat_vs_agent(), T),
-        light("에이전트 루프", psim.agent_loop()
-              + src(("Claude Code 문서 · How Claude Code works", "https://code.claude.com/docs/en/how-claude-code-works")), T),
-        light("Claude Code 의 데이터 작업 고리", pviz.data_loop(), T),
-        light("요청 구성", viz2.pair(
+        light("Claude Code가 데이터를 다루는 순서", pviz.data_loop(), T),
+        # ── 설명
+        light("요청 쓰는 법", viz2.pair(
             "한 줄 요청", [("요청", "「사과 엑셀 요약해 줘」"), ("무엇을", "Claude 가 추측"), ("저장", "대화창에만 · 파일 없음")],
             "네 칸을 채운 요청", [("목표", "몇 행 · 몇 열 · 열마다 뜻 · 상품 · 불량 수"), ("입력", "data/apple_A07.xlsx"),
                              ("산출물", "docs/사과_요약.md"), ("하지 말 것", "원본 수정")]), T),
-        # ── 설명 · 데이터 보는 법 (열의 종류 → 맞는 차트)
-        light("테이블의 행과 열", p0.table_terms(df), T),
-        light("수치형 변수와 분포", p0.num_anim(df), T),
-        light("범주형 변수와 막대", p0.cat_anim(df), T),
-        light("위치 데이터와 지도", p0.map_anim(df), T),
         light("데이터 종류와 차트", pbg.chart_types(), T),
         # ── 적용
         light("실습 폴더 sim-lab", viz2.maprows([

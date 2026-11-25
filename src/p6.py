@@ -24,7 +24,7 @@ def slides():
         # ── 설명
         light("사과 판정 조건", p0.judge_apple(), T),
         light("누설전류 합격선", psim.wafer_slider(), T),
-        light("조절 바 동작 네 단계", viz2.maprows([
+        light("조절 바 동작 순서", viz2.maprows([
             ("1 움직임", "조절 바 값이 바뀜", "input 이벤트"), ("2 기준 바꿈", "누설전류 상한 = 조절 바 값", "변수 하나"),
             ("3 판정 다시", f"{WN['rows']}행 전부 · 기준표 순서", "같은 판정 함수"), ("4 다시 그림", "카드 · 맵 · 차트 · 분포", "네 곳")], "단계", "하는 일"), T),
         light("함께 바뀌는 화면", psim.four_updates(), T),

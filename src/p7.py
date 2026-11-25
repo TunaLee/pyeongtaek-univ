@@ -48,14 +48,14 @@ def slides():
         light("조절 바 설계표", _design(), T),
         # ── 설명
         light("왼쪽 조절 · 오른쪽 결과", sk.duo("sim/wafer_s7.webp", "sim/wafer_s7_moved.webp", "처음 값", "누설전류 상한 5 nA"), T),
-        light("처음 값과 원본 대비", viz2.tiles([
+        light("처음 값과 원본 비교", viz2.tiles([
             ("처음 값 버튼", "조절 바 8개를 기준표 값으로"), ("원본 대비", f"엑셀 원본 수율 {WN['yield']}% 와 차이 · 예 {chk[0]['delta_pp']:+.2f}%p"),
             ("걸림 수", "조절 바마다 그 기준에 걸린 칩 수")], 3), T),
-        light("숫자 점검 항목", viz2.maprows([(c["op"], f"수율 {c['rate']:.2f}%", f"합격 {c['pass']} / {c['total']} · {c['delta_pp']:+.2f}%p") for c in chk], "조작", "기대 숫자"), T),
+        light("점검할 숫자", viz2.maprows([(c["op"], f"수율 {c['rate']:.2f}%", f"합격 {c['pass']} / {c['total']} · {c['delta_pp']:+.2f}%p") for c in chk], "조작", "기대 숫자"), T),
         # ── 설명 · 컨텍스트 · Skill
         light("컨텍스트", psim.context_fill()
               + src(("Claude Code 문서 · Context window", "https://code.claude.com/docs/en/context-window")), T),
-        light("비우기와 요약", viz2.tiles([
+        light("대화 비우기와 요약", viz2.tiles([
             ("/clear", "대화를 비움 · CLAUDE.md 는 다시 읽음"), ("/compact", "지금까지를 요약해 이어 감"),
             ("쓰는 때", "교시가 바뀔 때 · 다른 일로 넘어갈 때"), ("남기는 법", "결정 · 숫자는 파일로(docs/)")], 2)
               + src(("Claude Code 문서 · Commands", "https://code.claude.com/docs/en/commands")), T),

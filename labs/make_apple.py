@@ -61,6 +61,20 @@ def day(k, rng):
     return rows
 
 
+ODD_DAY = 18          # 특이한 날 — 멍 불량이 몰린 날 (데이터 분석 흐름 · 「특이한 날 들여다보기」 예)
+
+
+def odd_day(rows):
+    """ODD_DAY 하루만 멍 든 사과를 늘린다. 따로 만든 난수만 써서 다른 날(A07 · A25 등) 값은 그대로."""
+    r2 = np.random.default_rng(1818)
+    for r in rows:
+        if r[10] == 0 and r2.random() < .24:
+            r[10] = 1
+            r[12] = judge(1, r[11], float(r[7]), float(r[9]))
+            r[13] = "상품" if r[12] == "없음" else "불량"
+    return rows
+
+
 def write(p, rows):
     with p.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -81,6 +95,8 @@ def main():
     allrows = []
     for k in range(1, 26):
         rows = day(k, rng)
+        if k == ODD_DAY:
+            rows = odd_day(rows)
         allrows += rows
         stat["days"][f"A{k:02d}"] = rate(rows)
         write(RAW / f"apple_A{k:02d}.csv", rows)
@@ -91,6 +107,11 @@ def main():
     stat["zone"] = {z: rate([r for r in a7 if r[5] == z]) for z in ("안쪽", "중간", "가장자리")}
     stat["variety"] = {v: rate([r for r in a7 if r[6] == v]) for v in ("부사", "홍옥", "감홍")}
     stat["reason"] = {x: sum(r[12] == x for r in a7) for x in ("멍", "벌레 먹음", "무게 미달", "당도 미달")}
+    odd = [r for r in allrows if r[0] == f"2026-10-{ODD_DAY:02d}"]
+    rest = [r for r in allrows if r[0] != f"2026-10-{ODD_DAY:02d}"]
+    stat["odd_day"] = {"day": f"A{ODD_DAY:02d}", "rate": rate(odd),
+                       "reason": {x: sum(r[12] == x for r in odd) for x in ("멍", "벌레 먹음", "무게 미달", "당도 미달")},
+                       "reason_avg_other": {x: round(sum(r[12] == x for r in rest) / 24, 1) for x in ("멍", "벌레 먹음", "무게 미달", "당도 미달")}}
     stat["A07"] = {"rows": len(a7), "good": sum(r[-1] == "상품" for r in a7), "rate": rate(a7),
                    "mean_w": round(float(np.mean([r[7] for r in a7])), 1), "std_w": round(float(np.std([r[7] for r in a7], ddof=1)), 1)}
     ref_p = ROOT / "ref.json"

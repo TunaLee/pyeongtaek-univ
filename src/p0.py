@@ -8,6 +8,7 @@
 import pandas as pd
 
 import pbg
+import psim
 import sk
 import viz2
 from deck import divider, light
@@ -109,35 +110,6 @@ def _d07():
     return sk.apple()
 
 
-SALES = [("R-0001", "삼각김밥", 1500), ("R-0002", "우유", 1800), ("R-0003", "삼각김밥", 1500)]  # 저장 형식 설명용 예
-
-
-def formats():
-    """종이 장부 → 엑셀 → CSV → 데이터베이스. 같은 편의점 결제 기록 세 줄을 형식마다 (개요 · 사과 데이터는 1교시에)."""
-    h = pd.DataFrame(SALES, columns=["영수증", "품목", "금액"])
-    rows = "".join(f'<tr><th>{i + 2}</th><td>{r["영수증"]}</td><td>{r["품목"]}</td><td{" class=sel" if i == 0 else ""}>{r["금액"]:,}</td></tr>'
-                   for i, (_, r) in enumerate(h.iterrows()))
-    xl = (f'<div class="p0v p0xl"><div class="bar">결제_10월7일.xlsx</div><table><tr><th></th><th>A</th><th>B</th><th>C</th></tr>'
-          f'<tr><th>1</th><td>영수증</td><td>품목</td><td>금액</td></tr>{rows}</table></div>')
-    csv = '<div class="p0v p0csv"><pre>' + esc(h.to_csv(index=False).strip()) + "</pre></div>"
-    tot = h.groupby("품목", sort=False)["금액"].sum()
-    tb = "".join(f"<tr><td>{k}</td><td>{v:,}</td></tr>" for k, v in tot.items())
-    db = (f'<div class="p0v p0db"><div class="q">SELECT 품목, sum(금액) AS 합계<br/>FROM 결제<br/>GROUP BY 품목</div>'
-          f'<table><tr><th>품목</th><th>합계</th></tr>{tb}</table></div>')
-    ledger = '<div class="p0v"><img src="img/p0_ledger.webp" alt="1906년 회계 장부"/></div>'
-    cells = [(ledger, "종이 장부", "손으로 적고 손으로 더함"), (xl, "엑셀", "칸 · 수식 · 서식"),
-             (csv, "CSV", "쉼표로 나눈 글자"), (db, "데이터베이스", "표 여러 개 · SQL 질의")]
-    out = []
-    for i, (v, b, s_) in enumerate(cells):
-        if i:
-            out.append("<i>→</i>")
-        out.append(f'<div class="p0f" style="--d:{i * .5:.1f}s">{v}<b>{b}</b><span>{s_}</span></div>')
-    from stats_hx import src
-    return f'<div class="p0fm">{"".join(out)}</div>' + src(
-        ("장부 사진 · Camp Chesterfield general account ledger (1906) · 퍼블릭 도메인",
-         "https://commons.wikimedia.org/wiki/File:Camp_Chesterfield_hotel_ledger,_1940_and_general_account_ledger,_1905-1908_-_DPLA_-_74076597873e46852e851ab1bd511b35_(page_63).jpg"))
-
-
 def three_tools():
     """같은 질문 「가장자리 사과 상품률」 — 엑셀 · 파이썬 · Claude Code. 세 칸 모두 같은 값."""
     df = _d07()
@@ -217,10 +189,64 @@ def _steps(items, cols, step=2.0):
     return f'<div class="v2tiles c{cols}">{t}</div>'
 
 
-def history():
-    """개요 1 · 바이브코딩까지 — 유래 · 사례 → 언어 발전 · AI 코딩 도구 변화 → 기존 코딩과 바이브코딩."""
+def data_part():
+    """개요 1 · 데이터 분석 — 큰 흐름 → 사과 데이터 한 줄 → 값 하나(분포) → 두 값(산점도) → 등급 색(3차원) → 위치(지도) → 묶어 보기(막대)
+    → 여러 날(선) → 특이한 날 · 원인 짐작 → 추세선 예측 → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
+    import pana                      # pana 가 p0 의 시트 그림을 쓰므로 함수 안에서 불러옴
+    df = _d07()
     dd = [
-        light("바이브코딩의 유래", quote(
+        light("일상 속 데이터", viz2.maprows([
+            ("편의점 결제", "시각 · 품목 · 금액", "영수증 한 장 = 한 줄"), ("출석", "날짜 · 이름 · 출결", "출석부 한 칸"),
+            ("사과 선별", "무게 · 당도 · 흠", "사과 1개 = 한 줄"), ("반도체 검사", "칩 위치 · 측정값 · 합격 · 불합격", "칩 1개 = 한 줄")],
+            "기록 대상", "남는 값"), TAG),
+        light("데이터 분석의 큰 흐름", pana.roadmap(), TAG),
+    ]
+    ex = [
+        light("사과 선별 데이터", pbg.orchard_zones(), TAG),
+        light("행과 열", table_terms(df), TAG),
+        light("무게 분포", num_anim(df), TAG),
+        light("무게와 당도", pana.scatter_2d(df), TAG),
+        light("무게 · 당도 · 등급", pana.scatter_3d(df), TAG),
+        light("과수원 위치와 불량", map_anim(df), TAG),
+        light("위치별 상품률", cat_anim(df), TAG),
+        light("25일치 상품률", pana.daily_line(), TAG),
+        light("특이한 날 들여다보기", pana.odd_day(), TAG),
+        light("추세선과 예측", pana.trend_predict(df), TAG),
+        light("기준 바꿔 보기", pana.rule_whatif(df), TAG),
+    ]
+    ap = [
+        light("분석 도구의 변화", _steps([
+            ("손 계산", "<span>장부 · 계산기 · 그래프 용지</span><span>담당자가 한 줄씩 더함</span>"),
+            ("스프레드시트", "<span>엑셀 수식 · 필터 · 피벗 · 차트</span><span>실무자가 파일마다 반복</span>"),
+            ("코드", "<span>SQL · 파이썬 · 통계 도구</span><span>분석가에게 맡기고 기다림</span>"),
+            ("AI 에이전트", "<span>말로 묻고 바로 확인</span><span>담당자가 요청 · 결과 판단</span>")], 4), TAG),
+        light("AI와 함께하는 분석 흐름", pbg.analysis_flow(), TAG),
+        light("분석과 엔지니어링", viz2.pair(
+            "데이터 분석", [("질문", "「18일에는 왜 불량이 많았나」"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
+            "데이터 엔지니어링", [("질문", "「매일 수확 파일을 같은 기준으로 집계」"), ("결과", "읽기 · 정리 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), TAG),
+        light("AI와 함께하는 엔지니어링", viz2.pair(
+            "AI 이전", [("작성", "엔지니어가 스크립트 코드 작성"), ("오류", "로그를 읽고 사람이 수정"), ("반복", "같은 코드를 정해진 시각에 실행"),
+                       ("규칙", "문서 · 담당자 기억")],
+            "AI 에이전트", [("작성", "요청 → Claude 가 작성 · 실행"), ("오류", "Claude 가 오류를 읽고 고침 · 사람은 결과 확인"),
+                          ("반복", "같은 요청 · 저장해 둔 절차"), ("규칙", "규칙 파일 · 자동 차단 장치")]), TAG),
+        light("보고서에서 시뮬레이터까지", pbg.results_change(), TAG),
+    ]
+    return _div("데이터 분석"), {"도입": dd, "설명": ex, "적용": ap}
+
+
+def vibe_part():
+    """개요 2 · 바이브코딩 — 배경(언어 발전 · AI 코딩 도구 변화) → 등장 · 사례 → 흐름(기존 코딩과 바이브코딩) → Claude Code 의 동작(채팅과 에이전트 · 루프)."""
+    import pana
+    dd = [
+        light("프로그래밍 언어의 발전", pbg.langs()
+              + src(("IBM · FORTRAN", "https://www.ibm.com/history/fortran"), ("Python · History", "https://docs.python.org/3/license.html")), TAG),
+        light("AI 코딩 도구의 변화", pbg.eras()
+              + src(("GitHub · 2021-06-29", "https://github.blog/2021-06-29-introducing-github-copilot-ai-pair-programmer/"),
+                    ("OpenAI · 2022-11-30", "https://openai.com/index/chatgpt/"),
+                    ("Anthropic · 2025-05-22", "https://www.anthropic.com/news/claude-4")), TAG),
+    ]
+    ex = [
+        light("바이브코딩의 등장", quote(
             "내가 <mark>「바이브코딩」</mark>이라고 부르는 새로운 코딩 방식이 있다. 느낌(vibe)에 완전히 몸을 맡기고, "
             "AI의 빠른 발전을 받아들이고, 코드가 있다는 사실조차 잊는 방식이다.",
             "Andrej Karpathy · X · 2025-02-02 · 원문 「There's a new kind of coding I call “vibe coding”…」")
@@ -236,56 +262,12 @@ def history():
             ("수율 시뮬레이터", "엑셀 데이터 → 조절 바 화면 · 이 과정 8교시")], 3)
               + src(("levelsio · X", "https://x.com/levelsio/status/1899596115210891751"),
                     ("Karpathy · MenuGen", "https://karpathy.bearblog.dev/vibe-coding-menugen/")), TAG),
+        light("바이브코딩의 흐름", pana.vibe_flow(), TAG),
+        light("채팅과 에이전트", psim.chat_vs_agent(), TAG),
+        light("에이전트 루프", psim.agent_loop()
+              + src(("Claude Code 문서 · How Claude Code works", "https://code.claude.com/docs/en/how-claude-code-works")), TAG),
     ]
-    ex = [
-        light("프로그래밍 언어의 발전", pbg.langs()
-              + src(("IBM · FORTRAN", "https://www.ibm.com/history/fortran"), ("Python · History", "https://docs.python.org/3/license.html")), TAG),
-        light("AI 코딩 도구의 변화", pbg.eras()
-              + src(("GitHub · 2021-06-29", "https://github.blog/2021-06-29-introducing-github-copilot-ai-pair-programmer/"),
-                    ("OpenAI · 2022-11-30", "https://openai.com/index/chatgpt/"),
-                    ("Anthropic · 2025-05-22", "https://www.anthropic.com/news/claude-4")), TAG),
-    ]
-    ap = [
-        light("기존 코딩과 바이브코딩", viz2.pair(
-            "기존 코딩", [("만드는 사람", "코드를 직접 씀"), ("익힐 내용", "문법 · 라이브러리"), ("수정", "코드를 찾아 고침")],
-            "바이브코딩", [("만드는 사람", "말로 요청 · Claude 가 코드 작성"), ("익힐 내용", "요청 · 확인 · 되돌리기"),
-                         ("수정", "화면을 보고 다시 요청")]), TAG),
-    ]
-    return _div("바이브코딩까지"), {"도입": dd, "설명": ex, "적용": ap}
-
-
-def data_change():
-    """개요 2 · 데이터 분석과 엔지니어링 — 데이터 · 저장 형식 → 처리 방법 · 요청 경로 · 분석과 엔지니어링 · 엔지니어링의 변화 → 결과물의 변화.
-    일반 예(편의점 결제)만 쓴다. 사과 · 웨이퍼 데이터와 데이터 보는 법은 1 · 2교시 실습 단계에서."""
-    dd = [
-        light("데이터의 정의", viz2.maprows([
-            ("편의점 결제", "시각 · 품목 · 금액", "영수증 한 장 = 한 줄"), ("출석", "날짜 · 이름 · 출결", "출석부 한 칸"),
-            ("사과 선별", "무게 · 당도 · 흠", "사과 1개 = 한 줄"), ("반도체 검사", "칩 위치 · 측정값 · 합격 · 불합격", "칩 1개 = 한 줄")],
-            "기록 대상", "남는 값"), TAG),
-        light("데이터 저장 형식의 변화", formats(), TAG),
-    ]
-    ex = [
-        light("데이터 처리 방법의 변화", _steps([
-            ("손 계산", "<span>장부 · 계산기 · 그래프 용지</span><span>담당자가 한 줄씩 더함</span>"),
-            ("스프레드시트", "<span>엑셀 수식 · 필터 · 피벗 · 차트</span><span>실무자가 파일마다 반복</span>"),
-            ("코드", "<span>SQL · 파이썬 · 통계 도구</span><span>분석가 · 개발자가 작성</span>"),
-            ("AI 에이전트", "<span>요청 한 문장 · Claude Code</span><span>담당자가 요청 · 결과 확인</span>")], 4), TAG),
-        light("분석 요청 경로", viz2.pair(
-            "AI 이전", [("질문", "현업 담당자"), ("요청", "분석가에게 전달 · 순서 대기"), ("작업", "분석가가 SQL · 파이썬 작성"), ("결과", "보고서 · 엑셀 파일")],
-            "Claude Code", [("질문", "현업 담당자"), ("요청", "요청 한 문장 · 바로 실행"), ("작업", "Claude 가 코드 작성 · 실행 · 오류 수정"), ("결과", "파일 + 사람이 숫자 확인")]), TAG),
-        light("분석과 엔지니어링", viz2.pair(
-            "데이터 분석", [("질문", "「어느 품목이 많이 팔리나」"), ("결과", "차트 · 원인 후보 · 요약"), ("주기", "질문이 생길 때 한 번")],
-            "데이터 엔지니어링", [("질문", "「매일 결제 파일을 같은 기준으로 집계」"), ("결과", "읽기 · 정제 · 집계 스크립트"), ("주기", "파일이 들어올 때마다")]), TAG),
-        light("엔지니어링 작업의 변화", viz2.pair(
-            "AI 이전", [("작성", "엔지니어가 스크립트 코드 작성"), ("오류", "로그를 읽고 사람이 수정"), ("반복", "같은 코드를 정해진 시각에 실행"),
-                       ("규칙", "문서 · 담당자 기억")],
-            "AI 에이전트", [("작성", "요청 → Claude 가 작성 · 실행"), ("오류", "Claude 가 오류를 읽고 고침 · 사람은 결과 확인"),
-                          ("반복", "같은 요청 · 저장해 둔 절차"), ("규칙", "규칙 파일 · 자동 차단 장치")]), TAG),
-    ]
-    ap = [
-        light("분석 결과물의 변화", pbg.results_change(), TAG),
-    ]
-    return _div("데이터 분석과 엔지니어링"), {"도입": dd, "설명": ex, "적용": ap}
+    return _div("바이브코딩"), {"도입": dd, "설명": ex, "적용": []}
 
 
 def _div(title):
@@ -293,8 +275,8 @@ def _div(title):
 
 
 def slides():
-    """개요 두 부분 — [(간지, {도입 · 설명 · 적용})]."""
-    return [history(), data_change()]
+    """개요 두 부분 — 데이터 분석 → 바이브코딩 · [(간지, {도입 · 설명 · 적용})]."""
+    return [data_part(), vibe_part()]
 
 
 CSS += "  .v2tile .p0hl{color:#E07A12; font-weight:700;}\n  .v2tile.p0on{border-color:#F28C28; background:#FFF8F0;}\n"

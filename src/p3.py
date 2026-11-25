@@ -61,13 +61,13 @@ def slides():
                               ("나누기", "파일 하나 · 브라우저만 있으면 열림")]), T),
         light("웹 화면의 세 부분", _hcj(), T),
         # ── 설명
-        light("한 파일 안의 위치", '<div class="twocol w"><div>' + code("simulator.html", esc(ONEFILE)) + "</div><div>"
+        light("세 부분이 들어가는 곳", '<div class="twocol w"><div>' + code("simulator.html", esc(ONEFILE)) + "</div><div>"
               + viz2.tiles([("&lt;style&gt;", "꾸밈 · head 안"), ("본문 태그", "뼈대 · body 안"), ("&lt;script&gt;", "동작 · body 끝")], 1)
               + "</div></div>", T),
         light("예시 파일 고쳐 보기", viz2.maprows([
             ("브라우저로 열기", "html_css_js_예시.html 더블클릭", "화면"), ("메모장 · VS Code 로 열기", "같은 파일", "글자"),
             ("색 한 줄 바꾸기", "#2BA84A → #E8344E", "저장 → 새로 고침"), ("세 구역 찾기", "style · body · script", "위치 확인")], "할 일", "결과"), T),
-        light("바로 실행과 계획 먼저", viz2.pair(
+        light("계획부터 보기", viz2.pair(
             "바로 실행", [("요청 직후", "파일을 바로 작성"), ("화면 구성 · 계산", "Claude 가 정함"), ("마음에 안 들면", "다시 만들기 · 되돌리기")],
             "계획 먼저", [("요청 직후", "만들 파일 · 화면 구성 · 순서만 보여 줌"), ("고칠 곳", "계획에 말로 수정"),
                         ("승인 후", "그때 파일 작성")]), T),
