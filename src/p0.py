@@ -43,6 +43,7 @@ CSS = """
   .p0t.on{border-top-color:#F28C28; background:#FFF8F1;}
   .p0t > b{font-size:21px; color:#16233A;}
   .p0t .code{margin:0; max-width:100%;}
+  .p0t .v1b p{word-break:keep-all; overflow-wrap:anywhere;}
   .p0t .code pre, .p0t .code code{font-size:12.5px !important; white-space:pre;}
   .p0t .v1chat{margin:0;}
   .p0t ol code{white-space:nowrap;}
