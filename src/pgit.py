@@ -117,12 +117,12 @@ def slides():
         # ── 설명 · GitHub
         light("GitHub", viz2.pair(
             "Git", [("어디에", "내 컴퓨터"), ("하는 일", "저장 시점 기록 · 되돌리기"), ("없으면", "기록이 이 컴퓨터에만")],
-            "GitHub", [("어디에", "인터넷 · 원격 저장소"), ("하는 일", "기록 보관 · 공유 · 다른 컴퓨터에서 받기"), ("배포", "Vercel 과 연결")])
+            "GitHub", [("어디에", "인터넷 · 원격 저장소"), ("하는 일", "기록 보관 · 공유 · 다른 컴퓨터에서 받기"), ("배포", "GitHub Pages · Vercel 과 연결")])
               + src(GH_PLANS), T),
         light("공개 · 비공개 저장소", viz2.pair(
-            "공개 (public)", [("누가 보나", "인터넷의 누구나 코드를 봄"), ("맞는 경우", "공개해도 되는 연습 코드")],
-            "비공개 (private)", [("누가 보나", "나와 초대한 사람만"), ("맞는 경우", "회사 업무 · 이 실습")], hl="r")
-              + viz2.tiles([("GitHub Free", "비공개 저장소도 개수 제한 없음 · 일부 기능만 유료")], 1)
+            "공개 (public)", [("누가 보나", "인터넷의 누구나 코드를 봄"), ("맞는 경우", "이 실습 · GitHub Pages 배포 · 제출")],
+            "비공개 (private)", [("누가 보나", "나와 초대한 사람만"), ("맞는 경우", "회사 업무 · 공개하면 안 되는 코드")], hl="l")
+              + viz2.tiles([("GitHub Pages", "무료 계정은 공개 저장소에서만 · 비공개 저장소는 Pro 이상")], 1)
               + src(GH_PLANS), T),
         light("GitHub CLI (gh)", viz2.tiles([
             ("gh", "GitHub 공식 명령 도구 · 저장소 만들기 · 올리기"), ("설치", "Claude Code 에 「GitHub CLI 설치해 줘」"),
@@ -131,8 +131,8 @@ def slides():
               + code("Claude Code 가 실행 · Windows 예", esc("winget install --id GitHub.cli --source winget")) + "</div></div>"
               + src(GH_CLI), T),
         light("GitHub 업로드 요청", chat([
-            ("me", f"이 폴더를 GitHub 비공개 저장소 {REPO} 로 올려 줘"),
-            ("ai", f"gh repo create {REPO} --private --source=. --push 를 실행해도 될까요?"),
+            ("me", f"이 폴더를 GitHub 공개 저장소 {REPO} 로 올려 줘"),
+            ("ai", f"gh repo create {REPO} --public --source=. --push 를 실행해도 될까요?"),
             ("me", "응"),
             ("ai", f"완료 · https://github.com/내계정/{REPO}")], "Claude Code 대화")
               + viz2.tiles([("Claude 가 쓰는 명령", "gh repo create · 원격 저장소 만들기 + 지금까지의 커밋 올리기")], 1)
@@ -140,7 +140,7 @@ def slides():
         light("업로드한 저장소 확인", '<div class="twocol"><div>'
               + code(f"github.com/내계정/{REPO} · 예", esc(f"{REPO}/\n├── index.html\n├── CLAUDE.md\n├── .claude/\n└── .gitignore      data/ 는 올리지 않음"))
               + "</div><div>" + viz2.tiles([
-                  ("파일 목록", "내 폴더와 같음 · data/ 제외"), ("커밋 기록", "기능마다 남긴 커밋"), ("자물쇠 표시", "비공개 저장소")], 1)
+                  ("파일 목록", "내 폴더와 같음 · data/ 제외"), ("커밋 기록", "기능마다 남긴 커밋"), ("Public 표시", "저장소 이름 옆 · 누구나 열람")], 1)
               + "</div></div>", T),
         # ── 설명 · Vercel
         light("Vercel 프로젝트 가져오기", flow([

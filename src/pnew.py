@@ -358,9 +358,10 @@ def slides():
             ("키 · 비밀번호", "코드 · 파일에 들어 있지 않은지"), ("데이터 파일", "저장소에 올리지 않음 · 보고서는 올린 파일만 읽음"),
             ("배포 주소는 공개", "주소를 아는 누구나 열람"), ("Hobby 는 개인 · 비상업", "회사 서비스는 Pro 이상")], 2)
               + src(("Vercel · Hobby", "https://vercel.com/docs/plans/hobby")), T),
-        lab("31-2", "GitHub · Vercel 배포", T, "보고서 템플릿을 GitHub 저장소에 올리고 Vercel 로 배포해 주소를 공유한다",
-            ["GitHub 로그인 (gh)", "올리기 전 점검 요청", "저장소 만들고 올리기 요청", "Vercel 가져오기 · Deploy"],
-            ["저장소 주소 · github.com/내계정/이름", "배포 주소 · 이름.vercel.app", "다른 PC 에서 엑셀 올려 분석"], files="index.html"),
+        lab("31-2", "GitHub · Vercel 배포", T, "보고서 템플릿을 GitHub 공개 저장소에 올리고 GitHub Pages · Vercel 로 배포해 주소를 공유한다",
+            ["GitHub 로그인 (gh)", "올리기 전 점검 요청", "공개 저장소 만들고 올리기 요청", "GitHub Pages 배포 요청", "Vercel 가져오기 · Deploy"],
+            ["저장소 주소 · github.com/내계정/이름", "Pages 주소 · 내계정.github.io/이름", "Vercel 주소 · 이름.vercel.app",
+             "다른 PC 에서 엑셀 올려 분석"], files="index.html"),
         brief("31-2", T,
               ["gh 로그인 (브라우저 승인)", "올리기 전 점검", "저장소 만들고 올리기", "Vercel 가져오기 · Deploy"],
               [("목표", "보고서를 인터넷 주소에 공개"), ("입력", "index.html · GitHub · Vercel 계정"),
