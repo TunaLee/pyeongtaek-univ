@@ -191,7 +191,7 @@ def _steps(items, cols, step=2.0):
 
 def data_part():
     """개요 1 · 데이터 분석 — 큰 흐름 → 사과 데이터 한 줄 → 값 하나(분포) → 두 값(산점도) → 등급 색(3차원) → 위치(지도) → 묶어 보기(막대)
-    → 여러 날(선) → 특이한 날 · 원인 짐작 → 추세선 예측 → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
+    → 여러 날(선) → 특이한 날 · 원인 짐작 → 추세선 예측 → 지도학습 · 비지도학습(정답 열 · 경계 · 무리 · 활용 예) → 기준 바꿔 보기 → 예전 분석과 AI 와 함께하는 분석 · 엔지니어링 → 보고서에서 시뮬레이터까지."""
     import pana                      # pana 가 p0 의 시트 그림을 쓰므로 함수 안에서 불러옴
     df = _d07()
     dd = [
@@ -212,6 +212,10 @@ def data_part():
         light("25일치 상품률", pana.daily_line(), TAG),
         light("특이한 날 들여다보기", pana.odd_day(), TAG),
         light("추세선과 예측", pana.trend_predict(df), TAG),
+        light("지도학습과 비지도학습", pana.label_or_not(df), TAG),
+        light("지도학습", pana.supervised(df), TAG),
+        light("비지도학습", pana.unsupervised(), TAG),
+        light("지도학습 · 비지도학습 활용 예", pana.ml_uses(df), TAG),
         light("기준 바꿔 보기", pana.rule_whatif(df), TAG),
     ]
     ap = [
@@ -299,7 +303,7 @@ def _rows8(df):
 
 
 def _sheet(d, rows, n, hi, hi_t, scol=None):
-    """SVG 엑셀 시트 · 열 hi 를 hi_t% 에 강조. 칸 좌표 {(행, 열): (x, y, w)} 를 돌려준다. scol 로 보여 줄 열을 바꿈."""
+    """SVG 엑셀 시트 · 열 hi 를 hi_t% 에 강조(None 이면 강조 없음). 칸 좌표 {(행, 열): (x, y, w)} 를 돌려준다. scol 로 보여 줄 열을 바꿈."""
     scol = scol or _SCOL
     x0, rn = 0, 30
     xs, x = {}, x0 + rn
@@ -316,7 +320,7 @@ def _sheet(d, rows, n, hi, hi_t, scol=None):
         cx = xs[c][0]
         s += f'<line x1="{cx}" y1="{y}" x2="{cx}" y2="{y + 20}" stroke="#DADCE0"/>' + _t(cx + w / 2, y + 10, lts[i], "ts", extra='style="font-size:11px"')
     y = 44
-    hx_, hw = xs[hi]
+    hx_, hw = xs[hi] if hi else (0, 0)
     cells = {}
     allrows = [("hdr", None)] + [(r, row) for r, (_, row) in enumerate(rows.iterrows())]
     for k, (r, row) in enumerate(allrows):
@@ -338,8 +342,9 @@ def _sheet(d, rows, n, hi, hi_t, scol=None):
                 cells[(r, c)] = (cx, yy, w)
     ye = y + 26 + 8 * _RH
     s += f'<rect x="{x0}" y="{ye}" width="{W_}" height="26" fill="#F8F9FA" stroke="#E3E5E8"/>' + _t(x0 + W_ / 2, ye + 13, f"… {n}행", "ts", extra='style="font-size:13px"')
-    # 열 강조 (나타남)
-    s += f'<rect x="{hx_}" y="44" width="{hw}" height="{ye - 44}" fill="none" stroke="{O}" stroke-width="3" {d.show(hi_t)}/>'
+    # 열 강조 (나타남) · hi 가 없으면 강조하지 않음
+    if hi:
+        s += f'<rect x="{hx_}" y="44" width="{hw}" height="{ye - 44}" fill="none" stroke="{O}" stroke-width="3" {d.show(hi_t)}/>'
     return s, cells, W_
 
 

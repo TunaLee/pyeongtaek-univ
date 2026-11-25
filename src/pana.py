@@ -1,8 +1,10 @@
-"""데이터 분석의 흐름 애니메이션 — 큰 흐름 → 2차원 → 차원 더하기 → 여러 날 → 특이점 → 원인 → 추세선 예측 → 기준 바꿔 보기 · 바이브코딩의 흐름.
+"""데이터 분석의 흐름 애니메이션 — 큰 흐름 → 2차원 → 차원 더하기 → 여러 날 → 특이점 → 원인 → 추세선 예측
+→ 지도학습 · 비지도학습(정답 열 · 경계 찾기 · 무리 묶기 · 활용 예) → 기준 바꿔 보기 · 바이브코딩의 흐름.
 
-사과 데이터(sk.D07 · labs/ref.json general)로 그린다. 숫자는 모두 코드로 계산. 장면 간격 2초 이상 · 한 번 재생. 접두어 pa.
+사과 데이터(sk.D07 · 25일치 · labs/ref.json general)로 그린다. 숫자는 모두 코드로 계산. 장면 간격 2초 이상 · 한 번 재생. 접두어 pa.
 """
 import numpy as np
+import pandas as pd
 
 import sk
 from anim import K, N, O, OK, R, W, _D, _t
@@ -180,6 +182,196 @@ def trend_predict(df):
           + _t(1025, 142, f"무게 {xq}g 사과", "tn", extra='style="font-size:16px"') + _t(1025, 176, f"지름 약 {yq:.1f}mm", "tt", extra=f'style="fill:{BAD};font-size:21px"')
           + _t(1025, 204, f"무게 10g ↑ · 지름 약 {a * 10:.1f}mm ↑", "ts") + "</g>")
     return d.svg(1160, 410, s)
+
+
+# ── 지도학습 · 비지도학습 ─────────────────────────────────────
+BLUE = "#4A86E8"
+
+
+def _boundary(df):
+    """정답(등급)만 보고 「무게 ≥ a 이고 당도 ≥ b → 상품」 경계를 찾는다 — 맞힌 사과가 가장 많은 a · b."""
+    w, s = df["무게"].to_numpy(float), df["당도"].to_numpy(float)
+    y = (df["등급"] == "상품").to_numpy(np.int64)
+    uw, us = np.unique(w), np.unique(s)
+    cw, cs = (uw[:-1] + uw[1:]) / 2, (us[:-1] + us[1:]) / 2
+    a = (w[None] >= cw[:, None]).astype(np.int64)
+    b = (s[None] >= cs[:, None]).astype(np.int64)
+    hit = 2 * ((a * y) @ b.T) - a @ b.T + int((1 - y).sum())      # 맞힌 수 = 상품 맞힘 + 불량 맞힘
+    i, j = np.unravel_index(hit.argmax(), hit.shape)
+    return float(cw[i]), float(cs[j]), int(hit[i, j])
+
+
+_TREES = []
+
+
+def _trees():
+    """25일치를 나무(가로칸 · 세로칸)별로 평균 → 무게 · 당도만으로 두 무리(k-평균). 위치 열은 묶을 때 쓰지 않는다."""
+    if _TREES:
+        return _TREES[0]
+    al = pd.concat([sk.apple(f"A{k:02d}") for k in range(1, 26)])
+    g = al.groupby(["가로칸", "세로칸"]).agg(무게=("무게", "mean"), 당도=("당도", "mean"), 위치=("위치", "first")).reset_index()
+    z = np.c_[(g["무게"] - g["무게"].mean()) / g["무게"].std(), (g["당도"] - g["당도"].mean()) / g["당도"].std()]
+    c = z[[z.sum(1).argmin(), z.sum(1).argmax()]]
+    for _ in range(100):
+        lab = ((z[:, None] - c[None]) ** 2).sum(2).argmin(1)
+        c2 = np.array([z[lab == k].mean(0) for k in range(2)])
+        if np.allclose(c2, c):
+            break
+        c = c2
+    small = int((lab == 1).sum() < (lab == 0).sum())
+    g["무리"] = np.where(lab == small, 2, 1)                        # 작은 무리 = 무리 2
+    _TREES.append(g)
+    return g
+
+
+def label_or_not(df):
+    """같은 사과 시트 둘 — 왼쪽은 등급 열이 정답(라벨) → 새 사과 등급 예측 / 오른쪽은 등급 열을 가림 → 비슷한 사과 묶기 · 튀는 값 찾기. 14초."""
+    d = _D("pal", 14)
+    pc = lambda t: t / 14 * 100  # noqa: E731
+    rows = _rows8(df)
+    scol = [("사과번호", 92, False), ("무게", 70, True), ("당도", 70, True), ("등급", 70, False)]
+    Y, BH = 58, 26 + 8 * _RH
+    side = [(0, "지도학습", .5, "정답 (라벨)", "정답을 보고 학습", ["새 사과", "등급 예측"]),
+            (600, "비지도학습", 7, "정답 없음", "정답 없이 학습", ["비슷한 사과 묶기", "튀는 값 찾기"])]
+    s = ""
+    for k, (x0, name, t0, tag, sub, job) in enumerate(side):
+        sh, cells, W_ = _sheet(d, rows, len(df), None if k else "등급", pc(t0 + 2), scol)
+        gx, _, gw = cells[(0, "등급")]
+        if k:                                                    # 등급 열을 가림
+            sh += (f'<g {d.show(pc(t0 + 2))}><rect x="{gx}" y="44" width="{gw}" height="{BH}" fill="#EEF1F4"/>'
+                   f'<rect x="{gx}" y="44" width="{gw}" height="{BH}" fill="none" stroke="{O}" stroke-width="3" stroke-dasharray="7 5"/>'
+                   + _t(gx + gw / 2, 44 + BH / 2, "없음", "ts") + "</g>")
+        s += (f'<g {d.show(pc(t0))}>' + _t(x0, 24, name, "tt", "start", 'style="font-size:22px"')
+              + f'<g transform="translate({x0},{Y})">{sh}</g></g>')
+        s += f'<g {d.show(pc(t0 + 2))}>' + _t(x0 + gx + gw / 2, Y - 14, tag, "to", extra='style="font-size:15px"') + "</g>"
+        bx = x0 + W_ + 44
+        bw, by = x0 + 560 - bx, Y + 98
+        s += (f'<g {d.show(pc(t0 + 4))}><path d="M{x0 + W_ + 8} {by + 70} H{bx - 6}" stroke="{N}" stroke-width="2.5" marker-end="url(#{d.id("k")})"/>'
+              f'<rect x="{bx}" y="{by}" width="{bw}" height="140" rx="14" fill="{W}" stroke="{K}" stroke-width="2.5"/>'
+              + _t(bx + bw / 2, by + 30, sub, "ts", extra='style="font-size:14px"')
+              + "".join(_t(bx + bw / 2, by + 72 + i * 34, j, "tt", extra='style="font-size:18px"') for i, j in enumerate(job)) + "</g>")
+    return d.svg(1160, 400, s)
+
+
+def supervised(df):
+    """정답(등급 색)이 붙은 사과 → 맞힌 수가 가장 많은 경계를 찾음 → 새 사과 셋이 경계 안 · 밖에 따라 상품 · 불량으로 예측. 14초."""
+    d = _D("pas", 14)
+    pc = lambda t: t / 14 * 100  # noqa: E731
+    ax, fx, fy = _axes(110, 40, 760, 320, (200, 380), (9, 17), range(200, 381, 40), range(9, 18, 2), "무게 (g)", "당도 (brix)", d.show(0))
+    tw, ts, _ = _boundary(df)
+    s = ax + f'<rect x="{fx(tw):.1f}" y="40" width="{870 - fx(tw):.1f}" height="{fy(ts) - 40:.1f}" fill="{GOOD}" fill-opacity=".10" {d.show(pc(3))}/>'
+    s += (f'<g {d.show(pc(.5))}>' + "".join(f'<circle cx="{fx(r["무게"]):.1f}" cy="{fy(r["당도"]):.1f}" r="3.6" fill="{GOOD if r["등급"] == "상품" else BAD}"/>'
+                                            for _, r in df.iterrows())
+          + _t(900, 56, "정답", "to", "start") + f'<circle cx="952" cy="56" r="6" fill="{GOOD}"/>' + _t(966, 56, "상품", "tn", "start")
+          + f'<circle cx="1022" cy="56" r="6" fill="{BAD}"/>' + _t(1036, 56, "불량", "tn", "start") + "</g>")
+    s += (f'<g {d.show(pc(3))}><path d="M{fx(tw):.1f} 40 V{fy(ts):.1f} H870" fill="none" stroke="{O}" stroke-width="3.5"/>'
+          + _t(fx(tw) + 8, 54, "찾아낸 경계", "to", "start") + "</g>")
+    s += (f'<g {d.show(pc(3))}><rect x="900" y="90" width="250" height="128" rx="14" fill="#FFF8F0" stroke="{O}" stroke-width="2.5"/>'
+          + _t(1025, 116, f"정답 {len(df)}개로 찾은 경계", "to")
+          + _t(1025, 150, f"무게 약 {tw:.0f}g", "tt", extra='style="font-size:20px"') + _t(1025, 178, f"당도 약 {ts:.0f}", "tt", extra='style="font-size:20px"')
+          + _t(1025, 202, "선별 기준과 거의 같음", "ts", extra='style="font-size:14px"') + "</g>")
+    for w_, b_ in [(335, 13.8), (228, 12.9), (305, 10.0)]:            # 새 사과 — 정답(등급)을 모르는 입력
+        cx, cy = fx(w_), fy(b_)
+        c = GOOD if w_ >= tw and b_ >= ts else BAD
+        s += (f'<g {d.show(pc(6))}><circle cx="{cx:.1f}" cy="{cy:.1f}" r="11" fill="{W}" stroke="{N}" stroke-width="2.5"/>'
+              + _t(cx, cy + 1, "?", "tn", extra='style="font-size:14px"') + "</g>")
+        s += (f'<g {d.show(pc(8.5))}><circle cx="{cx:.1f}" cy="{cy:.1f}" r="11" fill="{c}" stroke="{N}" stroke-width="2.5"/>'
+              + _t(cx + 18, cy, "상품" if c == GOOD else "불량", "tn", "start",
+                   f'style="font-size:16px;fill:{c};paint-order:stroke;stroke:#fff;stroke-width:5px"') + "</g>")
+    s += (f'<g {d.show(pc(8.5))}><rect x="900" y="240" width="250" height="96" rx="14" fill="{W}" stroke="{N}" stroke-width="2.5"/>'
+          + _t(1025, 272, "새 사과 등급 예측", "tn", extra='style="font-size:16px"') + _t(1025, 304, "경계 안 상품 · 밖 불량", "ts") + "</g>")
+    return d.svg(1160, 410, s)
+
+
+def unsupervised():
+    """정답 없는 점(나무 600그루 · 25일 평균 무게 · 당도) → 두 무리로 묶임 → 지도에 칠하면 무리 2 가 가장자리 띠. 14초."""
+    d = _D("pau", 14)
+    pc = lambda t: t / 14 * 100  # noqa: E731
+    g = _trees()
+    col = {1: BLUE, 2: O}
+    ax, fx, fy = _axes(100, 50, 440, 300, (255, 315), (10.8, 13.4), range(260, 311, 10), [11, 12, 13],
+                       "25일 평균 무게 (g)", "25일 평균 당도 (brix)", d.show(0))
+    s = ax + (f'<g {d.show(pc(.5))}>' + "".join(f'<circle cx="{fx(r["무게"]):.1f}" cy="{fy(r["당도"]):.1f}" r="3.2" fill="{GRAY}" fill-opacity=".7"/>'
+                                                for _, r in g.iterrows())
+              + _t(100, 12, f"점 하나 = 나무 한 그루 · {len(g)}그루 · 정답 없음", "to", "start", 'style="font-size:16px"') + "</g>")
+    s += f'<g {d.show(pc(3))}>' + "".join(f'<circle cx="{fx(r["무게"]):.1f}" cy="{fy(r["당도"]):.1f}" r="3.4" fill="{col[r["무리"]]}"/>'
+                                          for _, r in g.iterrows())
+    for k in (1, 2):
+        m = g[g["무리"] == k]
+        lx, ly = (m["무게"].mean() + 8, m["당도"].min() - .3) if k == 1 else (m["무게"].mean() - 6, m["당도"].max() + .3)
+        s += _t(fx(lx), fy(ly), f"무리 {k} · {len(m)}그루", "tn", extra=f'style="font-size:16px;fill:{col[k]}"')
+    s += "</g>"
+    C, X0, Y0 = 15, 630, 50
+    nx, ny = int(g["가로칸"].max()), int(g["세로칸"].max())
+    gx = lambda x: X0 + (x - 1) * C  # noqa: E731
+    gy = lambda y: Y0 + (ny - y) * C  # noqa: E731
+    cell = lambda r, f: f'<rect x="{gx(r["가로칸"])}" y="{gy(r["세로칸"])}" width="{C - 2}" height="{C - 2}" rx="2" fill="{f}"/>'  # noqa: E731
+    s += (f'<g {d.show(pc(6))}>' + _t(X0, 26, "과수원 지도", "tn", "start", 'style="font-size:16px"')
+          + "".join(cell(r, "#E1E5EB") for _, r in g.iterrows()) + "</g>")
+    s += f'<g {d.show(pc(8))}>' + "".join(cell(r, col[r["무리"]]) for _, r in g.iterrows()) + "</g>"
+    edge = g["위치"] == "가장자리"
+    n2 = int((g["무리"] == 2).sum())
+    assert n2 == int(((g["무리"] == 2) & edge).sum()) == int(edge.sum()), "무리 2 와 가장자리가 어긋남 — 문구를 고친다"
+    s += (f'<g {d.show(pc(10.5))}><rect x="{X0}" y="366" width="{nx * C - 2}" height="58" rx="12" fill="#FFF8F0" stroke="{O}" stroke-width="2.5"/>'
+          + _t(X0 + nx * C / 2, 386, f"무리 2 = 가장자리 나무 {n2}그루", "to", extra='style="font-size:17px"')
+          + _t(X0 + nx * C / 2, 410, "묶을 때 쓴 열 · 무게 · 당도", "ts", extra='style="font-size:14px"') + "</g>")
+    return d.svg(1160, 430, s)
+
+
+def _mini(x, y, w, h, kind, df):
+    """활용 예 카드의 작은 그림 — 앞 장면의 사과 데이터를 축 숫자 없이 줄여 그린다."""
+    s = (f'<line x1="{x}" y1="{y + h}" x2="{x + w}" y2="{y + h}" stroke="{N}" stroke-width="1.5"/>'
+         f'<line x1="{x}" y1="{y}" x2="{x}" y2="{y + h}" stroke="{N}" stroke-width="1.5"/>')
+
+    def sc(xr, yr):
+        return (lambda v: x + 6 + (v - xr[0]) / (xr[1] - xr[0]) * (w - 12)), (lambda v: y + h - 6 - (v - yr[0]) / (yr[1] - yr[0]) * (h - 12))
+    dot = lambda fx, fy, a, b, c, r=2.2: f'<circle cx="{fx(a):.1f}" cy="{fy(b):.1f}" r="{r}" fill="{c}"/>'  # noqa: E731
+    if kind == "분류":
+        fx, fy = sc((200, 380), (9, 17))
+        tw, ts, _ = _boundary(df)
+        sub = df.iloc[::3]
+        s += "".join(dot(fx, fy, a, b, GOOD if g == "상품" else BAD) for a, b, g in zip(sub["무게"], sub["당도"], sub["등급"]))
+        s += f'<path d="M{fx(tw):.1f} {y} V{fy(ts):.1f} H{x + w}" fill="none" stroke="{O}" stroke-width="2.5"/>'
+    elif kind == "회귀":
+        xs, ys = df["무게"].to_numpy(float), df["지름"].to_numpy(float)
+        a, b = np.polyfit(xs, ys, 1)
+        fx, fy = sc((200, 380), (ys.min() - 1, ys.max() + 1))
+        s += "".join(dot(fx, fy, p, q, K) for p, q in zip(xs[::3], ys[::3])).replace(f'fill="{K}"', f'fill="{K}" fill-opacity=".45"')
+        s += f'<line x1="{fx(200):.1f}" y1="{fy(a * 200 + b):.1f}" x2="{fx(380):.1f}" y2="{fy(a * 380 + b):.1f}" stroke="{O}" stroke-width="3"/>'
+    elif kind == "군집":
+        g = _trees().iloc[::2]
+        fx, fy = sc((255, 315), (10.8, 13.4))
+        s += "".join(dot(fx, fy, a, b, BLUE if k == 1 else O) for a, b, k in zip(g["무게"], g["당도"], g["무리"]))
+    else:
+        days = REF["general"]["days"]
+        vals = [days[f"A{k:02d}"] for k in range(1, 26)]
+        fx, fy = sc((1, 25), (min(vals) - 4, max(vals) + 2))
+        s += f'<polyline points="{" ".join(f"{fx(k + 1):.1f},{fy(v):.1f}" for k, v in enumerate(vals))}" fill="none" stroke="{K}" stroke-width="2.5"/>'
+        k = min(range(25), key=lambda i: vals[i])
+        s += f'<circle cx="{fx(k + 1):.1f}" cy="{fy(vals[k]):.1f}" r="9" fill="none" stroke="{BAD}" stroke-width="2.5"/>'
+    return s
+
+
+def ml_uses(df):
+    """지도학습(분류 · 회귀) · 비지도학습(군집 · 이상 탐지) — 카드마다 덱에서 본 사과 그림을 줄여 붙이고 일상 예 · 사과 예. 카드 2초 간격 · 10초."""
+    d = _D("pam", 10)
+    pc = lambda t: t / 10 * 100  # noqa: E731
+    day = int(REF["general"]["odd_day"]["day"][1:])
+    cards = [("분류", "정답이 범주", ["스팸 메일 거르기", "사과 상품 · 불량 예측"]),
+             ("회귀", "정답이 숫자", ["집값 예측", "무게로 지름 예측"]),
+             ("군집", "비슷한 데이터끼리 묶기", ["고객 그룹 나누기", "가장자리 나무 무리"]),
+             ("이상 탐지", "무리에서 튀는 값 찾기", ["카드 이상 결제 찾기", f"특이한 날 {day}일"])]
+    s = ""
+    for x0, h, sub, t in [(0, "지도학습", "정답 있음", .5), (596, "비지도학습", "정답 없음", 4.5)]:
+        s += f'<g {d.show(pc(t))}>' + _t(x0, 20, h, "tt", "start", 'style="font-size:20px"') + _t(x0 + len(h) * 20 + 12, 20, sub, "ts", "start") + "</g>"
+    for i, (name, mean, ex) in enumerate(cards):
+        x0, y0, t = (0 if i < 2 else 596), (46 if i % 2 == 0 else 226), .5 + i * 2
+        s += (f'<g {d.show(pc(t))}><rect x="{x0}" y="{y0}" width="564" height="165" rx="16" fill="{W}" stroke="{K}" stroke-width="2"/>'
+              + _mini(x0 + 24, y0 + 22, 170, 121, name, df)
+              + _t(x0 + 222, y0 + 38, name, "tt", "start", 'style="font-size:21px"') + _t(x0 + 222, y0 + 68, mean, "ts", "start")
+              + "".join(f'<circle cx="{x0 + 228}" cy="{y0 + 104 + k * 30}" r="3.5" fill="{O}"/>'
+                        + _t(x0 + 240, y0 + 104 + k * 30, e, "tn", "start", 'style="font-size:16px"') for k, e in enumerate(ex)) + "</g>")
+    return d.svg(1160, 400, s)
 
 
 # ── 기준 바꿔 보기 · 규칙으로 미리 보기 (시뮬레이터의 원리) ─────────────
