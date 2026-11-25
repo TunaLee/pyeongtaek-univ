@@ -62,14 +62,14 @@ def slides():
         light("매번 같은 설명", viz2.pair(
             "요청마다 설명", [("1교시", "「숫자 보고할 때 네 가지 다」"), ("6교시", "「상한 5 · 20 숫자도」"), ("7교시", "「여덟 개 다 · 같은 형식」")],
             "Skill 한 번", [("저장", ".claude/skills/sim-check/SKILL.md"), ("부르기", "「숫자 점검해 줘」"), ("결과", "매번 같은 순서 · 같은 표")]), T),
-        light("Skill 이 열리는 단계", psim.skill_trigger()
+        light("Skill 을 불러오는 순서", psim.skill_trigger()
               + src(("Claude Code 문서 · Skills", "https://code.claude.com/docs/en/skills")), T),
         light("SKILL.md", '<div class="twocol w"><div>' + code(".claude/skills/sim-check/SKILL.md", esc(SKILL)) + "</div><div>"
               + viz2.tiles([("name", "Skill 이름 · 폴더 이름과 같게"), ("description", "언제 쓰는지 · Claude 가 고르는 기준"),
                             ("본문", "단계 · 산출물 형식")], 1) + "</div></div>", T),
         # ── 적용
-        lab("7-1", "사과 조절 바 6종", T, "판정 4종(멍 · 벌레 체크 · 무게 하한 · 당도 하한)과 집계 범위 2종(중심에서 거리 · 지름) 조절 바를 만들고 두 칸으로 배치한다",
-            ["조절 바 설계표 요청", "조절 바 전체 · 처음 값 버튼", "두 칸 배치", "sim-check Skill 로 숫자 점검"],
+        lab("7-1", "사과 조절 바 6종", T, "판정 4종(멍 · 벌레 체크 · 무게 하한 · 당도 하한)과 집계 범위 2종(중심에서 거리 · 지름) 조절 바를 만들고 좌우로 배치한다",
+            ["조절 바 설계표 요청", "조절 바 전체 · 처음 값 버튼", "좌우 배치", "sim-check Skill 로 숫자 점검"],
             [f"{DS['s7_checks'][0]['op']} → {DS['s7_checks'][0]['rate']:.2f}%", f"{DS['s7_checks'][1]['op']} → {DS['s7_checks'][1]['rate']:.2f}%", "처음 값 버튼 → 원래 숫자"], files="output/apple_sim.html"),
         light("사과 조절 바 6종 결과", sk.one("sim/apple_s7.webp", "사과 조절 바 6종"), T),
         lab("7-2", "조절 바 8종", T, "기준표 일곱 측정값 + 집계 범위(중심에서 거리)에 조절 바를 만들고 처음 값 · 원본 대비를 넣는다",
