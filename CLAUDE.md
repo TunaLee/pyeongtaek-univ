@@ -31,7 +31,7 @@ bash ~/.claude/skills/lecture-deck/scripts/capture_anim.sh $PWD/docs/index.html 
   - 3장 「Hook · Sub Agent · 도구」(`plab`): 원본 보호 Hook(data/ 수정 → 차단 · output/ 저장은 됨) · file-summary Sub Agent 4개로 data/ 엑셀 4개 동시 요약(A07 78.33 · A25 78.00 · W07 90.42 · W21 86.20). · 수율 도구 만들기(MCP · `yield_of(file)` · 완성본 `labs/harness-solution/`(tools/yield_server.py · .mcp.json) · mcp 2.x 는 FastMCP → `MCPServer` · MCP 공식 클라이언트로 엑셀 4개 호출 시험 · 화면 코드는 완성본 파일에서 읽음 · `plab.mcp_flow` · Python 3.10 이상)
   - 10장 배포(`pgit`): vibe-coding 1-5 · 1-7 장을 wafer-report 예로 — 배포 전 · 후 · 공유 링크 비유 · 주소별 접속 범위(file:// vs vercel.app · 서버가 없어 localhost · 내부망 장은 뺌) · 커밋 · Git 작업 흐름 · 되돌리기 · 체크포인트와 Git · GitHub · gh · Vercel.
   - 부록(`APPENDIX` · `pai`): 플러그인 · 마켓플레이스(claude-plugins-official 자동 · claude-community) · 설치 순서 · 범위 · 공개 하네스(Superpowers · gstack) · 설치 전 점검.
-- **개념 앞에 배경 장.** CLAUDE.md ← 새 대화의 시작 · Plan Mode ← 계획부터 보기 · Git ← 파일 이름 버전 관리 · 세이브 포인트 · 하네스 ← 프롬프트 · 컨텍스트 · 하네스 · 마구 · 배포 ← 정적 웹과 동적 웹.
+- **개념 앞에 배경 장.** CLAUDE.md ← 새 대화의 시작 · Plan Mode ← 계획부터 보기 · Git ← 파일 이름 버전 관리 · 세이브 포인트 · 하네스 ← 프롬프트 · 컨텍스트 · 하네스 · 마구 · 배포 ← 정적 웹과 동적 웹 ← 사진과 창문(비유 · posco-dx Ch4 그림 · 창문 속 해가 지나감 · `pnew.photo_window`).
 - **개요에서 설명한 개념을 실습 장에서 다시 설명하지 않는다**(차트 읽는 법 · 에이전트 루프 · 검증 루프를 지운 이유).
 - **열 목록 · 열 묶음 표는 보여 주지 않는다**(「열 18개 네 묶음」 같은 장). 데이터는 지도 · 차트로 직접 보며 이해하게 하고, 측정값 이름은 몰라도 된다.
 - `docs/index.html` 은 빌드 결과물이다. 직접 고치지 말고 `src/` 를 고친 뒤 빌드한다.

@@ -120,6 +120,58 @@ def token_pick(a=48217, b=29356):
     return d.svg(1160, 430, s)
 
 
+# ── 사진과 창문 · 정적 웹과 동적 웹 비유 (posco-dx Ch4 「사진과 창문」 그림을 옮김) ─────
+def _land(x, y, w, h):
+    """액자 · 창 안 풍경 — 하늘 흰색 · 언덕 회색."""
+    return (f'<path d="M{x} {y + h * .72} Q{x + w * .25} {y + h * .5} {x + w * .5} {y + h * .7} Q{x + w * .75} {y + h * .56} {x + w} {y + h * .66} '
+            f'L{x + w} {y + h} L{x} {y + h} Z" fill="#D9DDE3"/>'
+            f'<path d="M{x} {y + h * .86} Q{x + w * .4} {y + h * .74} {x + w} {y + h * .88} L{x + w} {y + h} L{x} {y + h} Z" fill="{N}" fill-opacity=".25"/>')
+
+
+def _cloud(x, y):
+    return (f'<path d="M{x} {y} q12 -18 30 -8 q14 -10 26 6 q14 2 8 16 l-62 0 q-14 -4 -2 -14 z" fill="{W}" stroke="{N}" '
+            f'stroke-width="3" stroke-linejoin="round"/>')
+
+
+def photo_window():
+    """사진(정적 웹) — 액자 속 풍경은 그대로 / 창문(동적 웹) — 해가 하늘을 지나가고 구름이 흘러감.
+    그림은 posco-dx scenes_ch4.photo_window(사람 · 로봇은 뺌). 10초 · 한 번 · 끝 장면 = 해가 오른쪽 아래."""
+    D = 10
+    d = _D("pnpw", D)
+    pc = lambda t: t / D * 100  # noqa: E731
+    px, py, pw, ph = 170, 70, 260, 190          # 액자
+    wx, wy, ww, wh = 730, 70, 260, 190          # 창문
+    s = (f'<line x1="{px + 40}" y1="{py - 4}" x2="{px + pw / 2}" y2="{py - 34}" stroke="{N}" stroke-width="3"/>'
+         f'<line x1="{px + pw - 40}" y1="{py - 4}" x2="{px + pw / 2}" y2="{py - 34}" stroke="{N}" stroke-width="3"/>'
+         f'<circle cx="{px + pw / 2}" cy="{py - 36}" r="6" fill="{N}"/>'
+         f'<rect x="{px - 16}" y="{py - 16}" width="{pw + 32}" height="{ph + 32}" rx="6" fill="{N}"/>'
+         f'<rect x="{px}" y="{py}" width="{pw}" height="{ph}" fill="{W}"/>' + _land(px, py, pw, ph)
+         + f'<circle cx="{px + 70}" cy="{py + 62}" r="26" fill="#D9DDE3" stroke="{N}" stroke-width="4"/>' + _cloud(px + 150, py + 52))
+    # 창문 — 해는 2차 곡선 위 점을 따라 움직임
+    p0, p1, p2 = (wx + 24, wy + 128), (wx + ww / 2, wy - 40), (wx + ww - 24, wy + 128)
+    bz = lambda t: ((1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0],  # noqa: E731
+                    (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1])
+    st = [(0, "transform:translate({:.0f}px,{:.0f}px)".format(*bz(0)))]
+    for k in range(11):
+        st.append((pc(1 + 7 * k / 10), "transform:translate({:.0f}px,{:.0f}px)".format(*bz(k / 10))))
+    st.append((100, "transform:translate({:.0f}px,{:.0f}px)".format(*bz(1))))
+    s += (f'<rect x="{wx}" y="{wy}" width="{ww}" height="{wh}" fill="{W}"/>' + _land(wx, wy, ww, wh)
+          + f'<path d="M{p0[0]} {p0[1]} Q{p1[0]} {p1[1]} {p2[0]} {p2[1]}" stroke="{N}" stroke-width="3" fill="none" stroke-dasharray="6 8" stroke-linecap="round"/>'
+          + f'<g {d.a(st)}><circle r="25" fill="#FFE2B8" stroke="{N}" stroke-width="4"/></g>'
+          + f'<g {d.a([(0, "transform:translate(0px,0px)"), (pc(1), "transform:translate(0px,0px)"), (pc(8), "transform:translate(-46px,0px)"), (100, "transform:translate(-46px,0px)")])}>'
+          + _cloud(wx + 176, wy + 100) + "</g>"
+          + f'<rect x="{wx - 14}" y="{wy - 14}" width="{ww + 28}" height="{wh + 28}" rx="4" fill="none" stroke="{O}" stroke-width="16"/>'
+          f'<line x1="{wx + ww / 2}" y1="{wy}" x2="{wx + ww / 2}" y2="{wy + wh}" stroke="{O}" stroke-width="9"/>'
+          f'<line x1="{wx}" y1="{wy + wh / 2}" x2="{wx + ww}" y2="{wy + wh / 2}" stroke="{O}" stroke-width="9"/>'
+          f'<rect x="{wx - 34}" y="{wy + wh + 14}" width="{ww + 68}" height="14" rx="4" fill="{N}"/>')
+    # 대응
+    s += (f'<g {d.show(pc(.5))}>' + _t(px + pw / 2, 330, "사진 · 정적 웹", "tt", "middle", 'style="font-size:22px"')
+          + _t(px + pw / 2, 364, "미리 만든 파일 · 누가 언제 열어도 같은 화면", "ts", "middle", 'style="font-size:16px"') + "</g>")
+    s += (f'<g {d.show(pc(1.2))}>' + _t(wx + ww / 2, 330, "창문 · 동적 웹", "tt", "middle", 'style="font-size:22px;fill:#EF6C00"')
+          + _t(wx + ww / 2, 364, "볼 때마다 · 보는 사람마다 다른 화면", "ts", "middle", 'style="font-size:16px"') + "</g>")
+    return d.svg(1160, 400, s)
+
+
 # ── 정적 웹과 동적 웹 ─────────────────────────────────────
 def static_dynamic():
     """위 줄 정적 웹(브라우저 ↔ 서버 · 만들어 둔 파일 그대로) → 아래 줄 동적 웹(서버가 DB 를 읽어 요청마다 만듦). 12초."""
@@ -271,6 +323,7 @@ def slides():
               [], [f"수율 {WN['yield']}%", f"사유별 합 = 불합격 {WN['fail']}"], ""),
 
         # ── 실습 · 화면
+        light("사진과 창문", photo_window(), T),
         light("정적 웹과 동적 웹", static_dynamic(), T),
 
         # ── 실습 · 보고서 템플릿
